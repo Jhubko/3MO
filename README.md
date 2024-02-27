@@ -48,8 +48,6 @@ This software uses the following open source packages:
 - [OpenAI](https://github.com/OkGoDoIt/OpenAI-API-dotnet)
 - [Google](https://github.com/googleapis/google-api-dotnet-client)
 
-<p>Or</p> 
-
 ## License
 
 MIT
