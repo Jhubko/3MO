@@ -29,7 +29,7 @@
   - Can answer a questions using chatGPT
 * Games
   - Card Game
-  - Random number
+  - Random number generator (dices)
 * Poll
   - Can generate two to four answer polls
 * Help Command
