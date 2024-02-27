@@ -46,7 +46,6 @@ namespace Discord_Bot
 
             Client.Ready += Client_Ready;
             Client.ComponentInteractionCreated += Client_ComponentInteractionCreated;
-            //Client.VoiceStateUpdated += VoiceChannelHandler;
             Client.GuildMemberAdded += Client_GuildMemberAdded;
 
 
@@ -65,7 +64,7 @@ namespace Discord_Bot
 
             UriBuilder builder = new UriBuilder
             {
-                Scheme = Uri.UriSchemeHttp, // Możesz zmienić na "https" jeśli używasz HTTPS
+                Scheme = Uri.UriSchemeHttp, 
                 Host = jsonReader.llHostname,
                 Port = jsonReader.llPort
             };
@@ -87,8 +86,6 @@ namespace Discord_Bot
 
             var SlashCommandConfig = Client.UseSlashCommands(new SlashCommandsConfiguration
             {
-                // Tell DSharpPlus about your service provider, so it can use it to resolve
-                // all the services easily from your command modules.
                 Services = serviceProvider,
             });
 
@@ -170,14 +167,6 @@ namespace Discord_Bot
 
             }
         }
-
-        //private static async Task VoiceChannelHandler(DiscordClient sender, VoiceStateUpdateEventArgs e)
-        //{
-        //    if (e.Before == null && e.Channel.Name == "Anime Heaven")
-        //    {
-        //        await e.Channel.SendMessageAsync($"{e.User.Username} dołączył do kanału głosowego");
-        //    }
-        //}
 
         private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {
