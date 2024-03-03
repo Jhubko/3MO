@@ -15,7 +15,7 @@ namespace Discord_Bot.commands.slash
         private IAudioService _audioService = Program.AudioService;
         private async ValueTask<QueuedLavalinkPlayer?> GetPlayerAsync(InteractionContext ctx, bool connectToVoiceChannel = true)
         {
-            var playerOptions = new QueuedLavalinkPlayerOptions { };
+            var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true, DisconnectOnDestroy = true  };
             var channelBehavior = connectToVoiceChannel
                 ? PlayerChannelBehavior.Join
                 : PlayerChannelBehavior.None;
@@ -287,7 +287,7 @@ namespace Discord_Bot.commands.slash
             if (player is null)
                 return;
 
-            var queue = player.Queue;
+            var queue = player.Queue.Take(30);
             string songs = string.Empty;
             int num = 0;
 
