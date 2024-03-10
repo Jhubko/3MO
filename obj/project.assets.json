@@ -177,12 +177,12 @@
           }
         }
       },
-      "Lavalink4NET/4.0.11": {
+      "Lavalink4NET/4.0.13": {
         "type": "package",
         "dependencies": {
-          "Lavalink4NET.Abstractions": "4.0.11",
-          "Lavalink4NET.Protocol": "4.0.11",
-          "Lavalink4NET.Rest": "4.0.11",
+          "Lavalink4NET.Abstractions": "4.0.13",
+          "Lavalink4NET.Protocol": "4.0.13",
+          "Lavalink4NET.Rest": "4.0.13",
           "Microsoft.Extensions.Caching.Memory": "7.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "7.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
@@ -196,7 +196,7 @@
           "lib/net7.0/Lavalink4NET.dll": {}
         }
       },
-      "Lavalink4NET.Abstractions/4.0.11": {
+      "Lavalink4NET.Abstractions/4.0.13": {
         "type": "package",
         "compile": {
           "lib/net7.0/Lavalink4NET.Abstractions.dll": {}
@@ -222,7 +222,35 @@
           }
         }
       },
-      "Lavalink4NET.Protocol/4.0.11": {
+      "Lavalink4NET.InactivityTracking/4.0.13": {
+        "type": "package",
+        "dependencies": {
+          "Lavalink4NET": "4.0.13",
+          "Microsoft.Extensions.Logging.Abstractions": "7.0.0"
+        },
+        "compile": {
+          "lib/net7.0/Lavalink4NET.InactivityTracking.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/Lavalink4NET.InactivityTracking.dll": {}
+        }
+      },
+      "Lavalink4NET.Lyrics/4.0.13": {
+        "type": "package",
+        "dependencies": {
+          "Lavalink4NET.Abstractions": "4.0.13",
+          "Microsoft.Extensions.Caching.Abstractions": "7.0.0",
+          "Microsoft.Extensions.Http": "7.0.0",
+          "System.Text.Json": "7.0.3"
+        },
+        "compile": {
+          "lib/net7.0/Lavalink4NET.Lyrics.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/Lavalink4NET.Lyrics.dll": {}
+        }
+      },
+      "Lavalink4NET.Protocol/4.0.13": {
         "type": "package",
         "dependencies": {
           "System.Text.Json": "7.0.3"
@@ -234,11 +262,11 @@
           "lib/net7.0/Lavalink4NET.Protocol.dll": {}
         }
       },
-      "Lavalink4NET.Rest/4.0.11": {
+      "Lavalink4NET.Rest/4.0.13": {
         "type": "package",
         "dependencies": {
-          "Lavalink4NET.Abstractions": "4.0.11",
-          "Lavalink4NET.Protocol": "4.0.11",
+          "Lavalink4NET.Abstractions": "4.0.13",
+          "Lavalink4NET.Protocol": "4.0.13",
           "Microsoft.Extensions.Caching.Abstractions": "7.0.0",
           "Microsoft.Extensions.Http": "7.0.0"
         },
@@ -2388,29 +2416,29 @@
         "lib/netstandard2.0/Google.Apis.CustomSearchAPI.v1.xml"
       ]
     },
-    "Lavalink4NET/4.0.11": {
-      "sha512": "904iTT2E1HvKaXqaGG3rTmevG9j6q0uALmJyyoFk1U+G1hPBRpHOtuJim2szFj+BYosmze0QLpkKbG9tNPoC+w==",
+    "Lavalink4NET/4.0.13": {
+      "sha512": "/Ueo7FrapoAzBLm8rNMnm7BNvpxQ/jWQWMp3klcemly8zJ3qGk3TOh40svn00B4a7rcZlv+ThwZZ+MbESNi6VQ==",
       "type": "package",
-      "path": "lavalink4net/4.0.11",
+      "path": "lavalink4net/4.0.13",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.4.0.11.nupkg.sha512",
+        "lavalink4net.4.0.13.nupkg.sha512",
         "lavalink4net.nuspec",
         "lib/net6.0/Lavalink4NET.dll",
         "lib/net7.0/Lavalink4NET.dll"
       ]
     },
-    "Lavalink4NET.Abstractions/4.0.11": {
-      "sha512": "ODd9fTabFUndqViy3gp7+8t+co1JKoLX8yLPN+h7g+xYL0QGhvbTgUeOaFF35M88Y9ZLgIIZ4PmS2aew7E+0rA==",
+    "Lavalink4NET.Abstractions/4.0.13": {
+      "sha512": "b92jJx4iboNmi9+Fdq5sjgE78Yrs7CrlSm1hRn/+hjokHADFU+wCqNf2AFDKujy1bG4g/IB/00Kxxp3+0f56gA==",
       "type": "package",
-      "path": "lavalink4net.abstractions/4.0.11",
+      "path": "lavalink4net.abstractions/4.0.13",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.abstractions.4.0.11.nupkg.sha512",
+        "lavalink4net.abstractions.4.0.13.nupkg.sha512",
         "lavalink4net.abstractions.nuspec",
         "lib/net6.0/Lavalink4NET.Abstractions.dll",
         "lib/net7.0/Lavalink4NET.Abstractions.dll"
@@ -2432,29 +2460,57 @@
         "lib/net7.0/Lavalink4NET.DSharpPlus.xml"
       ]
     },
-    "Lavalink4NET.Protocol/4.0.11": {
-      "sha512": "/9AldgfFr+C9dpxgcFKuaoFtnYBZeMbCImeCr5nF0Qg6Hi5w+KPbx6PRZ5CP6TsRZtMrjqd7do6eVhT8aPEuQQ==",
+    "Lavalink4NET.InactivityTracking/4.0.13": {
+      "sha512": "JpIHBklmrhLWXdNDGcLMj09c4KGDFi7szjedxUDnR9NZ032nfmg5F5V+vKLGp8lK1D8tSRCDLFOD5Npf4wPrcA==",
       "type": "package",
-      "path": "lavalink4net.protocol/4.0.11",
+      "path": "lavalink4net.inactivitytracking/4.0.13",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.protocol.4.0.11.nupkg.sha512",
+        "lavalink4net.inactivitytracking.4.0.13.nupkg.sha512",
+        "lavalink4net.inactivitytracking.nuspec",
+        "lib/net6.0/Lavalink4NET.InactivityTracking.dll",
+        "lib/net7.0/Lavalink4NET.InactivityTracking.dll"
+      ]
+    },
+    "Lavalink4NET.Lyrics/4.0.13": {
+      "sha512": "eVTHTmzFVbLe+nrihcNzq37nrRQmsgqn+cQW2s3Zp4CqLOIVpCD9UGLrolBCY6fpHkyGrZHTeGzH2OvUkuNgEw==",
+      "type": "package",
+      "path": "lavalink4net.lyrics/4.0.13",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Lavalink4NET.png",
+        "lavalink4net.lyrics.4.0.13.nupkg.sha512",
+        "lavalink4net.lyrics.nuspec",
+        "lib/net6.0/Lavalink4NET.Lyrics.dll",
+        "lib/net7.0/Lavalink4NET.Lyrics.dll"
+      ]
+    },
+    "Lavalink4NET.Protocol/4.0.13": {
+      "sha512": "EgPQLOeHGWNT9X+hUzedeWbP7NdjEhjJYVs6Fgy4Xa49ADu3WP4OXtllkV0Ab6HVgFitJh4d7/Q9GavFHNY65A==",
+      "type": "package",
+      "path": "lavalink4net.protocol/4.0.13",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Lavalink4NET.png",
+        "lavalink4net.protocol.4.0.13.nupkg.sha512",
         "lavalink4net.protocol.nuspec",
         "lib/net6.0/Lavalink4NET.Protocol.dll",
         "lib/net7.0/Lavalink4NET.Protocol.dll"
       ]
     },
-    "Lavalink4NET.Rest/4.0.11": {
-      "sha512": "3GPOh0ImB7RSybWMJe6wmED8n64U+hmyn/A0HBO/eFORKKbrJG/3thOVkkUG5xSI0kGYVmSNOgPuByNo1X5zfQ==",
+    "Lavalink4NET.Rest/4.0.13": {
+      "sha512": "Fc618OX9UkLijLb8dmuxE79o6RUlQggjZl6mMdm1eRS+Sz0vjdd4XnkqQR3Rjw8Nx/kk7dQXDpJF/xtM7rOhGQ==",
       "type": "package",
-      "path": "lavalink4net.rest/4.0.11",
+      "path": "lavalink4net.rest/4.0.13",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.rest.4.0.11.nupkg.sha512",
+        "lavalink4net.rest.4.0.13.nupkg.sha512",
         "lavalink4net.rest.nuspec",
         "lib/net6.0/Lavalink4NET.Rest.dll",
         "lib/net7.0/Lavalink4NET.Rest.dll"
@@ -6497,6 +6553,8 @@
       "Google.Apis.Core >= 1.67.0",
       "Google.Apis.CustomSearchAPI.v1 >= 1.67.0.3290",
       "Lavalink4NET.DSharpPlus >= 4.0.11",
+      "Lavalink4NET.InactivityTracking >= 4.0.13",
+      "Lavalink4NET.Lyrics >= 4.0.13",
       "Microsoft.Extensions.Hosting >= 8.0.0",
       "Newtonsoft.Json >= 13.0.3",
       "OpenAI >= 1.10.0"
@@ -6586,6 +6644,14 @@
           "Lavalink4NET.DSharpPlus": {
             "target": "Package",
             "version": "[4.0.11, )"
+          },
+          "Lavalink4NET.InactivityTracking": {
+            "target": "Package",
+            "version": "[4.0.13, )"
+          },
+          "Lavalink4NET.Lyrics": {
+            "target": "Package",
+            "version": "[4.0.13, )"
           },
           "Microsoft.Extensions.Hosting": {
             "target": "Package",

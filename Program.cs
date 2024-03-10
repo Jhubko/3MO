@@ -13,8 +13,13 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Lavalink4NET;
 using Lavalink4NET.Extensions;
+using Lavalink4NET.Players.Queued;
+using Lavalink4NET.Players;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Lavalink4NET.Rest.Entities.Tracks;
+using System.Numerics;
 
 namespace Discord_Bot
 {
@@ -46,6 +51,7 @@ namespace Discord_Bot
 
             Client.Ready += Client_Ready;
             Client.ComponentInteractionCreated += Client_ComponentInteractionCreated;
+            //Client.VoiceStateUpdated += VoiceChannelHandler;
             Client.GuildMemberAdded += Client_GuildMemberAdded;
 
 
@@ -64,7 +70,7 @@ namespace Discord_Bot
 
             UriBuilder builder = new UriBuilder
             {
-                Scheme = Uri.UriSchemeHttp, 
+                Scheme = jsonReader.secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, // Możesz zmienić na "https" jeśli używasz HTTPS
                 Host = jsonReader.llHostname,
                 Port = jsonReader.llPort
             };
@@ -86,6 +92,8 @@ namespace Discord_Bot
 
             var SlashCommandConfig = Client.UseSlashCommands(new SlashCommandsConfiguration
             {
+                // Tell DSharpPlus about your service provider, so it can use it to resolve
+                // all the services easily from your command modules.
                 Services = serviceProvider,
             });
 
@@ -167,6 +175,30 @@ namespace Discord_Bot
 
             }
         }
+        //private static async Task VoiceChannelHandler(DiscordClient sender, VoiceStateUpdateEventArgs e)
+        //{
+        //    if (e.Channel == null)
+        //        return;
+
+        //    var playerOptions = new QueuedLavalinkPlayerOptions { };
+        //    var channelBehavior = PlayerChannelBehavior.Join;
+
+        //    var retrieveOptions = new PlayerRetrieveOptions(ChannelBehavior: channelBehavior);
+
+        //    var result = await AudioService.Players
+        //                .RetrieveAsync(guildId: e.Guild.Id, memberVoiceChannel: e.Channel.Id, playerFactory: PlayerFactory.Queued, options: Options.Create(options: playerOptions), retrieveOptions)
+        //                .ConfigureAwait(false);
+
+
+        //    var track = await AudioService.Tracks
+        //                .LoadTrackAsync("bandycka jazda", TrackSearchMode.YouTube)
+        //                .ConfigureAwait(false);
+
+        //    if (e.User.Id == 339126499510583298 && e.Before == null)
+        //    {
+        //        await result.Player.PlayAsync(track).ConfigureAwait(false);
+        //    }
+        //}
 
         private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {

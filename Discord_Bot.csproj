@@ -18,6 +18,8 @@
     <PackageReference Include="Google.Apis.Core" Version="1.67.0" />
     <PackageReference Include="Google.Apis.CustomSearchAPI.v1" Version="1.67.0.3290" />
     <PackageReference Include="Lavalink4NET.DSharpPlus" Version="4.0.11" />
+    <PackageReference Include="Lavalink4NET.InactivityTracking" Version="4.0.13" />
+    <PackageReference Include="Lavalink4NET.Lyrics" Version="4.0.13" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAI" Version="1.10.0" />

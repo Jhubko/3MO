@@ -48,6 +48,8 @@ namespace Discord_Bot.other
             Color = DiscordColor.Black,
             Title = "Music Commands",
             Description = "**/play**  -> Puszcza muzyke na kanale głosowym \n" +
+                          "**/playnow **  -> Puszcza od razu utwór na kanale głosowym \n" +
+                          "**/next **  -> Dodaje piosenke jako pierwsza w kolejce \n" +
                           "**/pause**  -> Pauzuje muzyke\n" +
                           "**/resume**  -> Wznawia muzyke\n" +
                           "**/stop**  -> Całkowicie zatrzymuje muzyke\n" +

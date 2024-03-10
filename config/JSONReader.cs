@@ -18,7 +18,7 @@ namespace Discord_Bot.config
         public string llHostname { get; set; }
         public int llPort { get; set; }
         public string llPass { get; set; }
-
+        public bool secured { get; set; }
 
         public async Task ReadJSON()
         {
@@ -34,6 +34,7 @@ namespace Discord_Bot.config
                 this.llHostname = data.llHostname;
                 this.llPort = data.llPort;
                 this.llPass = data.llPass;
+                this.secured = data.secured;
             }
         }
 
@@ -49,5 +50,7 @@ namespace Discord_Bot.config
         public string llHostname { get; set; }
         public int llPort { get; set; }
         public string llPass { get; set; }
+
+        public bool secured { get; set; }
     }
 }

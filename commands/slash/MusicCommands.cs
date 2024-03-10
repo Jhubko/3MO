@@ -15,7 +15,7 @@ namespace Discord_Bot.commands.slash
         private IAudioService _audioService = Program.AudioService;
         private async ValueTask<QueuedLavalinkPlayer?> GetPlayerAsync(InteractionContext ctx, bool connectToVoiceChannel = true)
         {
-            var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true, DisconnectOnDestroy = true  };
+            var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true };
             var channelBehavior = connectToVoiceChannel
                 ? PlayerChannelBehavior.Join
                 : PlayerChannelBehavior.None;
@@ -51,13 +51,12 @@ namespace Discord_Bot.commands.slash
             if (player is null)
                 return;
 
-            if (Regex.IsMatch(songname, "www\\.youtube\\.com"))
+            if (Regex.IsMatch(songname, "&list="))
             {
                 await AddPlaylist(ctx, player, songname);
                 return;
             }
                 
-
             var track = await _audioService.Tracks
                         .LoadTrackAsync(songname, TrackSearchMode.YouTube)
                         .ConfigureAwait(false);
@@ -86,7 +85,6 @@ namespace Discord_Bot.commands.slash
             else
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(nowPlayingEmbed)).ConfigureAwait(false);
         }
-
         public async Task AddPlaylist(InteractionContext ctx, QueuedLavalinkPlayer player, [Option("playlist", "Playlist You want to play")][RemainingText] string playlist)
         {
             var result = await _audioService.Tracks
@@ -123,6 +121,78 @@ namespace Discord_Bot.commands.slash
             }
             else
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"**{result.Track.Author} - {result.Track.Title}** added to queue")).ConfigureAwait(false);
+        }
+
+        [SlashCommand("playnow", "Force play song")]
+        public async Task PlayNow(InteractionContext ctx, [Option("songname", "Song or playlist You want to play")][RemainingText] string songname)
+        {
+            var player = await GetPlayerAsync(ctx, connectToVoiceChannel: true);
+            await ctx.DeferAsync();
+
+            if (player is null)
+                return;
+
+            if (Regex.IsMatch(songname, "&list="))
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"😖 You can not force play a playlist!")).ConfigureAwait(false);
+                return;
+            }
+
+            var track = await _audioService.Tracks
+            .LoadTrackAsync(songname, TrackSearchMode.YouTube)
+            .ConfigureAwait(false);
+
+            if (track is null)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("😖 No results."));
+                return;
+            }
+
+            await player.Queue.InsertAsync(0, new TrackQueueItem(track));
+            await player.SkipAsync().ConfigureAwait(false);
+
+            string musicDesc = $"Title: {track.Title} \n" +
+                   $"Author: {track.Author} \n" +
+                   $"URL: {track.Uri}";
+
+            var nowPlayingEmbed = new DiscordEmbedBuilder()
+            {
+                Color = DiscordColor.DarkRed,
+                Title = "Teraz leci:",
+                Description = musicDesc
+            };
+
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(nowPlayingEmbed)).ConfigureAwait(false);
+        }
+
+        [SlashCommand("next", "Add song as next")]
+        public async Task AddNext(InteractionContext ctx, [Option("songname", "Song or playlist You want to play")][RemainingText] string songname)
+        {
+            var player = await GetPlayerAsync(ctx, connectToVoiceChannel: true);
+            await ctx.DeferAsync();
+
+            if (player is null)
+                return;
+
+            if (Regex.IsMatch(songname, "&list="))
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"😖 You can not add playlists")).ConfigureAwait(false);
+                return;
+            }
+
+            var track = await _audioService.Tracks
+            .LoadTrackAsync(songname, TrackSearchMode.YouTube)
+            .ConfigureAwait(false);
+
+            if (track is null)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("😖 No results."));
+                return;
+            }
+
+            var nextTrack = new TrackQueueItem(track);
+            await player.Queue.InsertAsync(0, nextTrack);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"**{track.Author} - {track.Title}** added to the queue next")).ConfigureAwait(false);
         }
 
         [SlashCommand("pause", description: "Pauses the player.")]
