@@ -1,15 +1,14 @@
-﻿using Discord_Bot.other;
+﻿using Discord_Bot.config;
+using Discord_Bot.other;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System;
-using System.Threading.Tasks;
 
 namespace Discord_Bot.commands
 {
     internal class ManagementCommands : BaseCommandModule
     {
-        public static ulong defaultRole;
+        public static config.JSONReader jsonReader = new JSONReader();
 
         [Command("help")]
         public async Task HelpCommand(CommandContext ctx)
@@ -23,14 +22,14 @@ namespace Discord_Bot.commands
         }
 
         [Command("defaultRole")]
-        public async Task DefaultRoleCommand(CommandContext ctx, string newDefaultRole)
+        public async Task DefaultRoleCommand(CommandContext ctx, [RemainingText] string newDefaultRole)
         {
             foreach (var role in ctx.Guild.Roles)
             {
                 if (role.Value.Name == newDefaultRole)
                 {
-                    defaultRole = role.Key;
-                    await ctx.RespondAsync($"New default role set to: {defaultRole}");
+                    jsonReader.UpdateJSON(ctx.Guild.Id, "DefaultRole", role.Key.ToString());
+                    await ctx.RespondAsync($"New default role set to: {newDefaultRole}");
                     return;
                 }               
             }

@@ -13,13 +13,9 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Lavalink4NET;
 using Lavalink4NET.Extensions;
-using Lavalink4NET.Players.Queued;
-using Lavalink4NET.Players;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Lavalink4NET.Rest.Entities.Tracks;
-using System.Numerics;
+using System;
 
 namespace Discord_Bot
 {
@@ -118,7 +114,13 @@ namespace Discord_Bot
         private static async Task Client_GuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs args)
         {
             var member = args.Member;
-            var role = args.Guild.GetRole(ManagementCommands.defaultRole);
+            var serverId = args.Guild.Id.ToString();
+
+            await jsonReader.ReadJSON(Path.Combine(jsonReader.configPath, $"{serverId}.json"));
+
+            var roleid = Convert.ToUInt64(jsonReader.defaultRole);
+
+            var role = args.Guild.GetRole(roleid);
 
             if (role != null)
             {

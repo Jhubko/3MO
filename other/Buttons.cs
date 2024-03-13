@@ -24,8 +24,8 @@ namespace Discord_Bot.other
         {
             Color = DiscordColor.Black,
             Title = "Management Commands",
-            Description = "**/help**  -> Pokazuję komendy z opisami \n" +
-                          "**/defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników"
+            Description = "**!help**  -> Pokazuję komendy z opisami \n" +
+                          "**!defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników"
         };
 
         public static DiscordEmbedBuilder helpCommandEmbed = new DiscordEmbedBuilder()
