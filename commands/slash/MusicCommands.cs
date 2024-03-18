@@ -51,7 +51,7 @@ namespace Discord_Bot.commands.slash
             if (player is null)
                 return;
 
-            if (Regex.IsMatch(songname, "&list="))
+            if (Regex.IsMatch(songname, "list="))
             {
                 await AddPlaylist(ctx, player, songname);
                 return;
