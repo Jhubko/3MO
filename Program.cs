@@ -15,7 +15,7 @@ using Lavalink4NET;
 using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
+using System.Text.RegularExpressions;
 
 namespace Discord_Bot
 {
@@ -24,7 +24,8 @@ namespace Discord_Bot
         public static IAudioService? AudioService { get; set; }
         public static DiscordClient? Client { get; set; }
         private static CommandsNextExtension? Commands { get; set; }
-        public static JSONReader jsonReader = new JSONReader();
+
+        public static JSONReader? jsonReader = new JSONReader();
 
         static async Task Main(string[] args)
         {
@@ -49,6 +50,7 @@ namespace Discord_Bot
             Client.ComponentInteractionCreated += Client_ComponentInteractionCreated;
             //Client.VoiceStateUpdated += VoiceChannelHandler;
             Client.GuildMemberAdded += Client_GuildMemberAdded;
+            Client.MessageCreated += Client_MessageCreated;
 
 
             var commandsConfig = new CommandsNextConfiguration()
@@ -105,17 +107,29 @@ namespace Discord_Bot
                 .StartAsync(CancellationToken.None)
                 .ConfigureAwait(false);
             }
-
-
             await Task.Delay(-1);
+        }
 
+        private static async Task Client_MessageCreated(DiscordClient sender, MessageCreateEventArgs args)
+        {
+            var channel = args.Channel;
+            var serverId = args.Guild.Id.ToString();
+            await jsonReader.ReadJSON(Path.Combine(jsonReader.configPath, $"{serverId}.json"));
+
+            if (jsonReader.imageChannels == null)
+                return;
+
+            if (jsonReader.imageChannels.ToList().Contains(channel.Id.ToString()))
+            {
+                if (Regex.IsMatch(args.Message.Content, "."))
+                    await args.Message.DeleteAsync();
+            }   
         }
 
         private static async Task Client_GuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs args)
         {
             var member = args.Member;
             var serverId = args.Guild.Id.ToString();
-
             await jsonReader.ReadJSON(Path.Combine(jsonReader.configPath, $"{serverId}.json"));
 
             var roleid = Convert.ToUInt64(jsonReader.defaultRole);

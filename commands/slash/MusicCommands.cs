@@ -12,7 +12,7 @@ namespace Discord_Bot.commands.slash
 {
     internal class MusicCommands : ApplicationCommandModule
     {
-        private IAudioService _audioService = Program.AudioService;
+        private IAudioService? _audioService = Program.AudioService;
         private async ValueTask<QueuedLavalinkPlayer?> GetPlayerAsync(InteractionContext ctx, bool connectToVoiceChannel = true)
         {
             var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true };
@@ -51,7 +51,7 @@ namespace Discord_Bot.commands.slash
             if (player is null)
                 return;
 
-            if (Regex.IsMatch(songname, "&list="))
+            if (Regex.IsMatch(songname, "list="))
             {
                 await AddPlaylist(ctx, player, songname);
                 return;

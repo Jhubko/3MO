@@ -8,7 +8,7 @@ namespace Discord_Bot.commands
 {
     internal class ManagementCommands : BaseCommandModule
     {
-        public static config.JSONReader jsonReader = new JSONReader();
+        public static JSONReader jsonReader = new JSONReader();
 
         [Command("help")]
         public async Task HelpCommand(CommandContext ctx)
@@ -34,7 +34,26 @@ namespace Discord_Bot.commands
                 }               
             }
             await ctx.RespondAsync($"Role '{newDefaultRole}' not found on this server.");
+        }
 
+        [Command("imageOnly")]
+        public async Task ImageOnlyChannelCommand(CommandContext ctx, [RemainingText] string channelToChange)
+        {
+            foreach (var channel in ctx.Guild.Channels)
+            {
+                if (channel.Value.Name == channelToChange)
+                {
+                   jsonReader.UpdateJSON(ctx.Guild.Id, "ImageOnlyChannels", channel.Key.ToString());
+                    //if (channelsLits.Contains(channel.Key.ToString()))
+                    //    await ctx.RespondAsync($"{channelToChange} was changed to normal channel.");
+                    //else
+                    //    await ctx.RespondAsync($"{channelToChange} was changed to image only channel.");
+
+                    await ctx.RespondAsync($"{channelToChange} was changed.");
+                    return;
+                }
+            }
+            await ctx.RespondAsync($"Role '{channelToChange}' not found on this server.");
         }
     }
 }
