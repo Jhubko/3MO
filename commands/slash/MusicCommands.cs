@@ -12,7 +12,7 @@ namespace Discord_Bot.commands.slash
 {
     internal class MusicCommands : ApplicationCommandModule
     {
-        private IAudioService? _audioService = Program.AudioService;
+        private readonly IAudioService? _audioService = Program.AudioService;
         private async ValueTask<QueuedLavalinkPlayer?> GetPlayerAsync(InteractionContext ctx, bool connectToVoiceChannel = true)
         {
             var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true };

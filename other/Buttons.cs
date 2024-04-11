@@ -25,7 +25,8 @@ namespace Discord_Bot.other
             Color = DiscordColor.Black,
             Title = "Management Commands",
             Description = "**!help**  -> Pokazuję komendy z opisami \n" +
-                          "**!defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników"
+                          "**!defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników \n" +
+                          "**!imageOnly**  -> Ustawia który kanał będzie usuwał wiadomości tekstowe"
         };
 
         public static DiscordEmbedBuilder helpCommandEmbed = new DiscordEmbedBuilder()
@@ -40,7 +41,8 @@ namespace Discord_Bot.other
             Color = DiscordColor.Black,
             Title = "Search Commands",
             Description = "**/image**  -> Wyszukuje randomowy obrazek o danej tematyce \n" +
-                          "**/chatgpt**  -> ChatGPT odpowie na twoje pytanie\n"
+                          "**/chatgpt**  -> ChatGPT odpowie na twoje pytanie\n" +
+                          "**/meme**  -> Wysyła randomowy mem z reddit\n"
         };
 
         public static DiscordEmbedBuilder musicCommandEmbed = new DiscordEmbedBuilder()

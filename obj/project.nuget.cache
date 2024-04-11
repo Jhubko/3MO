@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "wAQhIrkWh0CvLqUfnnlfnmE/4fn8uwhoOYhvHz8eEhjwOsla9VYqsyrGJacxBuJnkiU+ePpo6N39ifqoYJfdOw==",
+  "dgSpecHash": "8/9lIJXILqgJb89OmInq8bfjY67YlkN4RceXt+ebKyba7x+Q4c2SDUl4plcQ8JBR0as/PjGPSPcRgZDc5pZ25A==",
   "success": true,
   "projectFilePath": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\Discord_Bot.csproj",
   "expectedPackageFiles": [
@@ -89,7 +89,7 @@
     "C:\\Users\\hubko\\.nuget\\packages\\system.linq\\4.3.0\\system.linq.4.3.0.nupkg.sha512",
     "C:\\Users\\hubko\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
     "C:\\Users\\hubko\\.nuget\\packages\\system.net.http\\4.3.4\\system.net.http.4.3.4.nupkg.sha512",
-    "C:\\Users\\hubko\\.nuget\\packages\\system.net.http.json\\7.0.1\\system.net.http.json.7.0.1.nupkg.sha512",
+    "C:\\Users\\hubko\\.nuget\\packages\\system.net.http.json\\8.0.0\\system.net.http.json.8.0.0.nupkg.sha512",
     "C:\\Users\\hubko\\.nuget\\packages\\system.net.nameresolution\\4.3.0\\system.net.nameresolution.4.3.0.nupkg.sha512",
     "C:\\Users\\hubko\\.nuget\\packages\\system.net.primitives\\4.3.0\\system.net.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\hubko\\.nuget\\packages\\system.net.security\\4.3.0\\system.net.security.4.3.0.nupkg.sha512",

@@ -25,7 +25,7 @@ namespace Discord_Bot
         public static DiscordClient? Client { get; set; }
         private static CommandsNextExtension? Commands { get; set; }
 
-        public static JSONReader? jsonReader = new JSONReader();
+        public static JSONReader? jsonReader = new();
 
         static async Task Main(string[] args)
         {
@@ -34,7 +34,7 @@ namespace Discord_Bot
             var discordConfig = new DiscordConfiguration()
             {
                 Intents = DiscordIntents.All,
-                Token = jsonReader.token,
+                Token = jsonReader.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true
             };
@@ -55,7 +55,7 @@ namespace Discord_Bot
 
             var commandsConfig = new CommandsNextConfiguration()
             {
-                StringPrefixes = new string[] { jsonReader.prefix },
+                StringPrefixes = new string[] { jsonReader.Prefix },
                 EnableMentionPrefix = true,
                 EnableDms = true,
                 EnableDefaultHelp = false
@@ -68,9 +68,9 @@ namespace Discord_Bot
 
             UriBuilder builder = new UriBuilder
             {
-                Scheme = jsonReader.secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, // Możesz zmienić na "https" jeśli używasz HTTPS
-                Host = jsonReader.llHostname,
-                Port = jsonReader.llPort
+                Scheme = jsonReader.Secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, // Możesz zmienić na "https" jeśli używasz HTTPS
+                Host = jsonReader.LlHostname,
+                Port = jsonReader.LlPort
             };
 
             using var serviceProvider = new ServiceCollection()
@@ -80,7 +80,7 @@ namespace Discord_Bot
                     {
                         x.Label = "Lavalink";
                         x.BaseAddress = builder.Uri;
-                        x.Passphrase = jsonReader.llPass;
+                        x.Passphrase = jsonReader.LlPass;
                         x.ResumptionOptions = new LavalinkSessionResumptionOptions(TimeSpan.FromSeconds(60));
                         x.ReadyTimeout = TimeSpan.FromSeconds(15);
                     })
@@ -90,8 +90,6 @@ namespace Discord_Bot
 
             var SlashCommandConfig = Client.UseSlashCommands(new SlashCommandsConfiguration
             {
-                // Tell DSharpPlus about your service provider, so it can use it to resolve
-                // all the services easily from your command modules.
                 Services = serviceProvider,
             });
 
@@ -114,12 +112,12 @@ namespace Discord_Bot
         {
             var channel = args.Channel;
             var serverId = args.Guild.Id.ToString();
-            await jsonReader.ReadJSON(Path.Combine(jsonReader.configPath, $"{serverId}.json"));
+            await jsonReader.ReadJSON(Path.Combine(jsonReader.ConfigPath, $"{serverId}.json"));
 
-            if (jsonReader.imageChannels == null)
+            if (jsonReader.ImageChannels == null)
                 return;
 
-            if (jsonReader.imageChannels.ToList().Contains(channel.Id.ToString()))
+            if (jsonReader.ImageChannels.ToList().Contains(channel.Id.ToString()))
             {
                 if (Regex.IsMatch(args.Message.Content, "."))
                     await args.Message.DeleteAsync();
@@ -130,9 +128,9 @@ namespace Discord_Bot
         {
             var member = args.Member;
             var serverId = args.Guild.Id.ToString();
-            await jsonReader.ReadJSON(Path.Combine(jsonReader.configPath, $"{serverId}.json"));
+            await jsonReader.ReadJSON(Path.Combine(jsonReader.ConfigPath, $"{serverId}.json"));
 
-            var roleid = Convert.ToUInt64(jsonReader.defaultRole);
+            var roleid = Convert.ToUInt64(jsonReader.DefaultRole);
 
             var role = args.Guild.GetRole(roleid);
 

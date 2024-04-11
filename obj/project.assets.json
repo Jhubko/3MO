@@ -1456,18 +1456,18 @@
           }
         }
       },
-      "System.Net.Http.Json/7.0.1": {
+      "System.Net.Http.Json/8.0.0": {
         "type": "package",
         "dependencies": {
-          "System.Text.Json": "7.0.2"
+          "System.Text.Json": "8.0.0"
         },
         "compile": {
-          "lib/net7.0/System.Net.Http.Json.dll": {
+          "lib/net8.0/System.Net.Http.Json.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net7.0/System.Net.Http.Json.dll": {
+          "lib/net8.0/System.Net.Http.Json.dll": {
             "related": ".xml"
           }
         },
@@ -4681,15 +4681,16 @@
         "system.net.http.nuspec"
       ]
     },
-    "System.Net.Http.Json/7.0.1": {
-      "sha512": "ni8+BJnndbJI9AXme/qCYXg1s4RpdRJx3gKp5WzcWuLt4l3syuscgk5Becis6x4E7HbQk4z6A7FNXFQD75F+wQ==",
+    "System.Net.Http.Json/8.0.0": {
+      "sha512": "48Bxrd6zcGeQzS4GMEDVjuqCcAw/9wcEWnIu48FQJ5IzfKPiMR1nGtz9LrvGzU4+3TLbx/9FDlGmCUeLin1Eqg==",
       "type": "package",
-      "path": "system.net.http.json/7.0.1",
+      "path": "system.net.http.json/8.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
         "buildTransitive/net461/System.Net.Http.Json.targets",
         "buildTransitive/net462/_._",
@@ -4701,9 +4702,11 @@
         "lib/net6.0/System.Net.Http.Json.xml",
         "lib/net7.0/System.Net.Http.Json.dll",
         "lib/net7.0/System.Net.Http.Json.xml",
+        "lib/net8.0/System.Net.Http.Json.dll",
+        "lib/net8.0/System.Net.Http.Json.xml",
         "lib/netstandard2.0/System.Net.Http.Json.dll",
         "lib/netstandard2.0/System.Net.Http.Json.xml",
-        "system.net.http.json.7.0.1.nupkg.sha512",
+        "system.net.http.json.8.0.0.nupkg.sha512",
         "system.net.http.json.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -6557,7 +6560,8 @@
       "Lavalink4NET.Lyrics >= 4.0.13",
       "Microsoft.Extensions.Hosting >= 8.0.0",
       "Newtonsoft.Json >= 13.0.3",
-      "OpenAI >= 1.10.0"
+      "OpenAI >= 1.10.0",
+      "System.Net.Http.Json >= 8.0.0"
     ]
   },
   "packageFolders": {
@@ -6664,6 +6668,10 @@
           "OpenAI": {
             "target": "Package",
             "version": "[1.10.0, )"
+          },
+          "System.Net.Http.Json": {
+            "target": "Package",
+            "version": "[8.0.0, )"
           }
         },
         "imports": [

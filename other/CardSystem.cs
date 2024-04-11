@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Discord_Bot.other
+﻿namespace Discord_Bot.other
 {
     internal class CardSystem
     {

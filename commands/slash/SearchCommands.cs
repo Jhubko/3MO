@@ -3,6 +3,7 @@ using DSharpPlus.SlashCommands;
 using Google.Apis.CustomSearchAPI.v1;
 using Google.Apis.Services;
 using OpenAI_API;
+using Discord_Bot.other;
 
 namespace Discord_Bot.commands.slash
 {
@@ -14,15 +15,15 @@ namespace Discord_Bot.commands.slash
         {
             await ctx.DeferAsync();
 
-            string apiKey = Program.jsonReader.apikey;
-            string cseId = Program.jsonReader.cseId;
+            string apiKey = Program.jsonReader.Apikey;
+            string cseId = Program.jsonReader.CseId;
 
             var customSearchService = new CustomSearchAPIService(new BaseClientService.Initializer()
             {
                 ApiKey = apiKey,
                 ApplicationName = "3MO",
             });
-        
+
             var listRequest = customSearchService.Cse.List();
             listRequest.Cx = cseId;
             listRequest.SearchType = CseResource.ListRequest.SearchTypeEnum.Image;
@@ -31,10 +32,10 @@ namespace Discord_Bot.commands.slash
             var searchRequest = await listRequest.ExecuteAsync();
             var results = searchRequest.Items;
 
-            if (results == null || !results.Any()) 
+            if (results == null || !results.Any())
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("No results found"));
-                return;            
+                return;
             }
             else
             {
@@ -50,7 +51,7 @@ namespace Discord_Bot.commands.slash
 
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
             }
-           
+
 
         }
 
@@ -59,7 +60,7 @@ namespace Discord_Bot.commands.slash
         {
             await ctx.DeferAsync();
 
-            var api = new OpenAIAPI(Program.jsonReader.apiGPT);
+            var api = new OpenAIAPI(Program.jsonReader.ApiGPT);
             var chat = api.Chat.CreateConversation();
 
             chat.AppendSystemMessage("Type a question");
@@ -76,6 +77,14 @@ namespace Discord_Bot.commands.slash
             };
 
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(outputembed));
+        }
+
+        [SlashCommand("meme", "Send random meme")]
+        public async Task SendMemeAsync(InteractionContext ctx)
+        {
+            await ctx.DeferAsync();
+            var meme = await SearchSystem.GetRandomMemeAsync(ctx);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(meme));
         }
     }
 }

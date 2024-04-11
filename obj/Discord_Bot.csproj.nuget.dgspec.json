@@ -104,6 +104,10 @@
             "OpenAI": {
               "target": "Package",
               "version": "[1.10.0, )"
+            },
+            "System.Net.Http.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             }
           },
           "imports": [

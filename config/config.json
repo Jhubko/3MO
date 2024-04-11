@@ -1,0 +1,13 @@
+﻿{
+  //Insert your bot token here
+  "token": "",
+  "prefix": "!",
+  "apikey": "",
+  "cseId": "",
+  "apiGPT": "",
+  "llHostname": "lavalink4.alfari.id",
+  "llPort": 443,
+  "llPass": "catfein",
+  "secured": true,
+  "ConfigPath": ""
+}
