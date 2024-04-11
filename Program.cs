@@ -26,10 +26,13 @@ namespace Discord_Bot
         private static CommandsNextExtension? Commands { get; set; }
 
         public static JSONReader? jsonReader = new();
+        public static string configPath = string.Empty;
 
         static async Task Main(string[] args)
         {
             await jsonReader.ReadJSON();
+
+            configPath = jsonReader.ConfigPath;
 
             var discordConfig = new DiscordConfiguration()
             {
@@ -111,8 +114,13 @@ namespace Discord_Bot
         private static async Task Client_MessageCreated(DiscordClient sender, MessageCreateEventArgs args)
         {
             var channel = args.Channel;
-            var serverId = args.Guild.Id.ToString();
-            await jsonReader.ReadJSON(Path.Combine(jsonReader.ConfigPath, $"{serverId}.json"));
+            var serverId = args.Guild.Id;
+            string filePath = Path.Combine(configPath, $"{serverId}.json");
+
+            if (!File.Exists(filePath))
+                jsonReader.CreateJSON(serverId);
+
+            await jsonReader.ReadJSON(filePath);
 
             if (jsonReader.ImageChannels == null)
                 return;
@@ -128,7 +136,7 @@ namespace Discord_Bot
         {
             var member = args.Member;
             var serverId = args.Guild.Id.ToString();
-            await jsonReader.ReadJSON(Path.Combine(jsonReader.ConfigPath, $"{serverId}.json"));
+            await jsonReader.ReadJSON(Path.Combine(configPath, $"{serverId}.json"));
 
             var roleid = Convert.ToUInt64(jsonReader.DefaultRole);
 

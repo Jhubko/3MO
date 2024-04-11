@@ -28,7 +28,7 @@ namespace Discord_Bot.commands
             {
                 if (role.Value.Name == newDefaultRole)
                 {
-                    jsonReader.UpdateJSON(ctx.Guild.Id, "DefaultRole", role.Key.ToString());
+                    await jsonReader.UpdateJSON(ctx.Guild.Id, "DefaultRole", role.Key.ToString());
                     await ctx.RespondAsync($"New default role set to: {newDefaultRole}");
                     return;
                 }               
@@ -43,12 +43,7 @@ namespace Discord_Bot.commands
             {
                 if (channel.Value.Name == channelToChange)
                 {
-                   jsonReader.UpdateJSON(ctx.Guild.Id, "ImageOnlyChannels", channel.Key.ToString());
-                    //if (channelsLits.Contains(channel.Key.ToString()))
-                    //    await ctx.RespondAsync($"{channelToChange} was changed to normal channel.");
-                    //else
-                    //    await ctx.RespondAsync($"{channelToChange} was changed to image only channel.");
-
+                    await jsonReader.UpdateJSON(ctx.Guild.Id, "ImageOnlyChannels", channel.Key.ToString());
                     await ctx.RespondAsync($"{channelToChange} was changed.");
                     return;
                 }

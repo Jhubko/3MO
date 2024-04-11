@@ -6,7 +6,7 @@ namespace Discord_Bot.other
     internal class Buttons
     {
         public static DiscordButtonComponent gamesButton = new DiscordButtonComponent(ButtonStyle.Success, "gamesButton", "Games");
-        public static DiscordButtonComponent mngmtButton = new DiscordButtonComponent(ButtonStyle.Success, "mngmtButton", "Poll");
+        public static DiscordButtonComponent mngmtButton = new DiscordButtonComponent(ButtonStyle.Success, "mngmtButton", "Management");
         public static DiscordButtonComponent searchButton = new DiscordButtonComponent(ButtonStyle.Danger, "searchButton", "Search");
         public static DiscordButtonComponent musicButton = new DiscordButtonComponent(ButtonStyle.Danger, "musicButton", "Music");
 

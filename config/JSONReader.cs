@@ -25,29 +25,39 @@ namespace Discord_Bot.config
             using (StreamReader sr = new StreamReader(jsonName))
             {
                 string json = await sr.ReadToEndAsync();
-                JSONStructure? data = JsonConvert.DeserializeObject<JSONStructure>(json);
-                this.Token = data.Token;
-                this.Prefix = data.Prefix;
-                this.Apikey = data.Apikey;
-                this.CseId = data.CseId;
-                this.ApiGPT =  data.ApiGPT;
-                this.LlHostname =  data.LlHostname;
-                this.LlPort = data.LlPort; 
-                this.LlPass =  data.LlPass;
-                this.Secured =  data.Secured;
-                this.ConfigPath = data.ConfigPath;
-                this.DefaultRole = data.DefaultRole;
-                this.ImageChannels = data.ImageOnlyChannels;
+                JSONStructure data = JsonConvert.DeserializeObject<JSONStructure>(json);
+                if (data == null)
+                    return;
+
+                if (jsonName == "config.json")
+                {
+                    this.Token = data.Token;
+                    this.Prefix = data.Prefix;
+                    this.Apikey = data.Apikey;
+                    this.CseId = data.CseId;
+                    this.ApiGPT = data.ApiGPT;
+                    this.LlHostname = data.LlHostname;
+                    this.LlPort = data.LlPort;
+                    this.LlPass = data.LlPass;
+                    this.Secured = data.Secured;
+                    this.ConfigPath = data.ConfigPath;
+                }
+                else
+                {
+                    this.DefaultRole = data.DefaultRole;
+                    this.ImageChannels = data.ImageOnlyChannels;
+                }
             }
         }
 
-        public async void UpdateJSON(ulong index, string dataType, string Content)
+        public async Task UpdateJSON(ulong index, string dataType, string Content)
         {
             await ReadJSON();
 
             string filePath = Path.Combine(ConfigPath, $"{index}.json");
+            FileInfo fileInfo = new FileInfo(filePath);
 
-            if (!File.Exists(filePath))
+            if (!File.Exists(filePath) || fileInfo.Length == 0)
             {
                 CreateJSON(index, dataType, Content);
                 return;
@@ -66,18 +76,26 @@ namespace Discord_Bot.config
 
         }
 
-        public void CreateJSON(ulong index, string dataType, string Content)
+        public void CreateJSON(ulong index, string? dataType = null, string? Content = null)
         {
             string filePath = Path.Combine(ConfigPath, $"{index}.json");
             var data = new Dictionary<string, object>();
 
-            if (arrayDataTypes.Contains(dataType))
-                data[dataType] = new List<string>() { Content };
-            else
-                data[dataType] = Content;
+            if (dataType != null && Content != null)
+            {
+                if (arrayDataTypes.Contains(dataType))
+                    data[dataType] = new List<string>() { Content };
+                else
+                    data[dataType] = Content;
 
-            string json = JsonConvert.SerializeObject(data);
-            File.WriteAllText(filePath, json);
+                string json = JsonConvert.SerializeObject(data);
+                File.WriteAllText(filePath, json);
+            }
+            else
+            {
+                File.WriteAllText(filePath, null);
+            }
+
         }
 
         private void UpdateArrayDataType(JObject jsonData, string dataType, string Content)
