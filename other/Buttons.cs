@@ -42,7 +42,8 @@ namespace Discord_Bot.other
             Title = "Search Commands",
             Description = "**/image**  -> Wyszukuje randomowy obrazek o danej tematyce \n" +
                           "**/chatgpt**  -> ChatGPT odpowie na twoje pytanie\n" +
-                          "**/meme**  -> Wysyła randomowy mem z reddit\n"
+                          "**/meme**  -> Wysyła randomowy mem z reddit\n" +
+                          "**/wiki**  -> Wysyła randomowy artykuł z wikipedii\n"
         };
 
         public static DiscordEmbedBuilder musicCommandEmbed = new DiscordEmbedBuilder()

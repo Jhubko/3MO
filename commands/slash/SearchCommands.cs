@@ -86,5 +86,13 @@ namespace Discord_Bot.commands.slash
             var meme = await SearchSystem.GetRandomMemeAsync(ctx);
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(meme));
         }
+
+        [SlashCommand("wiki", "Send random wikipedia article")]
+        public async Task SendWikiAsync(InteractionContext ctx)
+        {
+            await ctx.DeferAsync();
+            var meme = await SearchSystem.GetRandomWikiAsync(ctx);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(meme));
+        }
     }
 }
