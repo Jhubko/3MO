@@ -7,9 +7,10 @@ namespace Discord_Bot.config
     {
         public string? Token { get; set; }
         public string? Prefix { get; set; }
-        public string? Apikey { get; set; }
+        public string? ApiGoogle { get; set; }
         public string? CseId { get; set; }
         public string? ApiGPT { get; set; }
+        public string? WeatherApi { get; set; }
         public string? LlHostname { get; set; }
         public int LlPort { get; set; }
         public string? LlPass { get; set; }
@@ -33,9 +34,10 @@ namespace Discord_Bot.config
                 {
                     this.Token = data.Token;
                     this.Prefix = data.Prefix;
-                    this.Apikey = data.Apikey;
+                    this.ApiGoogle = data.ApiGoogle;
                     this.CseId = data.CseId;
                     this.ApiGPT = data.ApiGPT;
+                    this.WeatherApi = data.WeatherApi;
                     this.LlHostname = data.LlHostname;
                     this.LlPort = data.LlPort;
                     this.LlPass = data.LlPass;
@@ -126,9 +128,10 @@ namespace Discord_Bot.config
     {
         public string? Token { get; set; }
         public string? Prefix { get; set; }
-        public string? Apikey { get; set; }
+        public string? ApiGoogle { get; set; }
         public string? CseId { get; set; }
         public string? ApiGPT { get; set; }
+        public string? WeatherApi { get; set; }
         public string? LlHostname { get; set; }
         public int LlPort { get; set; }
         public string? LlPass { get; set; }

@@ -15,7 +15,7 @@ namespace Discord_Bot.commands.slash
         {
             await ctx.DeferAsync();
 
-            string apiKey = Program.jsonReader.Apikey;
+            string apiKey = Program.jsonReader.ApiGoogle;
             string cseId = Program.jsonReader.CseId;
 
             var customSearchService = new CustomSearchAPIService(new BaseClientService.Initializer()
@@ -93,6 +93,14 @@ namespace Discord_Bot.commands.slash
             await ctx.DeferAsync();
             var meme = await SearchSystem.GetRandomWikiAsync(ctx);
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(meme));
+        }
+
+        [SlashCommand("weather", "Tell weather for city")]
+        public async Task WeatherWikiAsync(InteractionContext ctx, [Option("City", "City You want to check")] string city)
+        {
+            await ctx.DeferAsync();
+            var weather = await SearchSystem.GetWeather(ctx, city);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(weather));
         }
     }
 }

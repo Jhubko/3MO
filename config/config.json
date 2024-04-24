@@ -2,9 +2,10 @@
   //Insert your bot token here
   "token": "",
   "prefix": "!",
-  "apikey": "",
+  "ApiGoogle": "",
   "cseId": "",
   "apiGPT": "",
+  "WeatherApi": "",
   "llHostname": "lavalink4.alfari.id",
   "llPort": 443,
   "llPass": "catfein",

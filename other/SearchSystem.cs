@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace Discord_Bot.other
 {
@@ -78,6 +79,60 @@ namespace Discord_Bot.other
                 };
 
                 return wikiEmbed;
+            }
+            catch (HttpRequestException ex)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Błąd podczas pobierania strony: {ex.Message}"));
+                return null;
+            }
+            catch (JsonException ex)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Błąd podczas parsowania danych JSON: {ex.Message}"));
+                return null;
+            }
+        }
+
+        public static async Task<DiscordEmbedBuilder> GetWeather(InteractionContext ctx, string city)
+        {
+            try
+            {
+                string apiKey = Program.jsonReader.WeatherApi;
+                string apiUrl = $"http://api.weatherapi.com/v1/current.json?key={apiKey}&q={city}&aqi=no";
+                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+                var response = await _httpClient.SendAsync(request);
+
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var WeatherData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                string WeatherTitle = WeatherData.location.name;
+                string WeatherCountry = WeatherData.location.country;
+                string WeatherText = WeatherData.current.condition.text;
+                string WeatherImage = WeatherData.current.condition.icon;
+                string WeatherTemp = WeatherData.current.temp_c;
+                string WeatherTempFeels = WeatherData.current.feelslike_c;
+                string WeatherWind = WeatherData.current.wind_kph;
+                string WeatherCloud = WeatherData.current.cloud;
+                string WeatherPreasure = WeatherData.current.pressure_mb;
+                string WeatherTime = WeatherData.current.last_updated;
+
+                var weatherEmbed = new DiscordEmbedBuilder()
+                {
+                    Color = DiscordColor.CornflowerBlue,
+                    Title = $"{WeatherTitle}, {WeatherCountry}" ,
+                    ImageUrl = $"https:{WeatherImage}",
+                    Description =
+                        $"Weather: {WeatherText} \n" +
+                        $"Temperature: {WeatherTemp} °C \n" +
+                        $"Feels Like: {WeatherTempFeels} °C \n" +
+                        $"Wind: {WeatherWind} Km/H \n" +
+                        $"Preasure: {WeatherPreasure} hPa \n" +
+                        $"Clouds: {WeatherCloud}% \n" + 
+                        $"Time: {WeatherTime}",
+                };
+
+                return weatherEmbed;
             }
             catch (HttpRequestException ex)
             {
