@@ -159,7 +159,7 @@ namespace Discord_Bot.other
             try
             {
                 string apiKey = Program.jsonReader.WeatherApi;
-                string apiUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={city}&days=7&hour=25";
+                string apiUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={city}&days=8&hour=25";
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
                 var response = await _httpClient.SendAsync(request);
 
@@ -171,7 +171,7 @@ namespace Discord_Bot.other
                 string WeatherTitle = WeatherData.location.name;
                 string WeatherCountry = WeatherData.location.country;
 
-                for (int i = 1; i < 7; i++)
+                for (int i = 1; i < 8; i++)
                 {
                     WeatherWindList.Add($"{WeatherData.forecast.forecastday[i].day.maxwind_kph}");
                     WeatherTextList.Add($"{WeatherData.forecast.forecastday[i].day.condition.text}");
@@ -188,8 +188,6 @@ namespace Discord_Bot.other
                     desc += $"**Date:{WeatherDateList[i]}**\n **Weather:** {WeatherTextList[i]}, **Temperature:** {WeatherTempList[i]}°C\n **Wind**: {WeatherWindList[i]} k/h, **Chance of rain/snow:** {WeatherRainChanceList[i]}% / {WeatherSnowChanceList[i]}%\n";
                     desc += $"{frame}";
                 }
-
-
 
                 var weatherEmbed = new DiscordEmbedBuilder()
                 {

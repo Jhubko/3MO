@@ -25,11 +25,6 @@
   - Shuffle queue.
 * Searching images 
   - Can search selected image from google.
-* Random
-  - Send random meme from reddit
-  - Send random article from wikipedia
-* Weather
-  - Send information about weather in given location
 * ChatGPT
   - Can answer a questions using chatGPT
 * Games
