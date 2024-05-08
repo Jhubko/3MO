@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\other\\searchsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:other\\searchsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\other\\buttons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:other\\buttons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\other\\searchsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:other\\searchsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\slash\\searchcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,7 +50,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
@@ -90,13 +90,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "SearchSystem.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\SearchSystem.cs",
               "RelativeDocumentMoniker": "other\\SearchSystem.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\SearchSystem.cs",
               "RelativeToolTip": "other\\SearchSystem.cs",
-              "ViewState": "AQIAAJ4AAAAAAAAAAAAIwLMAAABcAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAALMAAABcAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-11T16:04:20.018Z",
               "EditorCaption": ""
@@ -127,15 +127,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Buttons.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\Buttons.cs",
               "RelativeDocumentMoniker": "other\\Buttons.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\Buttons.cs",
               "RelativeToolTip": "other\\Buttons.cs",
-              "ViewState": "AQIAAB0AAAAAAAAAAAAQwAgAAACFAAAA",
+              "ViewState": "AQIAABoAAAAAAAAAAAAQwC8AAABdAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-20T21:18:39.887Z"
+              "WhenOpened": "2024-03-20T21:18:39.887Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

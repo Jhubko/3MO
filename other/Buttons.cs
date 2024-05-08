@@ -43,7 +43,9 @@ namespace Discord_Bot.other
             Description = "**/image**  -> Wyszukuje randomowy obrazek o danej tematyce \n" +
                           "**/chatgpt**  -> ChatGPT odpowie na twoje pytanie\n" +
                           "**/meme**  -> Wysyła randomowy mem z reddit\n" +
-                          "**/wiki**  -> Wysyła randomowy artykuł z wikipedii\n"
+                          "**/wiki**  -> Wysyła randomowy artykuł z wikipedii\n" +
+                          "**/weather**  -> Wysyła informacje o aktualnej pogodzie w danym mieście\n" +
+                          "**/forecast**  -> Wysyła 7 dniową prognoze pogody w danym mieście"
         };
 
         public static DiscordEmbedBuilder musicCommandEmbed = new DiscordEmbedBuilder()
