@@ -1,13 +1,18 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
-using static Google.Apis.Requests.BatchRequest;
 
 namespace Discord_Bot.other
 {
     internal class SearchSystem
     {
         private static readonly HttpClient _httpClient = new HttpClient();
+        private static List<string> WeatherTextList = new();
+        private static List<string> WeatherRainChanceList = new();
+        private static List<string> WeatherSnowChanceList = new();
+        private static List<string> WeatherTempList = new();
+        private static List<string> WeatherDateList = new();
+        private static List<string> WeatherWindList = new();
         public static async Task<DiscordEmbedBuilder> GetRandomMemeAsync(InteractionContext ctx)
         {
             try
@@ -130,6 +135,67 @@ namespace Discord_Bot.other
                         $"Preasure: {WeatherPreasure} hPa \n" +
                         $"Clouds: {WeatherCloud}% \n" + 
                         $"Time: {WeatherTime}",
+                };
+
+                return weatherEmbed;
+            }
+            catch (HttpRequestException ex)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Błąd podczas pobierania strony: {ex.Message}"));
+                return null;
+            }
+            catch (JsonException ex)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Błąd podczas parsowania danych JSON: {ex.Message}"));
+                return null;
+            }
+        }
+
+        public static async Task<DiscordEmbedBuilder> GetForecast(InteractionContext ctx, string city)
+        {
+            string desc = string.Empty;
+            string frame = "════════════════════════════\n";
+
+            try
+            {
+                string apiKey = Program.jsonReader.WeatherApi;
+                string apiUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={city}&days=7&hour=25";
+                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+                var response = await _httpClient.SendAsync(request);
+
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var WeatherData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                string WeatherTitle = WeatherData.location.name;
+                string WeatherCountry = WeatherData.location.country;
+
+                for (int i = 1; i < 7; i++)
+                {
+                    WeatherWindList.Add($"{WeatherData.forecast.forecastday[i].day.maxwind_kph}");
+                    WeatherTextList.Add($"{WeatherData.forecast.forecastday[i].day.condition.text}");
+                    WeatherRainChanceList.Add($"{WeatherData.forecast.forecastday[i].day.daily_chance_of_rain}");
+                    WeatherSnowChanceList.Add($"{WeatherData.forecast.forecastday[i].day.daily_chance_of_snow}");
+                    WeatherTempList.Add($"{WeatherData.forecast.forecastday[i].day.avgtemp_c}");
+                    WeatherDateList.Add($"{WeatherData.forecast.forecastday[i].date}");
+                }
+
+                desc += $"{frame}";
+
+                for (int i = 0; i < WeatherTextList.Count(); i++)
+                {
+                    desc += $"**Date:{WeatherDateList[i]}**\n **Weather:** {WeatherTextList[i]}, **Temperature:** {WeatherTempList[i]}°C\n **Wind**: {WeatherWindList[i]} k/h, **Chance of rain/snow:** {WeatherRainChanceList[i]}% / {WeatherSnowChanceList[i]}%\n";
+                    desc += $"{frame}";
+                }
+
+
+
+                var weatherEmbed = new DiscordEmbedBuilder()
+                {
+                    Color = DiscordColor.CornflowerBlue,
+                    Title = $"{WeatherTitle}, {WeatherCountry}",
+                    Description = "**Forecast:**\n" + desc
                 };
 
                 return weatherEmbed;

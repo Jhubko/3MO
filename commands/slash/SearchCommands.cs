@@ -95,11 +95,19 @@ namespace Discord_Bot.commands.slash
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(meme));
         }
 
-        [SlashCommand("weather", "Tell weather for city")]
-        public async Task WeatherWikiAsync(InteractionContext ctx, [Option("City", "City You want to check")] string city)
+        [SlashCommand("weather", "Tell current weather for city")]
+        public async Task WeatherAsync(InteractionContext ctx, [Option("City", "City You want to check")] string city)
         {
             await ctx.DeferAsync();
             var weather = await SearchSystem.GetWeather(ctx, city);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(weather));
+        }
+
+        [SlashCommand("forecast", "Tell forecast for city")]
+        public async Task ForecastAsync(InteractionContext ctx, [Option("City", "City You want to check")] string city)
+        {
+            await ctx.DeferAsync();
+            var weather = await SearchSystem.GetForecast(ctx, city);
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(weather));
         }
     }
