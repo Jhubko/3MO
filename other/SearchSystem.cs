@@ -177,7 +177,7 @@ namespace Discord_Bot.other
                     WeatherTextList.Add($"{WeatherData.forecast.forecastday[i].day.condition.text}");
                     WeatherRainChanceList.Add($"{WeatherData.forecast.forecastday[i].day.daily_chance_of_rain}");
                     WeatherSnowChanceList.Add($"{WeatherData.forecast.forecastday[i].day.daily_chance_of_snow}");
-                    WeatherTempList.Add($"{WeatherData.forecast.forecastday[i].day.avgtemp_c}");
+                    WeatherTempList.Add($"{WeatherData.forecast.forecastday[i].day.maxtemp_c}");
                     WeatherDateList.Add($"{WeatherData.forecast.forecastday[i].date}");
                 }
 
