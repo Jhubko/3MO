@@ -40,7 +40,7 @@
 * Poll
   - Can generate two to four answer polls
 * Help Command
-  -Help command with description of all commands.
+  - Help command with description of all commands.
 * Management Commands
   - Set a default role for server.
   - Set channel as an image only channel.
