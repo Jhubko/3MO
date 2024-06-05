@@ -36,6 +36,31 @@ namespace Discord_Bot.commands
             await ctx.RespondAsync($"Role '{newDefaultRole}' not found on this server.");
         }
 
+        [Command("deleteMessageEmoji")]
+        public async Task DeleteMessageCommand(CommandContext ctx, [RemainingText] DiscordEmoji emoji )
+        {
+            if (DiscordEmoji.IsValidUnicode(emoji))
+            {
+                await jsonReader.UpdateJSON(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                await ctx.RespondAsync($"Delete emoji was set to: {emoji}");
+                return;
+            }
+            else
+            {
+                foreach (var e in ctx.Guild.Emojis.ToList())
+                {
+                    if (e.Value.Name == emoji.Name)
+                    {
+                        await jsonReader.UpdateJSON(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                        await ctx.RespondAsync($"Delete emoji was set to: {emoji}");
+                        return;
+                    }
+                }
+            }
+
+            await ctx.RespondAsync($"Emoji '{emoji}' was not found.");
+        }
+
         [Command("imageOnly")]
         public async Task ImageOnlyChannelCommand(CommandContext ctx, [RemainingText] string channelToChange)
         {

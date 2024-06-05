@@ -154,7 +154,7 @@ namespace Discord_Bot.other
         public static async Task<DiscordEmbedBuilder> GetForecast(InteractionContext ctx, string city)
         {
             string desc = string.Empty;
-            string frame = "════════════════════════════\n";
+            string frame = "════════════════════════════════\n";
 
             try
             {

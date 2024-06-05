@@ -52,6 +52,7 @@ namespace Discord_Bot
             Client.Ready += Client_Ready;
             Client.ComponentInteractionCreated += Client_ComponentInteractionCreated;
             //Client.VoiceStateUpdated += VoiceChannelHandler;
+            Client.MessageReactionAdded += Client_MessageReactionAdded;
             Client.GuildMemberAdded += Client_GuildMemberAdded;
             Client.MessageCreated += Client_MessageCreated;
 
@@ -111,16 +112,21 @@ namespace Discord_Bot
             await Task.Delay(-1);
         }
 
+        private static async Task Client_MessageReactionAdded(DiscordClient sender, MessageReactionAddEventArgs args)
+        {
+            var reaction = args.Emoji;
+            await ReadJson(args.Guild.Id);
+
+            if (jsonReader.DeleteMessageEmoji == null)
+                return;
+
+            await MessagesHandler.DeleteUnwantedMessage(args, DiscordEmoji.FromName(sender, jsonReader.DeleteMessageEmoji));
+        }
+
         private static async Task Client_MessageCreated(DiscordClient sender, MessageCreateEventArgs args)
         {
             var channel = args.Channel;
-            var serverId = args.Guild.Id;
-            string filePath = Path.Combine(configPath, $"{serverId}.json");
-
-            if (!File.Exists(filePath))
-                jsonReader.CreateJSON(serverId);
-
-            await jsonReader.ReadJSON(filePath);
+            await ReadJson(args.Guild.Id);
 
             if (jsonReader.ImageChannels == null)
                 return;
@@ -135,8 +141,7 @@ namespace Discord_Bot
         private static async Task Client_GuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs args)
         {
             var member = args.Member;
-            var serverId = args.Guild.Id.ToString();
-            await jsonReader.ReadJSON(Path.Combine(configPath, $"{serverId}.json"));
+            await ReadJson(args.Guild.Id);
 
             var roleid = Convert.ToUInt64(jsonReader.DefaultRole);
 
@@ -221,6 +226,16 @@ namespace Discord_Bot
         //        await result.Player.PlayAsync(track).ConfigureAwait(false);
         //    }
         //}
+
+        private static async Task ReadJson(ulong serverId)
+        {
+            string filePath = Path.Combine(configPath, $"{serverId}.json");
+
+            if (!File.Exists(filePath))
+                jsonReader.CreateJSON(serverId);
+
+            await jsonReader.ReadJSON(filePath);
+        }
 
         private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {

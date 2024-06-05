@@ -16,6 +16,7 @@ namespace Discord_Bot.config
         public string? LlPass { get; set; }
         public bool Secured { get; set; }
         public string? DefaultRole { get; set; }
+        public string? DeleteMessageEmoji { get; set; }
         public List<string>? ImageChannels { get; set; }
         public string? ConfigPath { get; set; }
 
@@ -46,8 +47,9 @@ namespace Discord_Bot.config
                 }
                 else
                 {
+                    this.DeleteMessageEmoji = data.DeleteMessageEmoji;
                     this.DefaultRole = data.DefaultRole;
-                    this.ImageChannels = data.ImageOnlyChannels;
+                    this.ImageChannels = data.ImageChannels;
                 }
             }
         }
@@ -137,7 +139,8 @@ namespace Discord_Bot.config
         public string? LlPass { get; set; }
         public bool Secured { get; set; }
         public string? DefaultRole { get; set; }
-        public List<string>? ImageOnlyChannels { get; set; }
+        public string? DeleteMessageEmoji { get; set; }
+        public List<string>? ImageChannels { get; set; }
         public string? ConfigPath { get; set; }
     }
 }
