@@ -51,7 +51,6 @@ namespace Discord_Bot
 
             Client.Ready += Client_Ready;
             Client.ComponentInteractionCreated += Client_ComponentInteractionCreated;
-            //Client.VoiceStateUpdated += VoiceChannelHandler;
             Client.MessageReactionAdded += Client_MessageReactionAdded;
             Client.GuildMemberAdded += Client_GuildMemberAdded;
             Client.MessageCreated += Client_MessageCreated;
@@ -68,7 +67,6 @@ namespace Discord_Bot
             Commands = Client.UseCommandsNext(commandsConfig);
             Commands.CommandErrored += CommandEventHandler;
             Commands.RegisterCommands<GamesCommands>();
-            Commands.RegisterCommands<ManagementCommands>();
 
             UriBuilder builder = new UriBuilder
             {
@@ -97,7 +95,8 @@ namespace Discord_Bot
                 Services = serviceProvider,
             });
 
-            SlashCommandConfig.RegisterCommands<PollCommands>();
+            SlashCommandConfig.RegisterCommands<ManagementCommands>();
+            SlashCommandConfig.RegisterCommands<GamesSlashCommands>();
             SlashCommandConfig.RegisterCommands<SearchCommands>();
             SlashCommandConfig.RegisterCommands<MusicCommands>();
 
@@ -109,7 +108,29 @@ namespace Discord_Bot
                 .StartAsync(CancellationToken.None)
                 .ConfigureAwait(false);
             }
+
+            StartDeleteBotMessagesTask();
+
             await Task.Delay(-1);
+        }
+
+        private static void StartDeleteBotMessagesTask()
+        {
+            var interval = TimeSpan.FromHours(12).TotalMilliseconds;
+
+            var timer = new System.Timers.Timer(interval);
+            timer.Elapsed += async (sender, e) =>
+            {
+                try
+                {
+                    await MessagesHandler.DeleteBotMessages();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception in DeleteBotMessages: {ex.Message}");
+                }
+            };
+            timer.Start();
         }
 
         private static async Task Client_MessageReactionAdded(DiscordClient sender, MessageReactionAddEventArgs args)
@@ -128,14 +149,14 @@ namespace Discord_Bot
             var channel = args.Channel;
             await ReadJson(args.Guild.Id);
 
-            if (jsonReader.ImageChannels == null)
-                return;
-
-            if (jsonReader.ImageChannels.ToList().Contains(channel.Id.ToString()))
+            if (jsonReader.ImageChannels != null && jsonReader.ImageChannels.ToList().Contains(channel.Id.ToString()))
             {
                 if (Regex.IsMatch(args.Message.Content, "."))
                     await args.Message.DeleteAsync();
-            }   
+            }
+
+            if (args.Message.Author.IsBot)
+                await jsonReader.UpdateJSON(args.Guild.Id, "BotMessages", args.Message.ChannelId.ToString(), args.Message.Id.ToString());
         }
 
         private static async Task Client_GuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs args)
@@ -202,40 +223,6 @@ namespace Discord_Bot
 
             }
         }
-        //private static async Task VoiceChannelHandler(DiscordClient sender, VoiceStateUpdateEventArgs e)
-        //{
-        //    if (e.Channel == null)
-        //        return;
-
-        //    var playerOptions = new QueuedLavalinkPlayerOptions { };
-        //    var channelBehavior = PlayerChannelBehavior.Join;
-
-        //    var retrieveOptions = new PlayerRetrieveOptions(ChannelBehavior: channelBehavior);
-
-        //    var result = await AudioService.Players
-        //                .RetrieveAsync(guildId: e.Guild.Id, memberVoiceChannel: e.Channel.Id, playerFactory: PlayerFactory.Queued, options: Options.Create(options: playerOptions), retrieveOptions)
-        //                .ConfigureAwait(false);
-
-
-        //    var track = await AudioService.Tracks
-        //                .LoadTrackAsync("bandycka jazda", TrackSearchMode.YouTube)
-        //                .ConfigureAwait(false);
-
-        //    if (e.User.Id == 339126499510583298 && e.Before == null)
-        //    {
-        //        await result.Player.PlayAsync(track).ConfigureAwait(false);
-        //    }
-        //}
-
-        private static async Task ReadJson(ulong serverId)
-        {
-            string filePath = Path.Combine(configPath, $"{serverId}.json");
-
-            if (!File.Exists(filePath))
-                jsonReader.CreateJSON(serverId);
-
-            await jsonReader.ReadJSON(filePath);
-        }
 
         private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {
@@ -243,6 +230,22 @@ namespace Discord_Bot
             return Task.CompletedTask;
 
             //throw new System.NotImplementedException();
+        }
+
+        public static List<ulong> GetGuilds()
+        {
+            var guilds = Client.Guilds;
+            return guilds.Keys.ToList();
+        }
+
+        public static async Task ReadJson(ulong serverId)
+        {
+            string filePath = Path.Combine(configPath, $"{serverId}.json");
+
+            if (!File.Exists(filePath))
+                jsonReader.CreateJSON(serverId);
+
+            await jsonReader.ReadJSON(filePath);
         }
     }
 }

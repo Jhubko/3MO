@@ -7,11 +7,27 @@ namespace Discord_Bot.commands
 {
     public class GamesCommands : BaseCommandModule
     {
+
         [Command("debil")]
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task DebilCommand(CommandContext ctx)
         {
             await ctx.Channel.SendMessageAsync(ctx.User.Username + " To debil");
+        }
+
+        [Command("motor")]
+        public async Task MotorCommand(CommandContext ctx)
+        {
+            await Program.ReadJson(ctx.Guild.Id);
+
+            int numbersOfMotorsMentioned = Program.jsonReader.Motor == null ? 0 : int.Parse(Program.jsonReader.Motor);
+
+            numbersOfMotorsMentioned++;
+
+            await ctx.Channel.SendMessageAsync($"🏍️ Adam wspomniał o Motorze już {numbersOfMotorsMentioned} razy 🏍️");            
+
+            await Program.jsonReader.UpdateJSON(ctx.Guild.Id, "Motor", numbersOfMotorsMentioned.ToString());
+            
         }
 
         [Command("karty")]
@@ -44,17 +60,6 @@ namespace Discord_Bot.commands
             };
 
             await ctx.Channel.SendMessageAsync(embed: resultEmbed);
-        }
-
-        [Command("random")]
-        public async Task RandomCommnad(CommandContext ctx, int number)
-        {
-            var random = new Random();
-
-            var randomNumber = random.Next(1, number);
-
-            await ctx.Channel.SendMessageAsync($"Your random number is {randomNumber}");
-
         }
     }
 }

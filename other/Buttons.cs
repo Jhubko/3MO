@@ -5,7 +5,7 @@ namespace Discord_Bot.other
 {
     internal class Buttons
     {
-        public static DiscordButtonComponent gamesButton = new DiscordButtonComponent(ButtonStyle.Success, "gamesButton", "Games");
+        public static DiscordButtonComponent gamesButton = new DiscordButtonComponent(ButtonStyle.Success, "gamesButton", "Fun");
         public static DiscordButtonComponent mngmtButton = new DiscordButtonComponent(ButtonStyle.Success, "mngmtButton", "Management");
         public static DiscordButtonComponent searchButton = new DiscordButtonComponent(ButtonStyle.Danger, "searchButton", "Search");
         public static DiscordButtonComponent musicButton = new DiscordButtonComponent(ButtonStyle.Danger, "musicButton", "Music");
@@ -13,21 +13,21 @@ namespace Discord_Bot.other
         public static DiscordEmbedBuilder gamesCommandEmbed = new DiscordEmbedBuilder()
         {
             Color = DiscordColor.Black,
-            Title = "Games Commands",
+            Title = "Fun Commands",
             Description = "**!debil**  -> Pisze, że jesteś debil \n" +
                           "**!karty**  -> Gra w karty z botem \n" +
-                          "**!random** -> Losuje liczbe od 1 do podanej liczby \n" +
-                          "**/poll**  -> Tworzy ankiete \n"
+                          "**!motor**  -> Wypisuje ile razy Adam powiedział coś o motorze \n" +
+                          "**/random** -> Losuje liczbe od 1 do podanej liczby \n"
         };
 
         public static DiscordEmbedBuilder managementCommandsEmbed = new DiscordEmbedBuilder()
         {
             Color = DiscordColor.Black,
             Title = "Management Commands",
-            Description = "**!help**  -> Pokazuję komendy z opisami \n" +
-                          "**!defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników \n" +
-                          "**!imageOnly**  -> Ustawia który kanał będzie usuwał wiadomości tekstowe \n" +
-                          "**!deleteMessageEmoji**   -> Ustawia emoji, które będzie usuwało wiadomości"
+            Description = "**/help**  -> Pokazuję komendy z opisami \n" +
+                          "**/defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników \n" +
+                          "**/imageOnly**  -> Ustawia który kanał będzie usuwał wiadomości tekstowe \n" +
+                          "**/deleteMessageEmoji**   -> Ustawia emoji, które będzie usuwało wiadomości"
         };
 
         public static DiscordEmbedBuilder helpCommandEmbed = new DiscordEmbedBuilder()

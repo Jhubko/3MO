@@ -17,10 +17,14 @@ namespace Discord_Bot.config
         public bool Secured { get; set; }
         public string? DefaultRole { get; set; }
         public string? DeleteMessageEmoji { get; set; }
+        public string? Motor { get; set; }
         public List<string>? ImageChannels { get; set; }
+        public Dictionary<string, List<string>>? BotMessages { get; set; }
         public string? ConfigPath { get; set; }
 
         private readonly List<string> arrayDataTypes = new List<string>() { "ImageOnlyChannels" };
+
+        private readonly List<string> dictionaryDataTypes = new List<string>() { "BotMessages" };
 
         public async Task ReadJSON(string jsonName = "config.json")
         {
@@ -50,11 +54,12 @@ namespace Discord_Bot.config
                     this.DeleteMessageEmoji = data.DeleteMessageEmoji;
                     this.DefaultRole = data.DefaultRole;
                     this.ImageChannels = data.ImageChannels;
+                    this.BotMessages = data.BotMessages;
+                    this.Motor = data.Motor;
                 }
             }
         }
-
-        public async Task UpdateJSON(ulong index, string dataType, string Content)
+        public async Task UpdateJSON(ulong index, string dataType, string content, string? content2 = null)
         {
             await ReadJSON();
 
@@ -63,7 +68,7 @@ namespace Discord_Bot.config
 
             if (!File.Exists(filePath) || fileInfo.Length == 0)
             {
-                CreateJSON(index, dataType, Content);
+                CreateJSON(index, dataType, content);
                 return;
             }
 
@@ -71,15 +76,16 @@ namespace Discord_Bot.config
             JObject jsonData = JObject.Parse(existingJson);          
 
             if (arrayDataTypes.Contains(dataType))
-                UpdateArrayDataType(jsonData, dataType, Content);
+                UpdateArrayDataType(jsonData, dataType, content);
+            if (dictionaryDataTypes.Contains(dataType))
+                UpdateDictionary(jsonData, dataType, content, content2);
             else
-                jsonData[dataType] = Content;
+                jsonData[dataType] = content;
 
             string updatedJson = JsonConvert.SerializeObject(jsonData, Formatting.Indented);
             File.WriteAllText(filePath, updatedJson);
 
         }
-
         public void CreateJSON(ulong index, string? dataType = null, string? Content = null)
         {
             string filePath = Path.Combine(ConfigPath, $"{index}.json");
@@ -101,7 +107,6 @@ namespace Discord_Bot.config
             }
 
         }
-
         private void UpdateArrayDataType(JObject jsonData, string dataType, string Content)
         {
             JArray? arrayDataType = jsonData[dataType] as JArray;
@@ -124,7 +129,55 @@ namespace Discord_Bot.config
 
             jsonData[dataType] = arrayDataType;
         }
+        private void UpdateDictionary(JObject jsonData, string dataType, string key, string value)
+        {
+            if (jsonData == null)
+            {
+                throw new ArgumentNullException(nameof(jsonData));
+            }
 
+            JToken? token = jsonData[dataType];
+
+            if (token == null)
+            {
+                jsonData[dataType] = new JObject();
+                token = jsonData[dataType];
+            }
+
+            if (token is JObject obj)
+            {
+                // Sprawdź czy istnieje lista dla danego klucza
+                if (!obj.ContainsKey(key))
+                {
+                    obj[key] = new JArray();
+                }
+
+                // Sprawdź czy wartość pod kluczem jest tablicą
+                if (obj[key] is JArray array)
+                {
+                    // Dodaj nową wartość do istniejącej listy pod danym kluczem
+                    array.Add(value);
+                }
+                else if (obj[key] is JValue)
+                {
+                    // Konwertuj istniejącą wartość na listę i dodaj nową wartość
+                    JArray newArray = new JArray();
+                    newArray.Add(obj[key]);
+                    newArray.Add(value);
+                    obj[key] = newArray;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Unexpected type found under key '{key}' in '{dataType}'.");
+                }
+
+                jsonData[dataType] = obj;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Expected JSON object for data type '{dataType}', but found {token.Type}.");
+            }
+        }
     }
     internal sealed class JSONStructure
     {
@@ -140,7 +193,9 @@ namespace Discord_Bot.config
         public bool Secured { get; set; }
         public string? DefaultRole { get; set; }
         public string? DeleteMessageEmoji { get; set; }
+        public string? Motor { get; set; }
         public List<string>? ImageChannels { get; set; }
+        public Dictionary<string, List<string>>? BotMessages { get; set; }
         public string? ConfigPath { get; set; }
     }
 }

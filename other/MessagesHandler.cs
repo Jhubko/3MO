@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Discord_Bot.other
 {
@@ -31,5 +33,58 @@ namespace Discord_Bot.other
             }
         }
 
+        public static async Task DeleteBotMessages()
+        {
+            var guilds = Program.GetGuilds();
+
+            foreach (var guild in guilds)
+            {
+                await Program.ReadJson(guild);
+
+                if (Program.jsonReader.BotMessages == null)
+                    continue;
+
+                foreach (var channelId in Program.jsonReader.BotMessages.Keys.ToList())
+                {
+                    foreach (var messageId in Program.jsonReader.BotMessages[channelId])
+                    {
+                        ulong parsedChannelId;
+                        ulong parsedMessageId;
+
+                        if (ulong.TryParse(channelId, out parsedChannelId) && ulong.TryParse(messageId, out parsedMessageId))
+                        {
+                            var channel = await Program.Client.GetChannelAsync(parsedChannelId);
+                            if (channel != null)
+                            {
+                                var message = await channel.GetMessageAsync(parsedMessageId);
+                                if (message != null)
+                                {
+                                    await message.DeleteAsync();
+                                }
+                            }
+                        }
+                    }
+
+                    Program.jsonReader.BotMessages[channelId].Clear();
+                }
+
+                string filePath = Path.Combine(Program.configPath, $"{guild}.json");
+
+                JObject existingJson;
+                if (File.Exists(filePath))
+                {
+                    string existingJsonString = File.ReadAllText(filePath);
+                    existingJson = JObject.Parse(existingJsonString);
+                }
+                else
+                {
+                    existingJson = new JObject();
+                }
+
+                existingJson["BotMessages"] = JObject.FromObject(Program.jsonReader.BotMessages);
+
+                File.WriteAllText(filePath, existingJson.ToString(Formatting.Indented));
+            }
+        }
     }
 }
