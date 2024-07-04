@@ -15,7 +15,7 @@
           }
         }
       },
-      "DSharpPlus/4.4.6": {
+      "DSharpPlus/4.4.9": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
@@ -39,10 +39,10 @@
           }
         }
       },
-      "DSharpPlus.CommandsNext/4.4.6": {
+      "DSharpPlus.CommandsNext/4.4.9": {
         "type": "package",
         "dependencies": {
-          "DSharpPlus": "4.4.6",
+          "DSharpPlus": "4.4.9",
           "Microsoft.Extensions.DependencyInjection": "5.0.1"
         },
         "compile": {
@@ -56,11 +56,11 @@
           }
         }
       },
-      "DSharpPlus.Interactivity/4.4.6": {
+      "DSharpPlus.Interactivity/4.4.9": {
         "type": "package",
         "dependencies": {
           "ConcurrentHashSet": "1.3.0",
-          "DSharpPlus": "4.4.6"
+          "DSharpPlus": "4.4.9"
         },
         "compile": {
           "lib/netstandard2.0/DSharpPlus.Interactivity.dll": {
@@ -73,10 +73,10 @@
           }
         }
       },
-      "DSharpPlus.SlashCommands/4.4.6": {
+      "DSharpPlus.SlashCommands/4.4.9": {
         "type": "package",
         "dependencies": {
-          "DSharpPlus": "4.4.6",
+          "DSharpPlus": "4.4.9",
           "Microsoft.Extensions.DependencyInjection": "5.0.1"
         },
         "compile": {
@@ -90,10 +90,10 @@
           }
         }
       },
-      "DSharpPlus.VoiceNext/4.4.6": {
+      "DSharpPlus.VoiceNext/4.4.9": {
         "type": "package",
         "dependencies": {
-          "DSharpPlus": "4.4.6",
+          "DSharpPlus": "4.4.9",
           "DSharpPlus.VoiceNext.Natives": "1.0.0",
           "System.Threading.Channels": "5.0.0"
         },
@@ -129,10 +129,10 @@
           }
         }
       },
-      "Google.Apis/1.67.0": {
+      "Google.Apis/1.68.0": {
         "type": "package",
         "dependencies": {
-          "Google.Apis.Core": "1.67.0"
+          "Google.Apis.Core": "1.68.0"
         },
         "compile": {
           "lib/net6.0/Google.Apis.dll": {
@@ -145,7 +145,7 @@
           }
         }
       },
-      "Google.Apis.Core/1.67.0": {
+      "Google.Apis.Core/1.68.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "13.0.3"
@@ -161,10 +161,10 @@
           }
         }
       },
-      "Google.Apis.CustomSearchAPI.v1/1.67.0.3290": {
+      "Google.Apis.CustomSearchAPI.v1/1.68.0.3395": {
         "type": "package",
         "dependencies": {
-          "Google.Apis": "1.67.0"
+          "Google.Apis": "1.68.0"
         },
         "compile": {
           "lib/net6.0/Google.Apis.CustomSearchAPI.v1.dll": {
@@ -177,104 +177,105 @@
           }
         }
       },
-      "Lavalink4NET/4.0.13": {
+      "Lavalink4NET/4.0.18": {
         "type": "package",
         "dependencies": {
-          "Lavalink4NET.Abstractions": "4.0.13",
-          "Lavalink4NET.Protocol": "4.0.13",
-          "Lavalink4NET.Rest": "4.0.13",
-          "Microsoft.Extensions.Caching.Memory": "7.0.0",
-          "Microsoft.Extensions.Hosting.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Options": "7.0.1",
-          "System.Net.Http.Json": "7.0.1"
+          "Lavalink4NET.Abstractions": "4.0.18",
+          "Lavalink4NET.Protocol": "4.0.18",
+          "Lavalink4NET.Rest": "4.0.18",
+          "Microsoft.Extensions.Caching.Memory": "8.0.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "System.Net.Http.Json": "8.0.0"
         },
         "compile": {
-          "lib/net7.0/Lavalink4NET.dll": {}
+          "lib/net8.0/Lavalink4NET.dll": {}
         },
         "runtime": {
-          "lib/net7.0/Lavalink4NET.dll": {}
+          "lib/net8.0/Lavalink4NET.dll": {}
         }
       },
-      "Lavalink4NET.Abstractions/4.0.13": {
+      "Lavalink4NET.Abstractions/4.0.18": {
         "type": "package",
         "compile": {
-          "lib/net7.0/Lavalink4NET.Abstractions.dll": {}
+          "lib/net8.0/Lavalink4NET.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net7.0/Lavalink4NET.Abstractions.dll": {}
+          "lib/net8.0/Lavalink4NET.Abstractions.dll": {}
         }
       },
-      "Lavalink4NET.DSharpPlus/4.0.11": {
+      "Lavalink4NET.DSharpPlus/4.0.18": {
         "type": "package",
         "dependencies": {
           "DSharpPlus": "4.4.6",
-          "Lavalink4NET": "4.0.11"
+          "Lavalink4NET": "4.0.18"
         },
         "compile": {
-          "lib/net7.0/Lavalink4NET.DSharpPlus.dll": {
+          "lib/net8.0/Lavalink4NET.DSharpPlus.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net7.0/Lavalink4NET.DSharpPlus.dll": {
+          "lib/net8.0/Lavalink4NET.DSharpPlus.dll": {
             "related": ".xml"
           }
         }
       },
-      "Lavalink4NET.InactivityTracking/4.0.13": {
+      "Lavalink4NET.InactivityTracking/4.0.18": {
         "type": "package",
         "dependencies": {
-          "Lavalink4NET": "4.0.13",
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.0"
+          "Lavalink4NET": "4.0.18",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1"
         },
         "compile": {
-          "lib/net7.0/Lavalink4NET.InactivityTracking.dll": {}
+          "lib/net8.0/Lavalink4NET.InactivityTracking.dll": {}
         },
         "runtime": {
-          "lib/net7.0/Lavalink4NET.InactivityTracking.dll": {}
+          "lib/net8.0/Lavalink4NET.InactivityTracking.dll": {}
         }
       },
-      "Lavalink4NET.Lyrics/4.0.13": {
+      "Lavalink4NET.Lyrics/4.0.18": {
         "type": "package",
         "dependencies": {
-          "Lavalink4NET.Abstractions": "4.0.13",
-          "Microsoft.Extensions.Caching.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Http": "7.0.0",
-          "System.Text.Json": "7.0.3"
+          "Lavalink4NET.Abstractions": "4.0.18",
+          "Microsoft.Extensions.Caching.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Http": "8.0.0",
+          "System.Text.Json": "8.0.3"
         },
         "compile": {
-          "lib/net7.0/Lavalink4NET.Lyrics.dll": {}
+          "lib/net8.0/Lavalink4NET.Lyrics.dll": {}
         },
         "runtime": {
-          "lib/net7.0/Lavalink4NET.Lyrics.dll": {}
+          "lib/net8.0/Lavalink4NET.Lyrics.dll": {}
         }
       },
-      "Lavalink4NET.Protocol/4.0.13": {
+      "Lavalink4NET.Protocol/4.0.18": {
         "type": "package",
         "dependencies": {
-          "System.Text.Json": "7.0.3"
+          "System.Text.Json": "8.0.3"
         },
         "compile": {
-          "lib/net7.0/Lavalink4NET.Protocol.dll": {}
+          "lib/net8.0/Lavalink4NET.Protocol.dll": {}
         },
         "runtime": {
-          "lib/net7.0/Lavalink4NET.Protocol.dll": {}
+          "lib/net8.0/Lavalink4NET.Protocol.dll": {}
         }
       },
-      "Lavalink4NET.Rest/4.0.13": {
+      "Lavalink4NET.Rest/4.0.18": {
         "type": "package",
         "dependencies": {
-          "Lavalink4NET.Abstractions": "4.0.13",
-          "Lavalink4NET.Protocol": "4.0.13",
-          "Microsoft.Extensions.Caching.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Http": "7.0.0"
+          "Lavalink4NET.Abstractions": "4.0.18",
+          "Lavalink4NET.Protocol": "4.0.18",
+          "Microsoft.Extensions.Caching.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Http": "8.0.0",
+          "System.Net.Http.Json": "8.0.0"
         },
         "compile": {
-          "lib/net7.0/Lavalink4NET.Rest.dll": {}
+          "lib/net8.0/Lavalink4NET.Rest.dll": {}
         },
         "runtime": {
-          "lib/net7.0/Lavalink4NET.Rest.dll": {}
+          "lib/net8.0/Lavalink4NET.Rest.dll": {}
         }
       },
       "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
@@ -288,18 +289,18 @@
           }
         }
       },
-      "Microsoft.Extensions.Caching.Abstractions/7.0.0": {
+      "Microsoft.Extensions.Caching.Abstractions/8.0.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Primitives": "7.0.0"
+          "Microsoft.Extensions.Primitives": "8.0.0"
         },
         "compile": {
-          "lib/net7.0/Microsoft.Extensions.Caching.Abstractions.dll": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Abstractions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net7.0/Microsoft.Extensions.Caching.Abstractions.dll": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -307,22 +308,22 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "Microsoft.Extensions.Caching.Memory/7.0.0": {
+      "Microsoft.Extensions.Caching.Memory/8.0.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Caching.Abstractions": "7.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Options": "7.0.0",
-          "Microsoft.Extensions.Primitives": "7.0.0"
+          "Microsoft.Extensions.Caching.Abstractions": "8.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.0",
+          "Microsoft.Extensions.Primitives": "8.0.0"
         },
         "compile": {
-          "lib/net7.0/Microsoft.Extensions.Caching.Memory.dll": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Memory.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net7.0/Microsoft.Extensions.Caching.Memory.dll": {
+          "lib/net8.0/Microsoft.Extensions.Caching.Memory.dll": {
             "related": ".xml"
           }
         },
@@ -516,7 +517,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
+      "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.1": {
         "type": "package",
         "compile": {
           "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
@@ -693,21 +694,23 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "Microsoft.Extensions.Http/7.0.0": {
+      "Microsoft.Extensions.Http/8.0.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Logging": "7.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Options": "7.0.0"
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Diagnostics": "8.0.0",
+          "Microsoft.Extensions.Logging": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.0"
         },
         "compile": {
-          "lib/net7.0/Microsoft.Extensions.Http.dll": {
+          "lib/net8.0/Microsoft.Extensions.Http.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net7.0/Microsoft.Extensions.Http.dll": {
+          "lib/net8.0/Microsoft.Extensions.Http.dll": {
             "related": ".xml"
           }
         },
@@ -736,10 +739,10 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
+      "Microsoft.Extensions.Logging.Abstractions/8.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1"
         },
         "compile": {
           "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
@@ -873,7 +876,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "Microsoft.Extensions.Options/8.0.0": {
+      "Microsoft.Extensions.Options/8.0.2": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
@@ -976,7 +979,7 @@
           }
         }
       },
-      "OpenAI/1.10.0": {
+      "OpenAI/1.11.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
@@ -2157,7 +2160,7 @@
           }
         }
       },
-      "System.Text.Json/8.0.0": {
+      "System.Text.Json/8.0.3": {
         "type": "package",
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
@@ -2265,71 +2268,71 @@
         "lib/netstandard2.0/ConcurrentCollections.xml"
       ]
     },
-    "DSharpPlus/4.4.6": {
-      "sha512": "pBWVpphNQN/r52OqYbT0AdH+jQGR5Vd0ltSM2dwBpKfvbfOrtUnSvE9icLFEc9zdJPS5iIHE2Raxi5y57QglYA==",
+    "DSharpPlus/4.4.9": {
+      "sha512": "RudOotg29ZEtbpmYrAfcIL323QjxbwmOZjBUwhUH/SfYKOlu82xBU/4Pr40dDY68EzzjkCxvRCtdcWeSVRWtKA==",
       "type": "package",
-      "path": "dsharpplus/4.4.6",
+      "path": "dsharpplus/4.4.9",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "dsharpplus.4.4.6.nupkg.sha512",
+        "dsharpplus.4.4.9.nupkg.sha512",
         "dsharpplus.nuspec",
         "dsharpplus.png",
         "lib/netstandard2.0/DSharpPlus.dll",
         "lib/netstandard2.0/DSharpPlus.xml"
       ]
     },
-    "DSharpPlus.CommandsNext/4.4.6": {
-      "sha512": "b70OieeEr/pF24isw5av+AuWlx7tRGcogoz+Q8Y0EXSOaLEtqgiMGUoU5NGJeIuDJycK7VpGeVczKcuf+TwUHQ==",
+    "DSharpPlus.CommandsNext/4.4.9": {
+      "sha512": "6nJMa4fiPPYCwTxnniBJve19QB9DLtpTSg1aF6cWPb9PkeunlUJVaV7fGI5ZHf8ceJpykWb+3L6xlbKsVwojpw==",
       "type": "package",
-      "path": "dsharpplus.commandsnext/4.4.6",
+      "path": "dsharpplus.commandsnext/4.4.9",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "dsharpplus.commandsnext.4.4.6.nupkg.sha512",
+        "dsharpplus.commandsnext.4.4.9.nupkg.sha512",
         "dsharpplus.commandsnext.nuspec",
         "dsharpplus.png",
         "lib/netstandard2.0/DSharpPlus.CommandsNext.dll",
         "lib/netstandard2.0/DSharpPlus.CommandsNext.xml"
       ]
     },
-    "DSharpPlus.Interactivity/4.4.6": {
-      "sha512": "WSNlTijQPTHZYGXZRdp4pqUhfwcQPFMMavNU70+jsEeInqgKG6Lklkd8W1R5cxVzRgLWjerjh29XIgxS1C9W4Q==",
+    "DSharpPlus.Interactivity/4.4.9": {
+      "sha512": "Z2kNlaecDczdpoLcvK33qx6gb5oo3BnoZ/cRS4XK69nqi7cGYu80qqYcvvZMvDPGx+fMOzehwr6MkinYHTXi7w==",
       "type": "package",
-      "path": "dsharpplus.interactivity/4.4.6",
+      "path": "dsharpplus.interactivity/4.4.9",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "dsharpplus.interactivity.4.4.6.nupkg.sha512",
+        "dsharpplus.interactivity.4.4.9.nupkg.sha512",
         "dsharpplus.interactivity.nuspec",
         "dsharpplus.png",
         "lib/netstandard2.0/DSharpPlus.Interactivity.dll",
         "lib/netstandard2.0/DSharpPlus.Interactivity.xml"
       ]
     },
-    "DSharpPlus.SlashCommands/4.4.6": {
-      "sha512": "vbQ20n+qBZpR55UyD/OdipR1oTTbdlxcNqWSWWNMDNcadB00XqPm3MBBDlx2LcUEBfK6ClCYZUB8Y5tT7CK1bw==",
+    "DSharpPlus.SlashCommands/4.4.9": {
+      "sha512": "rjs6AF8+J87Jufzw5TYfVa/6aXCs9hcZJ+aUfLsy+nGYYSEzKHaqz6pr/UzqatvN78GjM3N1ZPIunxLhE+qSrw==",
       "type": "package",
-      "path": "dsharpplus.slashcommands/4.4.6",
+      "path": "dsharpplus.slashcommands/4.4.9",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "dsharpplus.png",
-        "dsharpplus.slashcommands.4.4.6.nupkg.sha512",
+        "dsharpplus.slashcommands.4.4.9.nupkg.sha512",
         "dsharpplus.slashcommands.nuspec",
         "lib/netstandard2.0/DSharpPlus.SlashCommands.dll",
         "lib/netstandard2.0/DSharpPlus.SlashCommands.xml"
       ]
     },
-    "DSharpPlus.VoiceNext/4.4.6": {
-      "sha512": "cY51OqWD/qeNhQsIJ75ahyNChfPcRXRL1bfO1NsXqsOzYUDVzibL4k6obpSdoyFBLLL5+9reXu1Mld2xbacSJQ==",
+    "DSharpPlus.VoiceNext/4.4.9": {
+      "sha512": "BlQr/V5FlsTy3ipuMAo+mvskmjNRs1PMEdDJZr7rhu+3jEzzoglra/6EHy29ZitJMxKK6INYbCPgS1ODV9626A==",
       "type": "package",
-      "path": "dsharpplus.voicenext/4.4.6",
+      "path": "dsharpplus.voicenext/4.4.9",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "dsharpplus.png",
-        "dsharpplus.voicenext.4.4.6.nupkg.sha512",
+        "dsharpplus.voicenext.4.4.9.nupkg.sha512",
         "dsharpplus.voicenext.nuspec",
         "lib/netstandard2.0/DSharpPlus.VoiceNext.dll",
         "lib/netstandard2.0/DSharpPlus.VoiceNext.xml"
@@ -2350,16 +2353,16 @@
         "runtimes/win-x86/native/libsodium.dll"
       ]
     },
-    "Google.Apis/1.67.0": {
-      "sha512": "XM8/fViJaB1pN61OdXy5RMZoQEqd3hKlWvA/K431gFSb5XtQ48BynfgrbBkUtFcPbSRa4BdjBHzSbkBh/skyMg==",
+    "Google.Apis/1.68.0": {
+      "sha512": "s2MymhdpH+ybZNBeZ2J5uFgFHApBp+QXf9FjZSdM1lk/vx5VqIknJwnaWiuAzXxPrLEkesX0Q+UsiWn39yZ9zw==",
       "type": "package",
-      "path": "google.apis/1.67.0",
+      "path": "google.apis/1.68.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.1.67.0.nupkg.sha512",
+        "google.apis.1.68.0.nupkg.sha512",
         "google.apis.nuspec",
         "lib/net462/Google.Apis.dll",
         "lib/net462/Google.Apis.pdb",
@@ -2372,16 +2375,16 @@
         "lib/netstandard2.0/Google.Apis.xml"
       ]
     },
-    "Google.Apis.Core/1.67.0": {
-      "sha512": "IPq0I3B01NYZraPoMl8muELFLg4Vr2sbfyZp4PR2Xe3MAhHkZCiKyV28Yh1L14zIKUb0X0snol1sR5/mx4S6Iw==",
+    "Google.Apis.Core/1.68.0": {
+      "sha512": "pAqwa6pfu53UXCR2b7A/PAPXeuVg6L1OFw38WckN27NU2+mf+KTjoEg2YGv/f0UyKxzz7DxF1urOTKg/6dTP9g==",
       "type": "package",
-      "path": "google.apis.core/1.67.0",
+      "path": "google.apis.core/1.68.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.core.1.67.0.nupkg.sha512",
+        "google.apis.core.1.68.0.nupkg.sha512",
         "google.apis.core.nuspec",
         "lib/net462/Google.Apis.Core.dll",
         "lib/net462/Google.Apis.Core.pdb",
@@ -2394,16 +2397,16 @@
         "lib/netstandard2.0/Google.Apis.Core.xml"
       ]
     },
-    "Google.Apis.CustomSearchAPI.v1/1.67.0.3290": {
-      "sha512": "8EHhZcxbpX8gz9ABHWT8/wRvJIfWcmFmHEWn7Ra8k8qR7FTWUDGquJxM1PQ3P6I8Og/2WsCWMfoeTl6SAAWSew==",
+    "Google.Apis.CustomSearchAPI.v1/1.68.0.3395": {
+      "sha512": "gMd6bs4kYpVf9Pko5xuJ2DCVwDeu7ZZp193UUe0dHzPDnfLOaGA+S5QAyleKoDQurm2MloeKwMwZp//5hBy9HA==",
       "type": "package",
-      "path": "google.apis.customsearchapi.v1/1.67.0.3290",
+      "path": "google.apis.customsearchapi.v1/1.68.0.3395",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.customsearchapi.v1.1.67.0.3290.nupkg.sha512",
+        "google.apis.customsearchapi.v1.1.68.0.3395.nupkg.sha512",
         "google.apis.customsearchapi.v1.nuspec",
         "lib/net462/Google.Apis.CustomSearchAPI.v1.dll",
         "lib/net462/Google.Apis.CustomSearchAPI.v1.pdb",
@@ -2416,104 +2419,112 @@
         "lib/netstandard2.0/Google.Apis.CustomSearchAPI.v1.xml"
       ]
     },
-    "Lavalink4NET/4.0.13": {
-      "sha512": "/Ueo7FrapoAzBLm8rNMnm7BNvpxQ/jWQWMp3klcemly8zJ3qGk3TOh40svn00B4a7rcZlv+ThwZZ+MbESNi6VQ==",
+    "Lavalink4NET/4.0.18": {
+      "sha512": "bapeDNV+8dV9jZ0edZotxsFxNi807ifsXNA+OjvYUQMzaMtAHsI7znJepoFxHzZB5w6yi67rjbU8M3NruP2uag==",
       "type": "package",
-      "path": "lavalink4net/4.0.13",
+      "path": "lavalink4net/4.0.18",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.4.0.13.nupkg.sha512",
+        "lavalink4net.4.0.18.nupkg.sha512",
         "lavalink4net.nuspec",
         "lib/net6.0/Lavalink4NET.dll",
-        "lib/net7.0/Lavalink4NET.dll"
+        "lib/net7.0/Lavalink4NET.dll",
+        "lib/net8.0/Lavalink4NET.dll"
       ]
     },
-    "Lavalink4NET.Abstractions/4.0.13": {
-      "sha512": "b92jJx4iboNmi9+Fdq5sjgE78Yrs7CrlSm1hRn/+hjokHADFU+wCqNf2AFDKujy1bG4g/IB/00Kxxp3+0f56gA==",
+    "Lavalink4NET.Abstractions/4.0.18": {
+      "sha512": "/YoZWwFq+aDoGAY0gHpgQL+Cc8rLnf5RS1Ryjxs57vmOTSpX4+DZ+j+UgQpT3vn3IcsZu4uq7AeiocZ6/ajDlg==",
       "type": "package",
-      "path": "lavalink4net.abstractions/4.0.13",
+      "path": "lavalink4net.abstractions/4.0.18",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.abstractions.4.0.13.nupkg.sha512",
+        "lavalink4net.abstractions.4.0.18.nupkg.sha512",
         "lavalink4net.abstractions.nuspec",
         "lib/net6.0/Lavalink4NET.Abstractions.dll",
-        "lib/net7.0/Lavalink4NET.Abstractions.dll"
+        "lib/net7.0/Lavalink4NET.Abstractions.dll",
+        "lib/net8.0/Lavalink4NET.Abstractions.dll"
       ]
     },
-    "Lavalink4NET.DSharpPlus/4.0.11": {
-      "sha512": "GwLkeOGaE793M+eWwD108Ato2T5f2tvQzRhA09ia04lK6RLcwROEYlFMVdz/sg5/Q7FPjsTd7YatMKHucGcvLw==",
+    "Lavalink4NET.DSharpPlus/4.0.18": {
+      "sha512": "jPuXkwB12zx5pCviRiwumzIHZifyuZ+sWmLrUgj6+QVEXQLDuVv0GZ6Ny0Y4fqIt+wVUyw/3pVae10zD/j+NgQ==",
       "type": "package",
-      "path": "lavalink4net.dsharpplus/4.0.11",
+      "path": "lavalink4net.dsharpplus/4.0.18",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.dsharpplus.4.0.11.nupkg.sha512",
+        "lavalink4net.dsharpplus.4.0.18.nupkg.sha512",
         "lavalink4net.dsharpplus.nuspec",
         "lib/net6.0/Lavalink4NET.DSharpPlus.dll",
         "lib/net6.0/Lavalink4NET.DSharpPlus.xml",
         "lib/net7.0/Lavalink4NET.DSharpPlus.dll",
-        "lib/net7.0/Lavalink4NET.DSharpPlus.xml"
+        "lib/net7.0/Lavalink4NET.DSharpPlus.xml",
+        "lib/net8.0/Lavalink4NET.DSharpPlus.dll",
+        "lib/net8.0/Lavalink4NET.DSharpPlus.xml"
       ]
     },
-    "Lavalink4NET.InactivityTracking/4.0.13": {
-      "sha512": "JpIHBklmrhLWXdNDGcLMj09c4KGDFi7szjedxUDnR9NZ032nfmg5F5V+vKLGp8lK1D8tSRCDLFOD5Npf4wPrcA==",
+    "Lavalink4NET.InactivityTracking/4.0.18": {
+      "sha512": "6wrpMOdyCS3Pgj7PIQYapSGmy/5lLbRF3Oe2yr99/vq05ArrC71/iM1BbAqHPUvl2tdF8A9iE4SM822ssbvUEA==",
       "type": "package",
-      "path": "lavalink4net.inactivitytracking/4.0.13",
+      "path": "lavalink4net.inactivitytracking/4.0.18",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.inactivitytracking.4.0.13.nupkg.sha512",
+        "lavalink4net.inactivitytracking.4.0.18.nupkg.sha512",
         "lavalink4net.inactivitytracking.nuspec",
         "lib/net6.0/Lavalink4NET.InactivityTracking.dll",
-        "lib/net7.0/Lavalink4NET.InactivityTracking.dll"
+        "lib/net7.0/Lavalink4NET.InactivityTracking.dll",
+        "lib/net8.0/Lavalink4NET.InactivityTracking.dll"
       ]
     },
-    "Lavalink4NET.Lyrics/4.0.13": {
-      "sha512": "eVTHTmzFVbLe+nrihcNzq37nrRQmsgqn+cQW2s3Zp4CqLOIVpCD9UGLrolBCY6fpHkyGrZHTeGzH2OvUkuNgEw==",
+    "Lavalink4NET.Lyrics/4.0.18": {
+      "sha512": "qjIWRQhzbB02Sjsrqplb9rArz54LgRh0rTm2xk2+GHmXATxjL2ZqwXe8eQp+mXVBny9iblGsbHc1tmoDOfxL2w==",
       "type": "package",
-      "path": "lavalink4net.lyrics/4.0.13",
+      "path": "lavalink4net.lyrics/4.0.18",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.lyrics.4.0.13.nupkg.sha512",
+        "lavalink4net.lyrics.4.0.18.nupkg.sha512",
         "lavalink4net.lyrics.nuspec",
         "lib/net6.0/Lavalink4NET.Lyrics.dll",
-        "lib/net7.0/Lavalink4NET.Lyrics.dll"
+        "lib/net7.0/Lavalink4NET.Lyrics.dll",
+        "lib/net8.0/Lavalink4NET.Lyrics.dll"
       ]
     },
-    "Lavalink4NET.Protocol/4.0.13": {
-      "sha512": "EgPQLOeHGWNT9X+hUzedeWbP7NdjEhjJYVs6Fgy4Xa49ADu3WP4OXtllkV0Ab6HVgFitJh4d7/Q9GavFHNY65A==",
+    "Lavalink4NET.Protocol/4.0.18": {
+      "sha512": "SN0t4SIqlWy26FSM3aFFk4vGYLP/kym3KqRjQDZwuBF17xXvVJSWqbXRgYC4L/GPjLUyMRv2AwLV1aCBsAuOXA==",
       "type": "package",
-      "path": "lavalink4net.protocol/4.0.13",
+      "path": "lavalink4net.protocol/4.0.18",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.protocol.4.0.13.nupkg.sha512",
+        "lavalink4net.protocol.4.0.18.nupkg.sha512",
         "lavalink4net.protocol.nuspec",
         "lib/net6.0/Lavalink4NET.Protocol.dll",
-        "lib/net7.0/Lavalink4NET.Protocol.dll"
+        "lib/net7.0/Lavalink4NET.Protocol.dll",
+        "lib/net8.0/Lavalink4NET.Protocol.dll"
       ]
     },
-    "Lavalink4NET.Rest/4.0.13": {
-      "sha512": "Fc618OX9UkLijLb8dmuxE79o6RUlQggjZl6mMdm1eRS+Sz0vjdd4XnkqQR3Rjw8Nx/kk7dQXDpJF/xtM7rOhGQ==",
+    "Lavalink4NET.Rest/4.0.18": {
+      "sha512": "Wtw2H+8vgj3cO3SsMVst7dDeyw9+8/oroW7nnsrps/2OuyYP/eBFj6qGLRiXE33ITtrzakapt2fx3MM/2hqJYQ==",
       "type": "package",
-      "path": "lavalink4net.rest/4.0.13",
+      "path": "lavalink4net.rest/4.0.18",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Lavalink4NET.png",
-        "lavalink4net.rest.4.0.13.nupkg.sha512",
+        "lavalink4net.rest.4.0.18.nupkg.sha512",
         "lavalink4net.rest.nuspec",
         "lib/net6.0/Lavalink4NET.Rest.dll",
-        "lib/net7.0/Lavalink4NET.Rest.dll"
+        "lib/net7.0/Lavalink4NET.Rest.dll",
+        "lib/net8.0/Lavalink4NET.Rest.dll"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
@@ -2541,15 +2552,16 @@
         "version.txt"
       ]
     },
-    "Microsoft.Extensions.Caching.Abstractions/7.0.0": {
-      "sha512": "IeimUd0TNbhB4ded3AbgBLQv2SnsiVugDyGV1MvspQFVlA07nDC7Zul7kcwH5jWN3JiTcp/ySE83AIJo8yfKjg==",
+    "Microsoft.Extensions.Caching.Abstractions/8.0.0": {
+      "sha512": "3KuSxeHoNYdxVYfg2IRZCThcrlJ1XJqIXkAWikCsbm5C/bCjv7G0WoKDyuR98Q+T607QT2Zl5GsbGRkENcV2yQ==",
       "type": "package",
-      "path": "microsoft.extensions.caching.abstractions/7.0.0",
+      "path": "microsoft.extensions.caching.abstractions/8.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
         "buildTransitive/net461/Microsoft.Extensions.Caching.Abstractions.targets",
         "buildTransitive/net462/_._",
@@ -2561,22 +2573,25 @@
         "lib/net6.0/Microsoft.Extensions.Caching.Abstractions.xml",
         "lib/net7.0/Microsoft.Extensions.Caching.Abstractions.dll",
         "lib/net7.0/Microsoft.Extensions.Caching.Abstractions.xml",
+        "lib/net8.0/Microsoft.Extensions.Caching.Abstractions.dll",
+        "lib/net8.0/Microsoft.Extensions.Caching.Abstractions.xml",
         "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.dll",
         "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.xml",
-        "microsoft.extensions.caching.abstractions.7.0.0.nupkg.sha512",
+        "microsoft.extensions.caching.abstractions.8.0.0.nupkg.sha512",
         "microsoft.extensions.caching.abstractions.nuspec",
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.Extensions.Caching.Memory/7.0.0": {
-      "sha512": "xpidBs2KCE2gw1JrD0quHE72kvCaI3xFql5/Peb2GRtUuZX+dYPoK/NTdVMiM67Svym0M0Df9A3xyU0FbMQhHw==",
+    "Microsoft.Extensions.Caching.Memory/8.0.0": {
+      "sha512": "7pqivmrZDzo1ADPkRwjy+8jtRKWRCPag9qPI+p7sgu7Q4QreWhcvbiWXsbhP+yY8XSiDvZpu2/LWdBv7PnmOpQ==",
       "type": "package",
-      "path": "microsoft.extensions.caching.memory/7.0.0",
+      "path": "microsoft.extensions.caching.memory/8.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
         "buildTransitive/net461/Microsoft.Extensions.Caching.Memory.targets",
         "buildTransitive/net462/_._",
@@ -2588,9 +2603,11 @@
         "lib/net6.0/Microsoft.Extensions.Caching.Memory.xml",
         "lib/net7.0/Microsoft.Extensions.Caching.Memory.dll",
         "lib/net7.0/Microsoft.Extensions.Caching.Memory.xml",
+        "lib/net8.0/Microsoft.Extensions.Caching.Memory.dll",
+        "lib/net8.0/Microsoft.Extensions.Caching.Memory.xml",
         "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.dll",
         "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.xml",
-        "microsoft.extensions.caching.memory.7.0.0.nupkg.sha512",
+        "microsoft.extensions.caching.memory.8.0.0.nupkg.sha512",
         "microsoft.extensions.caching.memory.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -2884,10 +2901,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
-      "sha512": "cjWrLkJXK0rs4zofsK4bSdg+jhDLTaxrkXu4gS6Y7MAlCvRyNNgwY/lJi5RDlQOnSZweHqoyvgvbdvQsRIW+hg==",
+    "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.1": {
+      "sha512": "fGLiCRLMYd00JYpClraLjJTNKLmMJPnqxMaiRzEBIIvevlzxz33mXy39Lkd48hu1G+N21S7QpaO5ZzKsI6FRuA==",
       "type": "package",
-      "path": "microsoft.extensions.dependencyinjection.abstractions/8.0.0",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/8.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2911,7 +2928,7 @@
         "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
         "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
         "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
-        "microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+        "microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",
         "microsoft.extensions.dependencyinjection.abstractions.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -3126,15 +3143,16 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.Extensions.Http/7.0.0": {
-      "sha512": "9Pq9f/CvOSz0t9yQa6g1uWpxa2sm13daLFm8EZwy9MaQUjKXWdNUXQwIxwhmba5N83UIqURiPHSNqGK1vfWF2w==",
+    "Microsoft.Extensions.Http/8.0.0": {
+      "sha512": "cWz4caHwvx0emoYe7NkHPxII/KkTI8R/LC9qdqJqnKv2poTJ4e2qqPGQqvRoQ5kaSA4FU5IV3qFAuLuOhoqULQ==",
       "type": "package",
-      "path": "microsoft.extensions.http/7.0.0",
+      "path": "microsoft.extensions.http/8.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
         "buildTransitive/net461/Microsoft.Extensions.Http.targets",
         "buildTransitive/net462/_._",
@@ -3146,9 +3164,11 @@
         "lib/net6.0/Microsoft.Extensions.Http.xml",
         "lib/net7.0/Microsoft.Extensions.Http.dll",
         "lib/net7.0/Microsoft.Extensions.Http.xml",
+        "lib/net8.0/Microsoft.Extensions.Http.dll",
+        "lib/net8.0/Microsoft.Extensions.Http.xml",
         "lib/netstandard2.0/Microsoft.Extensions.Http.dll",
         "lib/netstandard2.0/Microsoft.Extensions.Http.xml",
-        "microsoft.extensions.http.7.0.0.nupkg.sha512",
+        "microsoft.extensions.http.8.0.0.nupkg.sha512",
         "microsoft.extensions.http.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -3185,10 +3205,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
-      "sha512": "arDBqTgFCyS0EvRV7O3MZturChstm50OJ0y9bDJvAcmEPJm0FFpFyjU/JLYyStNGGey081DvnQYlncNX5SJJGA==",
+    "Microsoft.Extensions.Logging.Abstractions/8.0.1": {
+      "sha512": "RIFgaqoaINxkM2KTOw72dmilDmTrYA0ns2KW4lDz4gZ2+o6IQ894CzmdL3StM2oh7QQq44nCWiqKqc4qUI9Jmg==",
       "type": "package",
-      "path": "microsoft.extensions.logging.abstractions/8.0.0",
+      "path": "microsoft.extensions.logging.abstractions/8.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3253,7 +3273,7 @@
         "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.xml",
         "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll",
         "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.xml",
-        "microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+        "microsoft.extensions.logging.abstractions.8.0.1.nupkg.sha512",
         "microsoft.extensions.logging.abstractions.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -3405,10 +3425,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.Extensions.Options/8.0.0": {
-      "sha512": "JOVOfqpnqlVLUzINQ2fox8evY2SKLYJ3BV8QDe/Jyp21u1T7r45x/R/5QdteURMR5r01GxeJSBBUOCOyaNXA3g==",
+    "Microsoft.Extensions.Options/8.0.2": {
+      "sha512": "dWGKvhFybsaZpGmzkGCbNNwBD1rVlWzrZKANLW/CcbFJpCEceMCGzT7zZwHOGBCbwM0SzBuceMj5HN1LKV1QqA==",
       "type": "package",
-      "path": "microsoft.extensions.options/8.0.0",
+      "path": "microsoft.extensions.options/8.0.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3447,7 +3467,7 @@
         "lib/netstandard2.0/Microsoft.Extensions.Options.xml",
         "lib/netstandard2.1/Microsoft.Extensions.Options.dll",
         "lib/netstandard2.1/Microsoft.Extensions.Options.xml",
-        "microsoft.extensions.options.8.0.0.nupkg.sha512",
+        "microsoft.extensions.options.8.0.2.nupkg.sha512",
         "microsoft.extensions.options.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -3610,10 +3630,10 @@
         "packageIcon.png"
       ]
     },
-    "OpenAI/1.10.0": {
-      "sha512": "XITFdMPZXa4otWfA2oBZSaFkiEy+bK8DqmERtG8PKQO+15IWL+Rf27sVlX0vQd+CCliZGW5ZqtaZiPWd7uVHZw==",
+    "OpenAI/1.11.0": {
+      "sha512": "ezjdykDSC/j5zB76S0WWIYuI3GwiOtYtjZZBkaGMMOC6QZgyJX4mzN28XMScTftxXjsY0RTxDF0ZkmXxwQwl9w==",
       "type": "package",
-      "path": "openai/1.10.0",
+      "path": "openai/1.11.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3621,7 +3641,7 @@
         "lib/netstandard2.0/OpenAI_API.dll",
         "lib/netstandard2.0/OpenAI_API.xml",
         "nuget_logo.png",
-        "openai.1.10.0.nupkg.sha512",
+        "openai.1.11.0.nupkg.sha512",
         "openai.nuspec"
       ]
     },
@@ -6211,10 +6231,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "System.Text.Json/8.0.0": {
-      "sha512": "OdrZO2WjkiEG6ajEFRABTRCi/wuXQPxeV6g8xvUJqdxMvvuCCEk86zPla8UiIQJz3durtUEbNyY/3lIhS0yZvQ==",
+    "System.Text.Json/8.0.3": {
+      "sha512": "hpagS9joOwv6efWfrMmV9MjQXpiXZH72PgN067Ysfr6AWMSD1/1hEcvh/U5mUpPLezEWsOJSuVrmqDIVD958iA==",
       "type": "package",
-      "path": "system.text.json/8.0.0",
+      "path": "system.text.json/8.0.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -6279,7 +6299,7 @@
         "lib/net8.0/System.Text.Json.xml",
         "lib/netstandard2.0/System.Text.Json.dll",
         "lib/netstandard2.0/System.Text.Json.xml",
-        "system.text.json.8.0.0.nupkg.sha512",
+        "system.text.json.8.0.3.nupkg.sha512",
         "system.text.json.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -6547,20 +6567,20 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "DSharpPlus >= 4.4.6",
-      "DSharpPlus.CommandsNext >= 4.4.6",
-      "DSharpPlus.Interactivity >= 4.4.6",
-      "DSharpPlus.SlashCommands >= 4.4.6",
-      "DSharpPlus.VoiceNext >= 4.4.6",
-      "Google.Apis >= 1.67.0",
-      "Google.Apis.Core >= 1.67.0",
-      "Google.Apis.CustomSearchAPI.v1 >= 1.67.0.3290",
-      "Lavalink4NET.DSharpPlus >= 4.0.11",
-      "Lavalink4NET.InactivityTracking >= 4.0.13",
-      "Lavalink4NET.Lyrics >= 4.0.13",
+      "DSharpPlus >= 4.4.9",
+      "DSharpPlus.CommandsNext >= 4.4.9",
+      "DSharpPlus.Interactivity >= 4.4.9",
+      "DSharpPlus.SlashCommands >= 4.4.9",
+      "DSharpPlus.VoiceNext >= 4.4.9",
+      "Google.Apis >= 1.68.0",
+      "Google.Apis.Core >= 1.68.0",
+      "Google.Apis.CustomSearchAPI.v1 >= 1.68.0.3395",
+      "Lavalink4NET.DSharpPlus >= 4.0.18",
+      "Lavalink4NET.InactivityTracking >= 4.0.18",
+      "Lavalink4NET.Lyrics >= 4.0.18",
       "Microsoft.Extensions.Hosting >= 8.0.0",
       "Newtonsoft.Json >= 13.0.3",
-      "OpenAI >= 1.10.0",
+      "OpenAI >= 1.11.0",
       "System.Net.Http.Json >= 8.0.0"
     ]
   },
@@ -6615,47 +6635,47 @@
         "dependencies": {
           "DSharpPlus": {
             "target": "Package",
-            "version": "[4.4.6, )"
+            "version": "[4.4.9, )"
           },
           "DSharpPlus.CommandsNext": {
             "target": "Package",
-            "version": "[4.4.6, )"
+            "version": "[4.4.9, )"
           },
           "DSharpPlus.Interactivity": {
             "target": "Package",
-            "version": "[4.4.6, )"
+            "version": "[4.4.9, )"
           },
           "DSharpPlus.SlashCommands": {
             "target": "Package",
-            "version": "[4.4.6, )"
+            "version": "[4.4.9, )"
           },
           "DSharpPlus.VoiceNext": {
             "target": "Package",
-            "version": "[4.4.6, )"
+            "version": "[4.4.9, )"
           },
           "Google.Apis": {
             "target": "Package",
-            "version": "[1.67.0, )"
+            "version": "[1.68.0, )"
           },
           "Google.Apis.Core": {
             "target": "Package",
-            "version": "[1.67.0, )"
+            "version": "[1.68.0, )"
           },
           "Google.Apis.CustomSearchAPI.v1": {
             "target": "Package",
-            "version": "[1.67.0.3290, )"
+            "version": "[1.68.0.3395, )"
           },
           "Lavalink4NET.DSharpPlus": {
             "target": "Package",
-            "version": "[4.0.11, )"
+            "version": "[4.0.18, )"
           },
           "Lavalink4NET.InactivityTracking": {
             "target": "Package",
-            "version": "[4.0.13, )"
+            "version": "[4.0.18, )"
           },
           "Lavalink4NET.Lyrics": {
             "target": "Package",
-            "version": "[4.0.13, )"
+            "version": "[4.0.18, )"
           },
           "Microsoft.Extensions.Hosting": {
             "target": "Package",
@@ -6667,7 +6687,7 @@
           },
           "OpenAI": {
             "target": "Package",
-            "version": "[1.10.0, )"
+            "version": "[1.11.0, )"
           },
           "System.Net.Http.Json": {
             "target": "Package",

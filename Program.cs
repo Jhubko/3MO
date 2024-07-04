@@ -67,6 +67,7 @@ namespace Discord_Bot
             Commands = Client.UseCommandsNext(commandsConfig);
             Commands.CommandErrored += CommandEventHandler;
             Commands.RegisterCommands<GamesCommands>();
+            Commands.RegisterCommands<MenagmentCommands>();
 
             UriBuilder builder = new UriBuilder
             {
@@ -95,7 +96,7 @@ namespace Discord_Bot
                 Services = serviceProvider,
             });
 
-            SlashCommandConfig.RegisterCommands<ManagementCommands>();
+            SlashCommandConfig.RegisterCommands<ManagementSlashCommands>();
             SlashCommandConfig.RegisterCommands<GamesSlashCommands>();
             SlashCommandConfig.RegisterCommands<SearchCommands>();
             SlashCommandConfig.RegisterCommands<MusicCommands>();

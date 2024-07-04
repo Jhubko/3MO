@@ -3,43 +3,44 @@
   "WorkspaceRootPath": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hubko\\Desktop\\1209226263449960569.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\other\\buttons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:other\\buttons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\other\\messageshandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:other\\messageshandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\menagmentcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\menagmentcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\slash\\gamesslashcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\slash\\gamesslashcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\slash\\managementcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\slash\\managementcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\slash\\managementslashcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\slash\\managementslashcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\slash\\gamesslashcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\slash\\gamesslashcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\config\\jsonreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:config\\jsonreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\other\\messageshandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:other\\messageshandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\slash\\searchcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\slash\\searchcommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\bin\\Debug\\net8.0\\config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:bin\\Debug\\net8.0\\config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\slash\\musiccommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\slash\\musiccommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\commands\\gamescommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:commands\\gamescommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|c:\\users\\hubko\\source\\repos\\discord_bot2.0\\other\\buttons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E5A8D7E-89F5-4357-B506-D10ED45E7AE4}|Discord_Bot.csproj|solutionrelative:other\\buttons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -49,50 +50,49 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "1209226263449960569.json",
-              "DocumentMoniker": "C:\\Users\\hubko\\Desktop\\1209226263449960569.json",
-              "RelativeDocumentMoniker": "..\\..\\..\\Desktop\\1209226263449960569.json",
-              "ToolTip": "C:\\Users\\hubko\\Desktop\\1209226263449960569.json",
-              "RelativeToolTip": "..\\..\\..\\Desktop\\1209226263449960569.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAPAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-06-19T14:06:47.054Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "GamesCommands.cs",
-              "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\GamesCommands.cs",
-              "RelativeDocumentMoniker": "commands\\GamesCommands.cs",
-              "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\GamesCommands.cs",
-              "RelativeToolTip": "commands\\GamesCommands.cs",
-              "ViewState": "AQIAAAsAAAAAAAAAAAAQwEIAAAAAAAAA",
+              "Title": "config.json",
+              "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\bin\\Debug\\net8.0\\config.json",
+              "RelativeDocumentMoniker": "bin\\Debug\\net8.0\\config.json",
+              "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\bin\\Debug\\net8.0\\config.json",
+              "RelativeToolTip": "bin\\Debug\\net8.0\\config.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-06-26T17:12:17.881Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MenagmentCommands.cs",
+              "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\MenagmentCommands.cs",
+              "RelativeDocumentMoniker": "commands\\MenagmentCommands.cs",
+              "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\MenagmentCommands.cs",
+              "RelativeToolTip": "commands\\MenagmentCommands.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACEAAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-19T10:06:21.15Z",
+              "WhenOpened": "2024-07-04T16:44:02.192Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "SearchCommands.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\SearchCommands.cs",
               "RelativeDocumentMoniker": "commands\\slash\\SearchCommands.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\SearchCommands.cs",
               "RelativeToolTip": "commands\\slash\\SearchCommands.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAAAAAA",
+              "ViewState": "AQIAABYAAAAAAAAAAAAgwAEAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-03T15:59:40.809Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-03T15:59:40.809Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "GamesSlashCommands.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\GamesSlashCommands.cs",
               "RelativeDocumentMoniker": "commands\\slash\\GamesSlashCommands.cs",
@@ -100,73 +100,68 @@
               "RelativeToolTip": "commands\\slash\\GamesSlashCommands.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-19T13:18:10.379Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-19T13:18:10.379Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 0,
               "Title": "Buttons.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\Buttons.cs",
               "RelativeDocumentMoniker": "other\\Buttons.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\Buttons.cs",
               "RelativeToolTip": "other\\Buttons.cs",
-              "ViewState": "AQIAAAgAAAAAAAAAAAAQwBgAAAAnAAAA",
+              "ViewState": "AQIAABQAAAAAAAAAAAAQwBMAAABSAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-20T21:18:39.887Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ManagementCommands.cs",
-              "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\ManagementCommands.cs",
-              "RelativeDocumentMoniker": "commands\\slash\\ManagementCommands.cs",
-              "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\ManagementCommands.cs",
-              "RelativeToolTip": "commands\\slash\\ManagementCommands.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAABcAAAB0AAAA",
+              "DocumentIndex": 2,
+              "Title": "ManagementSlashCommands.cs",
+              "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\ManagementSlashCommands.cs",
+              "RelativeDocumentMoniker": "commands\\slash\\ManagementSlashCommands.cs",
+              "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\ManagementSlashCommands.cs",
+              "RelativeToolTip": "commands\\slash\\ManagementSlashCommands.cs",
+              "ViewState": "AQIAABkAAAAAAAAAAAAgwC8AAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-20T15:44:56.203Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-20T15:44:56.203Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "MusicCommands.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\MusicCommands.cs",
               "RelativeDocumentMoniker": "commands\\slash\\MusicCommands.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\commands\\slash\\MusicCommands.cs",
               "RelativeToolTip": "commands\\slash\\MusicCommands.cs",
-              "ViewState": "AQIAAA8AAAAAAAAAAAAzwCUAAAAtAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-20T21:30:54.603Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-20T21:30:54.603Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAAOoAAAAAAAAAAAAAwPgAAAAIAAAA",
+              "ViewState": "AQIAAC4AAAAAAAAAAAAkwEUAAAA3AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-11T17:29:38.653Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-11T17:29:38.653Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "MessagesHandler.cs",
               "DocumentMoniker": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\MessagesHandler.cs",
               "RelativeDocumentMoniker": "other\\MessagesHandler.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\other\\MessagesHandler.cs",
               "RelativeToolTip": "other\\MessagesHandler.cs",
-              "ViewState": "AQIAAB8AAAAAAAAAAAAYwCQAAAAyAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACEAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-05T14:02:42.029Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-05T14:02:42.029Z"
             },
             {
               "$type": "Document",
@@ -176,10 +171,9 @@
               "RelativeDocumentMoniker": "config\\JSONReader.cs",
               "ToolTip": "C:\\Users\\hubko\\source\\repos\\Discord_Bot2.0\\config\\JSONReader.cs",
               "RelativeToolTip": "config\\JSONReader.cs",
-              "ViewState": "AQIAACgAAAAAAAAAAAAkwDwAAAAIAAAA",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAYwDUAAAA7AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-20T15:50:35.819Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-20T15:50:35.819Z"
             }
           ]
         }

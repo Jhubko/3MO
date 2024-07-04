@@ -27,7 +27,7 @@ namespace Discord_Bot.other
             Description = "**/help**  -> Pokazuję komendy z opisami \n" +
                           "**/defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników \n" +
                           "**/imageOnly**  -> Ustawia który kanał będzie usuwał wiadomości tekstowe \n" +
-                          "**/deleteMessageEmoji**   -> Ustawia emoji, które będzie usuwało wiadomości"
+                          "**!deleteMessageEmoji**   -> Ustawia emoji, które będzie usuwało wiadomości"
         };
 
         public static DiscordEmbedBuilder helpCommandEmbed = new DiscordEmbedBuilder()

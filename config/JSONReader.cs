@@ -68,8 +68,7 @@ namespace Discord_Bot.config
 
             if (!File.Exists(filePath) || fileInfo.Length == 0)
             {
-                CreateJSON(index, dataType, content);
-                return;
+                CreateJSON(index);
             }
 
             string existingJson = File.ReadAllText(filePath);
@@ -86,26 +85,10 @@ namespace Discord_Bot.config
             File.WriteAllText(filePath, updatedJson);
 
         }
-        public void CreateJSON(ulong index, string? dataType = null, string? Content = null)
+        public void CreateJSON(ulong index)
         {
             string filePath = Path.Combine(ConfigPath, $"{index}.json");
-            var data = new Dictionary<string, object>();
-
-            if (dataType != null && Content != null)
-            {
-                if (arrayDataTypes.Contains(dataType))
-                    data[dataType] = new List<string>() { Content };
-                else
-                    data[dataType] = Content;
-
-                string json = JsonConvert.SerializeObject(data);
-                File.WriteAllText(filePath, json);
-            }
-            else
-            {
-                File.WriteAllText(filePath, null);
-            }
-
+            File.WriteAllText(filePath, "{}");
         }
         private void UpdateArrayDataType(JObject jsonData, string dataType, string Content)
         {

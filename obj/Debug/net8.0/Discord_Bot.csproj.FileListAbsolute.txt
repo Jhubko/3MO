@@ -70,3 +70,4 @@ C:\Users\hubko\source\repos\Discord_Bot2.0\obj\Debug\net8.0\Discord_Bot.genrunti
 C:\Users\hubko\source\repos\Discord_Bot2.0\obj\Debug\net8.0\ref\Discord_Bot.dll
 C:\Users\hubko\source\repos\Discord_Bot2.0\bin\Debug\net8.0\Lavalink4NET.InactivityTracking.dll
 C:\Users\hubko\source\repos\Discord_Bot2.0\bin\Debug\net8.0\Lavalink4NET.Lyrics.dll
+C:\Users\hubko\source\repos\Discord_Bot2.0\bin\Debug\net8.0\System.Text.Json.dll
