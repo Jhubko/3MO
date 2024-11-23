@@ -16,7 +16,7 @@
 
 ## Key Features
 
-* Plaing music from YouTube 
+* Playing music from YouTube 
   - Adding songs or playlist from youtube.
   - Possibility to pause or resume.
   - Skipping current song.
