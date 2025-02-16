@@ -17,7 +17,7 @@ namespace Discord_Bot.other
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://www.reddit.com/r/memes/random.json");
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://meme-api.com/gimme/memes");
                 request.Headers.Add("User-Agent", "DiscordBot");
 
                 var response = await _httpClient.SendAsync(request);
@@ -27,9 +27,9 @@ namespace Discord_Bot.other
                 var json = await response.Content.ReadAsStringAsync();
                 var memeData = JsonConvert.DeserializeObject<dynamic>(json);
 
-                string memeUrl = memeData[0].data.children[0].data.url;
-                string memeTitle = memeData[0].data.children[0].data.title;
-                string memeAuthor = memeData[0].data.children[0].data.author;
+                string memeUrl = memeData.url;
+                string memeTitle = memeData.title;
+                string memeAuthor = memeData.author;
 
                 var memeEmbed = new DiscordEmbedBuilder()
                 {
