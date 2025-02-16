@@ -25,8 +25,11 @@ namespace Discord_Bot
         public static DiscordClient? Client { get; set; }
         private static CommandsNextExtension? Commands { get; set; }
 
-        public static JSONReader? jsonReader = new();
+        public static JSONReader jsonReader = new();
         public static string configPath = string.Empty;
+
+        public static VoicePointsManager voicePointsManager;
+
 
         static async Task Main(string[] args)
         {
@@ -54,6 +57,11 @@ namespace Discord_Bot
             Client.MessageReactionAdded += Client_MessageReactionAdded;
             Client.GuildMemberAdded += Client_GuildMemberAdded;
             Client.MessageCreated += Client_MessageCreated;
+            Client.VoiceStateUpdated += Client_VoiceStateUpdated;
+
+
+            voicePointsManager = new VoicePointsManager();
+            Task.Run(() => voicePointsManager.AddPointsLoop());
 
 
             var commandsConfig = new CommandsNextConfiguration()
@@ -100,7 +108,9 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<GamesSlashCommands>();
             SlashCommandConfig.RegisterCommands<SearchCommands>();
             SlashCommandConfig.RegisterCommands<MusicCommands>();
-
+            SlashCommandConfig.RegisterCommands<PointsSlashCommands>();
+            SlashCommandConfig.RegisterCommands<GambleCommand>();
+            SlashCommandConfig.RegisterCommands<DuelCommand>();
 
             await Client.ConnectAsync();
             foreach (var hostedService in serviceProvider.GetServices<IHostedService>())
@@ -113,6 +123,11 @@ namespace Discord_Bot
             StartDeleteBotMessagesTask();
 
             await Task.Delay(-1);
+        }
+
+        private static async Task Client_VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs args)
+        {
+            await voicePointsManager.OnVoiceStateUpdated(sender, args); // Obsługuje zmiany stanu głosowego
         }
 
         private static void StartDeleteBotMessagesTask()
@@ -225,12 +240,9 @@ namespace Discord_Bot
             }
         }
 
-        private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
+        private static async Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {
-
-            return Task.CompletedTask;
-
-            //throw new System.NotImplementedException();
+            await voicePointsManager.CollectActiveUsers(sender);
         }
 
         public static List<ulong> GetGuilds()
