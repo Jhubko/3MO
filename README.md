@@ -37,6 +37,10 @@
 * Games
   - Card Game
   - Random number generator (dices)
+* Voice chat points
+  - Get points by being on voice chat.
+  - Gable - maybe you can double it?
+  - Duel with other palyer for their points
 * Help Command
   - Help command with description of all commands.
 * Management Commands
