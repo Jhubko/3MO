@@ -101,7 +101,7 @@ namespace Discord_Bot.other
         {
             try
             {
-                string apiKey = Program.jsonReader.WeatherApi;
+                string apiKey = Program.globalConfig.WeatherApi;
                 string apiUrl = $"http://api.weatherapi.com/v1/current.json?key={apiKey}&q={city}&aqi=no";
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
                 var response = await _httpClient.SendAsync(request);
@@ -158,7 +158,7 @@ namespace Discord_Bot.other
 
             try
             {
-                string apiKey = Program.jsonReader.WeatherApi;
+                string apiKey = Program.globalConfig.WeatherApi;
                 string apiUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={city}&days=8&hour=25";
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
                 var response = await _httpClient.SendAsync(request);

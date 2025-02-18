@@ -22,7 +22,6 @@ public class DuelCommand : ApplicationCommandModule
         int userPoints = await Program.voicePointsManager.GetUserPoints(userId);
         int opponentPoints = await Program.voicePointsManager.GetUserPoints(opponentId);
         int betAmount = ParseDuelAmount(amountInput, userPoints);
-
         if (betAmount <= 0)
         {
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Niewłaściwa kwota. Podaj numer, wartość procentową lub 'all'."));

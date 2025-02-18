@@ -15,8 +15,8 @@ namespace Discord_Bot.commands.slash
         {
             await ctx.DeferAsync();
 
-            string apiKey = Program.jsonReader.ApiGoogle;
-            string cseId = Program.jsonReader.CseId;
+            string apiKey = Program.globalConfig.ApiGoogle;
+            string cseId = Program.globalConfig.CseId;
 
             var customSearchService = new CustomSearchAPIService(new BaseClientService.Initializer()
             {
@@ -60,7 +60,7 @@ namespace Discord_Bot.commands.slash
         {
             await ctx.DeferAsync();
 
-            var api = new OpenAIAPI(Program.jsonReader.ApiGPT);
+            var api = new OpenAIAPI(Program.globalConfig.ApiGPT);
             var chat = api.Chat.CreateConversation();
 
             chat.AppendSystemMessage("Type a question");

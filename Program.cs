@@ -1,6 +1,6 @@
 ﻿using Discord_Bot.commands;
 using Discord_Bot.commands.slash;
-using Discord_Bot.config;
+using Discord_Bot.Config;
 using Discord_Bot.other;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -25,22 +25,30 @@ namespace Discord_Bot
         public static DiscordClient? Client { get; set; }
         private static CommandsNextExtension? Commands { get; set; }
 
-        public static JSONReader jsonReader = new();
+        public static IJsonHandler jsonHandler = new JSONReader();
+
+        public static string serverConfigPath = string.Empty;
+
+        private static JSONWriter GlobalJsonWriter;
+
         public static string configPath = string.Empty;
 
         public static VoicePointsManager voicePointsManager;
 
+        public static GlobalConfig globalConfig;
+
 
         static async Task Main(string[] args)
         {
-            await jsonReader.ReadJSON();
-
-            configPath = jsonReader.ConfigPath;
+            globalConfig = await jsonHandler.ReadJson<GlobalConfig>("config.json");
+            serverConfigPath = globalConfig?.ConfigPath;
+            GlobalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
+            configPath = globalConfig.ConfigPath;
 
             var discordConfig = new DiscordConfiguration()
             {
                 Intents = DiscordIntents.All,
-                Token = jsonReader.Token,
+                Token = globalConfig.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true
             };
@@ -66,7 +74,7 @@ namespace Discord_Bot
 
             var commandsConfig = new CommandsNextConfiguration()
             {
-                StringPrefixes = new string[] { jsonReader.Prefix },
+                StringPrefixes = new string[] { globalConfig.Prefix },
                 EnableMentionPrefix = true,
                 EnableDms = true,
                 EnableDefaultHelp = false
@@ -79,9 +87,9 @@ namespace Discord_Bot
 
             UriBuilder builder = new UriBuilder
             {
-                Scheme = jsonReader.Secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, // Możesz zmienić na "https" jeśli używasz HTTPS
-                Host = jsonReader.LlHostname,
-                Port = jsonReader.LlPort
+                Scheme = globalConfig.Secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
+                Host = globalConfig.LlHostname,
+                Port = globalConfig.LlPort
             };
 
             using var serviceProvider = new ServiceCollection()
@@ -91,7 +99,7 @@ namespace Discord_Bot
                     {
                         x.Label = "Lavalink";
                         x.BaseAddress = builder.Uri;
-                        x.Passphrase = jsonReader.LlPass;
+                        x.Passphrase = globalConfig.LlPass;
                         x.ResumptionOptions = new LavalinkSessionResumptionOptions(TimeSpan.FromSeconds(60));
                         x.ReadyTimeout = TimeSpan.FromSeconds(15);
                     })
@@ -152,35 +160,37 @@ namespace Discord_Bot
         private static async Task Client_MessageReactionAdded(DiscordClient sender, MessageReactionAddEventArgs args)
         {
             var reaction = args.Emoji;
-            await ReadJson(args.Guild.Id);
+            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{args.Guild.Id}.json");
 
-            if (jsonReader.DeleteMessageEmoji == null)
+            if (serverConfig?.DeleteMessageEmoji == null)
                 return;
 
-            await MessagesHandler.DeleteUnwantedMessage(args, DiscordEmoji.FromName(sender, jsonReader.DeleteMessageEmoji));
+            await MessagesHandler.DeleteUnwantedMessage(args, DiscordEmoji.FromName(sender, serverConfig.DeleteMessageEmoji));
         }
 
         private static async Task Client_MessageCreated(DiscordClient sender, MessageCreateEventArgs args)
         {
             var channel = args.Channel;
-            await ReadJson(args.Guild.Id);
+            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{args.Guild.Id}.json");
 
-            if (jsonReader.ImageChannels != null && jsonReader.ImageChannels.ToList().Contains(channel.Id.ToString()))
+            if (serverConfig.ImageChannels != null && serverConfig.ImageChannels.ToList().Contains(channel.Id.ToString()))
             {
                 if (Regex.IsMatch(args.Message.Content, "."))
                     await args.Message.DeleteAsync();
             }
 
             if (args.Message.Author.IsBot)
-                await jsonReader.UpdateJSON(args.Guild.Id, "BotMessages", args.Message.ChannelId.ToString(), args.Message.Id.ToString());
+                await GlobalJsonWriter.UpdateServerConfig(args.Guild.Id, "BotMessages", args.Message.ChannelId.ToString(), args.Message.Id.ToString());
+
+
         }
 
         private static async Task Client_GuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs args)
         {
             var member = args.Member;
-            await ReadJson(args.Guild.Id);
+            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{args.Guild.Id}.json");
 
-            var roleid = Convert.ToUInt64(jsonReader.DefaultRole);
+            var roleid = Convert.ToUInt64(serverConfig?.DefaultRole);
 
             var role = args.Guild.GetRole(roleid);
 
@@ -247,18 +257,8 @@ namespace Discord_Bot
 
         public static List<ulong> GetGuilds()
         {
-            var guilds = Client.Guilds;
+            var guilds = Client?.Guilds;
             return guilds.Keys.ToList();
-        }
-
-        public static async Task ReadJson(ulong serverId)
-        {
-            string filePath = Path.Combine(configPath, $"{serverId}.json");
-
-            if (!File.Exists(filePath))
-                jsonReader.CreateJSON(serverId);
-
-            await jsonReader.ReadJSON(filePath);
         }
     }
 }

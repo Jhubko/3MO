@@ -1,4 +1,4 @@
-﻿using Discord_Bot.config;
+﻿using Discord_Bot.Config;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -8,7 +8,8 @@ namespace Discord_Bot.commands
 {
     public class MenagmentCommands : BaseCommandModule
     {
-        private JSONReader jsonReader = new JSONReader();
+        private static IJsonHandler jsonReader = new JSONReader();
+        private JSONWriter GlobalJsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
 
         [Command("deleteMessageEmoji")]
         public async Task DeleteMessageCommand(CommandContext ctx, [RemainingText] DiscordEmoji emoji)
@@ -16,7 +17,7 @@ namespace Discord_Bot.commands
 
             if (DiscordEmoji.IsValidUnicode(emoji))
             {
-                await jsonReader.UpdateJSON(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
                 await ctx.Channel.SendMessageAsync($"Delete emoji was set to: {emoji}");
                 return;
             }
@@ -26,7 +27,7 @@ namespace Discord_Bot.commands
                 {
                     if (e.Value.Name == emoji.Name)
                     {
-                        await jsonReader.UpdateJSON(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                        await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
                         await ctx.Channel.SendMessageAsync($"Delete emoji was set to: {emoji}");
                         return;
                     }
