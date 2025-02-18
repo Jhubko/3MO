@@ -1,4 +1,5 @@
-﻿using DSharpPlus;
+﻿using Discord_Bot.Config;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
@@ -8,6 +9,9 @@ namespace Discord_Bot.other
 {
     internal class MessagesHandler
     {
+        private static IJsonHandler jsonReader = new JSONReader();
+        private static JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+
         public static async Task DeleteUnwantedMessage(MessageReactionAddEventArgs args, DiscordEmoji emoji)
         {
             var deleteMessageReactions = await args.Message.GetReactionsAsync(emoji);
@@ -32,21 +36,21 @@ namespace Discord_Bot.other
                 await args.Message.DeleteAsync();
             }
         }
-
         public static async Task DeleteBotMessages()
         {
             var guilds = Program.GetGuilds();
 
+
             foreach (var guild in guilds)
             {
-                await Program.ReadJson(guild);
+                var serverConfig = await Program.jsonHandler.ReadJson<ServerConfig>($"{Program.globalConfig.ConfigPath}\\{guild}.json");
 
-                if (Program.jsonReader.BotMessages == null)
+                if (serverConfig?.BotMessages == null)
                     continue;
 
-                foreach (var channelId in Program.jsonReader.BotMessages.Keys.ToList())
+                foreach (var channelId in serverConfig.BotMessages.Keys.ToList())
                 {
-                    foreach (var messageId in Program.jsonReader.BotMessages[channelId])
+                    foreach (var messageId in serverConfig.BotMessages[channelId])
                     {
                         ulong parsedChannelId;
                         ulong parsedMessageId;
@@ -64,26 +68,8 @@ namespace Discord_Bot.other
                             }
                         }
                     }
-
-                    Program.jsonReader.BotMessages[channelId].Clear();
                 }
-
-                string filePath = Path.Combine(Program.configPath, $"{guild}.json");
-
-                JObject existingJson;
-                if (File.Exists(filePath))
-                {
-                    string existingJsonString = File.ReadAllText(filePath);
-                    existingJson = JObject.Parse(existingJsonString);
-                }
-                else
-                {
-                    existingJson = new JObject();
-                }
-
-                existingJson["BotMessages"] = JObject.FromObject(Program.jsonReader.BotMessages);
-
-                File.WriteAllText(filePath, existingJson.ToString(Formatting.Indented));
+                await jsonWriter.UpdateServerConfig(guild, "BotMessages", "{}");
             }
         }
     }

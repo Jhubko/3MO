@@ -1,4 +1,4 @@
-﻿using Discord_Bot.config;
+﻿using Discord_Bot.Config;
 using Discord_Bot.other;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -9,7 +9,8 @@ namespace Discord_Bot.commands.slash
 {
     internal class ManagementCommands : ApplicationCommandModule
     {
-        public static JSONReader jsonReader = new JSONReader();
+        private static IJsonHandler jsonReader = new JSONReader();
+        private JSONWriter GlobalJsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
 
         [SlashCommand("help", "Show information about all commands.")]
         public async Task HelpCommand(InteractionContext ctx)
@@ -34,7 +35,7 @@ namespace Discord_Bot.commands.slash
             {
                 if (role.Value.Name == newDefaultRole)
                 {
-                    await jsonReader.UpdateJSON(ctx.Guild.Id, "DefaultRole", role.Key.ToString());
+                    await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DefaultRole", role.Key.ToString());
                     await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"New default role set to: {newDefaultRole}")).ConfigureAwait(false);
                     return;
                 }
@@ -49,7 +50,7 @@ namespace Discord_Bot.commands.slash
 
             if (DiscordEmoji.IsValidUnicode(emoji))
             {
-                await jsonReader.UpdateJSON(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Delete emoji was set to: {emoji}")).ConfigureAwait(false);
                 return;
             }
@@ -59,7 +60,7 @@ namespace Discord_Bot.commands.slash
                 {
                     if (e.Value.Name == emoji.Name)
                     {
-                        await jsonReader.UpdateJSON(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                        await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
                         await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Delete emoji was set to: {emoji}")).ConfigureAwait(false);
                         return;
                     }
@@ -79,7 +80,7 @@ namespace Discord_Bot.commands.slash
             {
                 if (channel.Value.Name == channelToChange)
                 {
-                    await jsonReader.UpdateJSON(ctx.Guild.Id, "ImageOnlyChannels", channel.Key.ToString());
+                    await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "ImageOnlyChannels", channel.Key.ToString());
                     await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{channelToChange} was changed to image only.")).ConfigureAwait(false);
                     return;
                 }

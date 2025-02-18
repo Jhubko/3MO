@@ -1,24 +1,22 @@
-﻿using System.Text.Json;
-using Discord_Bot;
-using Discord_Bot.config;
+﻿using Discord_Bot;
+using Discord_Bot.Config;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
+using Newtonsoft.Json;
+using System;
+using System.Text.Json;
 
 class VoicePointsManager
 {
-    private readonly string folderPath = $"{Program.jsonReader.ConfigPath}\\user_points";
+    private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
     private HashSet<ulong> activeUsers;
-
+    private static IJsonHandler jsonReader = new JSONReader();
+    private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
     {
         
         activeUsers = new HashSet<ulong>();
         Directory.CreateDirectory(folderPath);
-    }
-
-    private string GetUserFilePath(ulong userId)
-    {
-        return Path.Combine(folderPath, $"{userId}.json"); 
     }
 
     public async Task CollectActiveUsers(DiscordClient client)
@@ -36,7 +34,7 @@ class VoicePointsManager
                         {
                             activeUsers.Add(user.Id);
 
-                            int currentPoints = LoadUserPoints(user.Id);
+                            int currentPoints = await LoadUserPoints(user.Id);
                             currentPoints += 10;
                             SaveUserPoints(user.Id, currentPoints);
                         }
@@ -49,30 +47,15 @@ class VoicePointsManager
     }
 
 
-    private int LoadUserPoints(ulong userId)
+    private async Task<int> LoadUserPoints(ulong userId)
     {
-        string filePath = GetUserFilePath(userId);
-        if (File.Exists(filePath))
-        {
-            string json = File.ReadAllText(filePath);
-
-            try
-            {
-                return JsonSerializer.Deserialize<int>(json);
-            }
-            catch (JsonException)
-            {
-                return 500;
-            }
-        }
-        return 500;
+        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
+        return int.Parse(userConfig.Points); ;
     }
 
-    public void SaveUserPoints(ulong userId, int points)
+    public async void SaveUserPoints(ulong userId, int points)
     {
-        string filePath = GetUserFilePath(userId);
-        string json = JsonSerializer.Serialize(points, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(filePath, json); // Zapis punktów użytkownika do pliku
+       await jsonWriter.UpdateUserConfig(userId, "Points", points.ToString());
     }
 
     public async Task OnVoiceStateUpdated(DiscordClient client, VoiceStateUpdateEventArgs e)
@@ -96,7 +79,7 @@ class VoicePointsManager
             await Task.Delay(TimeSpan.FromMinutes(1));
             foreach (ulong userId in activeUsers)
             {
-                int currentPoints = LoadUserPoints(userId);
+                int currentPoints = await LoadUserPoints(userId);
                 currentPoints += 10;
                 SaveUserPoints(userId, currentPoints);
             }
@@ -105,20 +88,6 @@ class VoicePointsManager
 
     public async Task<int> GetUserPoints(ulong userId)
     {
-        string filePath = GetUserFilePath(userId);
-        if (File.Exists(filePath))
-        {
-            string json = await File.ReadAllTextAsync(filePath);
-
-            try
-            {
-                return JsonSerializer.Deserialize<int>(json);
-            }
-            catch (JsonException)
-            {
-                return 500;
-            }
-        }
-        return 500;
+        return await LoadUserPoints(userId);
     }
 }
