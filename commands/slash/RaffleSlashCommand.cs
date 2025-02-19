@@ -102,11 +102,12 @@ public class RaffleCommand : ApplicationCommandModule
         foreach (var file in Directory.GetFiles(folderPath, "*.json"))
         {
             var userData = await jsonReader.ReadJson<UserConfig>(file);
+            ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
             if (userData != null)
             {
                 for (int i = 0; i < int.Parse(userData.Tickets); i++)
                 {
-                    ticketEntries.Add(ulong.Parse(file));
+                    ticketEntries.Add(ulong.Parse(userId.ToString()));
                 }
             }
         }
@@ -154,10 +155,11 @@ public class RaffleCommand : ApplicationCommandModule
         if (File.Exists(filePath))
         {
             var userData = await jsonReader.ReadJson<UserConfig>(filePath);
+            int user_points = int.Parse(userData.Points);
             if (userData != null)
             {
-                userData.Points += points;
-                await jsonWriter.UpdateUserConfig(winnerId, "Points", userData.Points.ToString());
+                user_points += points;
+                await jsonWriter.UpdateUserConfig(winnerId, "Points", user_points.ToString());
             }
         }
     }
