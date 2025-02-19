@@ -16,8 +16,7 @@ public class RaffleCommand : ApplicationCommandModule
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
-    [SlashCommand("startraffle", "Zaczymany loterie!")]
-    public async Task StartRaffle(InteractionContext ctx)
+    public async Task StartRaffle(CustomInteractionContext ctx)
     {
         if (raffleActive)
         {
@@ -95,8 +94,7 @@ public class RaffleCommand : ApplicationCommandModule
     }
 
 
-    [SlashCommand("endraffle", "Zakończ loterie!")]
-    public async Task EndRaffle(InteractionContext ctx)
+    public async Task EndRaffle(CustomInteractionContext ctx)
     {
         if (!raffleActive)
         {
@@ -209,5 +207,9 @@ public class RaffleCommand : ApplicationCommandModule
             }
         }
         return ticketsToBuy;
+    }
+    public bool IsRaffleActive()
+    {
+        return raffleActive;
     }
 }

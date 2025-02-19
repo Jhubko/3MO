@@ -13,6 +13,7 @@
         public string? LlPass { get; set; }
         public bool Secured { get; set; }
         public string? ConfigPath { get; set; }
+        public string? GamblingChannelId { get; set; }
     }
 
     public class ServerConfig
