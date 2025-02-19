@@ -73,6 +73,28 @@ public class RaffleCommand : ApplicationCommandModule
         await ctx.CreateResponseAsync($"{ctx.User.Mention} kupił {ticketsToBuy} losów za {totalCost} punktów. Łączna liczba losów: {currentTickets}. Aktualna pula: {rafflePool} punktów.", true);
     }
 
+    [SlashCommand("checktickets", "Sprawdź liczbę swoich losów!")]
+    public async Task CheckTickets(InteractionContext ctx)
+    {
+        ulong userId = ctx.User.Id;
+        var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
+        int currentTickets = int.Parse(userData.Tickets);
+        await ctx.CreateResponseAsync($"Masz {currentTickets} losów.", true);
+    }
+
+    [SlashCommand("checkraffle", "Sprawdź stan loterii!")]
+    public async Task CheckRaffle(InteractionContext ctx)
+    {
+        if (!raffleActive)
+        {
+            await ctx.CreateResponseAsync("Brak aktywnych loterii.", true);
+            return;
+        }
+
+        await ctx.CreateResponseAsync($"Aktualna pula: {rafflePool} punktów.", true);
+    }
+
+
     [SlashCommand("endraffle", "Zakończ loterie!")]
     public async Task EndRaffle(InteractionContext ctx)
     {
