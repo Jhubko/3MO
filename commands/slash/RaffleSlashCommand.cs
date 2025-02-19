@@ -28,7 +28,7 @@ public class RaffleCommand : ApplicationCommandModule
         rafflePool = new Random().Next(100, 5001);
         await ResetAllRaffleTickets();
         raffleActive = true;
-        await ctx.CreateResponseAsync($"Loteria została rozpoczęta! W puli {rafflePool} punktów. Wpisz /buyticket, aby kupić los.", true);
+        await ctx.CreateResponseAsync($"Loteria została rozpoczęta! W puli {rafflePool} punktów. Wpisz /buyticket, aby kupić los.", false);
     }
 
     [SlashCommand("buyticket", "Kup los na loterie!")]
@@ -60,7 +60,7 @@ public class RaffleCommand : ApplicationCommandModule
 
         if (currentPoints < totalCost)
         {
-            await ctx.CreateResponseAsync($"Nie masz tyle punktów bambiku. Wróć z {totalCost} punktami.", true);
+            await ctx.CreateResponseAsync($"Nie masz tyle punktów bambiku, nie stać cię na {ticketsToBuy} losów. Wróć z {totalCost} punktami.", false);
             return;
         }
 
@@ -70,7 +70,7 @@ public class RaffleCommand : ApplicationCommandModule
         await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
         await jsonWriter.UpdateUserConfig(userId, "Tickets", currentTickets.ToString());
 
-        await ctx.CreateResponseAsync($"{ctx.User.Mention} kupił {ticketsToBuy} losów za {totalCost} punktów. Łączna liczba losów: {currentTickets}. Aktualna pula: {rafflePool} punktów.", true);
+        await ctx.CreateResponseAsync($"{ctx.User.Mention} kupił {ticketsToBuy} losów za {totalCost} punktów. Łączna liczba losów: {currentTickets}. Aktualna pula: {rafflePool} punktów.", false);
     }
 
     [SlashCommand("checktickets", "Sprawdź liczbę swoich losów!")]
@@ -79,7 +79,7 @@ public class RaffleCommand : ApplicationCommandModule
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         int currentTickets = int.Parse(userData.Tickets);
-        await ctx.CreateResponseAsync($"Masz {currentTickets} losów.", true);
+        await ctx.CreateResponseAsync($"Masz {currentTickets} losów.", false);
     }
 
     [SlashCommand("checkraffle", "Sprawdź stan loterii!")]
@@ -91,7 +91,7 @@ public class RaffleCommand : ApplicationCommandModule
             return;
         }
 
-        await ctx.CreateResponseAsync($"Aktualna pula: {rafflePool} punktów.", true);
+        await ctx.CreateResponseAsync($"Aktualna pula: {rafflePool} punktów. Loteria kończy się codziennie o 18:00", false);
     }
 
 
@@ -108,12 +108,12 @@ public class RaffleCommand : ApplicationCommandModule
         var winner = await DrawRaffleWinner();
         if (winner == 0)
         {
-            await ctx.CreateResponseAsync("Loteria została zakończona! Brak zwycięzcy, ponieważ nie było biletów.", true);
+            await ctx.CreateResponseAsync("Loteria została zakończona! Brak zwycięzcy, ponieważ nie było biletów.", false);
         }
         else
         {
             SaveWinnerData(winner, rafflePool);
-            await ctx.CreateResponseAsync($"Loteria została zakończona! <@{winner}> wygrał {rafflePool} punktów", true);
+            await ctx.CreateResponseAsync($"Loteria została zakończona! <@{winner}> wygrał {rafflePool} punktów", false);
         }
     }
 
