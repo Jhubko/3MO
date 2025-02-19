@@ -14,7 +14,7 @@ public class RaffleCommand : ApplicationCommandModule
     private static bool raffleActive = false;
     private static IJsonHandler jsonReader = new JSONReader();
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
-    private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_data";
+    private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
     [SlashCommand("startraffle", "Zaczymany loterie!")]
     public async Task StartRaffle(InteractionContext ctx)
@@ -43,7 +43,7 @@ public class RaffleCommand : ApplicationCommandModule
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         int currentPoints = int.Parse(userData.Points);
-        int currentTickets =  userData.Tickets;
+        int currentTickets =  int.Parse(userData.Tickets);
         int ticketsToBuy = 1;
 
         if (amountInput.ToLower() == "max")
@@ -104,7 +104,7 @@ public class RaffleCommand : ApplicationCommandModule
             var userData = await jsonReader.ReadJson<UserConfig>(file);
             if (userData != null)
             {
-                for (int i = 0; i < userData.Tickets; i++)
+                for (int i = 0; i < int.Parse(userData.Tickets); i++)
                 {
                     ticketEntries.Add(ulong.Parse(file));
                 }
@@ -142,9 +142,8 @@ public class RaffleCommand : ApplicationCommandModule
 
             if (userData != null)
             {
-                userData.Tickets = 0;
-                string updatedJson = JsonSerializer.Serialize(userData, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(file, updatedJson);
+                ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
+                await jsonWriter.UpdateUserConfig(userId, "Tickets", "0");
             }
         }
     }
