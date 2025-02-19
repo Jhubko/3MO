@@ -25,5 +25,6 @@
     public class UserConfig
     {
         public string? Points { get; set; } = "500";
+        public int Tickets { get; set; } = 0;
     }
 }
