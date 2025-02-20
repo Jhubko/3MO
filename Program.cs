@@ -16,11 +16,16 @@ using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text.RegularExpressions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 
 namespace Discord_Bot
 {
     internal class Program
     {
+        private static Timer raffleTimer;
         public static IAudioService? AudioService { get; set; }
         public static DiscordClient? Client { get; set; }
         private static CommandsNextExtension? Commands { get; set; }
@@ -119,6 +124,7 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<PointsSlashCommands>();
             SlashCommandConfig.RegisterCommands<GambleCommand>();
             SlashCommandConfig.RegisterCommands<DuelCommand>();
+            SlashCommandConfig.RegisterCommands<RaffleCommand>();
 
             await Client.ConnectAsync();
             foreach (var hostedService in serviceProvider.GetServices<IHostedService>())
@@ -129,8 +135,40 @@ namespace Discord_Bot
             }
 
             StartDeleteBotMessagesTask();
+            ScheduleRaffle();
 
             await Task.Delay(-1);
+        }
+
+        private static void ScheduleRaffle()
+        {
+            DateTime now = DateTime.Now;
+            DateTime next6Pm = now.Date.AddHours(18);
+            if (now > next6Pm)
+            {
+                next6Pm = next6Pm.AddDays(1);
+            }
+
+            TimeSpan timeToGo = next6Pm - now;
+            raffleTimer = new Timer(async _ => await HandleRaffle(Client), null, timeToGo, TimeSpan.FromHours(24));
+        }
+
+        private static async Task HandleRaffle(DiscordClient client)
+        {
+            var raffleCommand = new RaffleCommand();
+            var channel = await client.GetChannelAsync(Convert.ToUInt64(globalConfig.GamblingChannelId)); // Replace with your channel ID
+
+                CustomInteractionContext ctx = null;
+                if (channel.GuildId.HasValue)
+                {
+                    ctx = new CustomInteractionContext(client, client.GetGuildAsync(channel.GuildId.Value).Result, channel, client.CurrentUser);
+                }
+
+            if (raffleCommand.IsRaffleActive())
+            {
+                await raffleCommand.EndRaffle(ctx);
+            }
+            await raffleCommand.StartRaffle(ctx);
         }
 
         private static async Task Client_VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs args)
