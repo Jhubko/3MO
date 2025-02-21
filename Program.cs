@@ -139,7 +139,7 @@ namespace Discord_Bot
             await Task.Delay(-1);
         }
 
-        private static void ScheduleRaffle()
+        private static async Task ScheduleRaffle()
         {
             foreach (var guild in GetGuilds())
             {
@@ -310,7 +310,7 @@ namespace Discord_Bot
         private static async Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {
             await voicePointsManager.CollectActiveUsers(sender);
-            ScheduleRaffle();
+            await ScheduleRaffle();
         }
 
         public static List<ulong> GetGuilds()

@@ -69,7 +69,7 @@ public class RaffleCommand : ApplicationCommandModule
         currentPoints -= totalCost;
         await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
         await jsonWriter.UpdateUserConfig(userId, "Tickets", currentTickets.ToString());
-
+        await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "RafflePool", rafflePool.ToString());
         await ctx.CreateResponseAsync($"{ctx.User.Mention} kupił {ticketsToBuy} losów za {totalCost} punktów. Łączna liczba losów: {currentTickets}. Aktualna pula: {rafflePool} punktów.", false);
     }
 
