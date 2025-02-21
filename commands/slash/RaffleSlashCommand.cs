@@ -27,6 +27,7 @@ public class RaffleCommand : ApplicationCommandModule
         rafflePool = new Random().Next(100, 5001);
         await ResetAllRaffleTickets();
         raffleActive = true;
+        await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "RafflePool", rafflePool.ToString());
         await ctx.CreateResponseAsync($"Loteria została rozpoczęta! W puli {rafflePool} punktów. Wpisz /buyticket, aby kupić los.", false);
     }
 

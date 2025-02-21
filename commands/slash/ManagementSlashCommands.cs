@@ -60,5 +60,22 @@ namespace Discord_Bot.commands.slash
             }
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Channel: '{channelToChange}' not found on this server.")).ConfigureAwait(false);
         }
+        [Command("raffleChannel")]
+        [SlashCommand("raffleChannel", "Set raffle channel for your server.")]
+        public async Task RaffleChannelCommand(InteractionContext ctx, [Option("channelToChange", "Channel name you want to be raffle channel for your server")][RemainingText] string channelToChange)
+        {
+            await ctx.DeferAsync();
+
+            foreach (var channel in ctx.Guild.Channels)
+            {
+                if (channel.Value.Name == channelToChange)
+                {
+                    await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "GamblingChannelId", channel.Key.ToString());
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{channelToChange} was changed to raffle channel.")).ConfigureAwait(false);
+                    return;
+                }
+            }
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Channel: '{channelToChange}' not found on this server.")).ConfigureAwait(false);
+        }
     }
 }
