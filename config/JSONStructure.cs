@@ -13,7 +13,6 @@
         public string? LlPass { get; set; }
         public bool Secured { get; set; }
         public string? ConfigPath { get; set; }
-        public string? GamblingChannelId { get; set; }
     }
 
     public class ServerConfig
@@ -22,6 +21,8 @@
         public string? DeleteMessageEmoji { get; set; }
         public List<string>? ImageChannels { get; set; }
         public Dictionary<string, List<string>>? BotMessages { get; set; }
+        public string? GamblingChannelId { get; set; }
+        public string? RafflePool { get; set; }
     }
     public class UserConfig
     {
