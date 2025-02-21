@@ -93,6 +93,12 @@ public class RaffleCommand : ApplicationCommandModule
         await ctx.CreateResponseAsync($"Aktualna pula: {rafflePool} punktów. Loteria kończy się codziennie o 18:00", false);
     }
 
+    public async Task ResumeRaffle(CustomInteractionContext ctx, int pool)
+    {
+        rafflePool = pool;
+        raffleActive = true;
+        await ctx.CreateResponseAsync($"Loteria została reaktywowana! W puli {rafflePool} punktów. Wpisz /buyticket, aby kupić los.", false);
+    }
 
     public async Task EndRaffle(CustomInteractionContext ctx)
     {

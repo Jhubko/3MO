@@ -150,9 +150,22 @@ namespace Discord_Bot
             }
 
             TimeSpan timeToGo = next6Pm - now;
+            ResumeRaffle(Client);
             raffleTimer = new Timer(async _ => await HandleRaffle(Client), null, timeToGo, TimeSpan.FromHours(24));
         }
 
+        private static async Task ResumeRaffle(DiscordClient client)
+        {
+            var raffleCommand = new RaffleCommand();
+            var channel = await client.GetChannelAsync(Convert.ToUInt64(globalConfig.GamblingChannelId)); // Replace with your channel ID
+            var pool =  int.Parse(globalConfig.RafflePool);
+                CustomInteractionContext ctx = null;
+                if (channel.GuildId.HasValue)
+                {
+                    ctx = new CustomInteractionContext(client, client.GetGuildAsync(channel.GuildId.Value).Result, channel, client.CurrentUser);
+                }
+            raffleCommand.ResumeRaffle(ctx, pool);
+        }
         private static async Task HandleRaffle(DiscordClient client)
         {
             var raffleCommand = new RaffleCommand();
@@ -163,7 +176,6 @@ namespace Discord_Bot
                 {
                     ctx = new CustomInteractionContext(client, client.GetGuildAsync(channel.GuildId.Value).Result, channel, client.CurrentUser);
                 }
-
             if (raffleCommand.IsRaffleActive())
             {
                 await raffleCommand.EndRaffle(ctx);

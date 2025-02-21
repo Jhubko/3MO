@@ -14,6 +14,7 @@
         public bool Secured { get; set; }
         public string? ConfigPath { get; set; }
         public string? GamblingChannelId { get; set; }
+        public string? RafflePool { get; set; }
     }
 
     public class ServerConfig
