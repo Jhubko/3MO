@@ -90,4 +90,32 @@ class VoicePointsManager
     {
         return await LoadUserPoints(userId);
     }
+
+    public async Task<List<UserPoints>> GetTopUsers(int count)
+    {
+        var allUsers = await GetAllUsers();
+        return allUsers.OrderByDescending(u => u.Points).Take(count).ToList();
+    }
+
+    private async Task<List<UserPoints>> GetAllUsers()
+    {
+        var users = new List<UserPoints>();
+        foreach (var file in Directory.GetFiles(folderPath, "*.json"))
+        {
+            var userData = await jsonReader.ReadJson<UserConfig>(file);
+
+            if (userData != null)
+            {
+                ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
+                users.Add(new UserPoints { UserId = userId, Points = int.Parse(userData.Points) });
+            }
+        }
+        return users;
+    }
+}
+
+public class UserPoints
+{
+    public ulong UserId { get; set; }
+    public int Points { get; set; }
 }
