@@ -2,8 +2,6 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Discord_Bot.other
 {

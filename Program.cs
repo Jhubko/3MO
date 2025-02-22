@@ -76,20 +76,6 @@ namespace Discord_Bot
             voicePointsManager = new VoicePointsManager();
             Task.Run(() => voicePointsManager.AddPointsLoop());
 
-
-            var commandsConfig = new CommandsNextConfiguration()
-            {
-                StringPrefixes = new string[] { globalConfig.Prefix },
-                EnableMentionPrefix = true,
-                EnableDms = true,
-                EnableDefaultHelp = false
-            };
-
-            Commands = Client.UseCommandsNext(commandsConfig);
-            Commands.CommandErrored += CommandEventHandler;
-            Commands.RegisterCommands<GamesCommands>();
-            Commands.RegisterCommands<MenagmentCommands>();
-
             UriBuilder builder = new UriBuilder
             {
                 Scheme = globalConfig.Secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,

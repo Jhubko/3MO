@@ -11,16 +11,12 @@ namespace Discord_Bot.commands.slash
         public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-
             int points = await Program.voicePointsManager.GetUserPoints(userId);
-
             var member = await ctx.Guild.GetMemberAsync(userId);
-            var name = new StringBuilder(member.DisplayName);
-            name[0] = char.ToUpper(name[0]);
 
             var embed = new DiscordEmbedBuilder
             {
-                Title = $"{name} ma **{points}** punktów!",
+                Title = $"{GambleUtils.CapitalizeUserFirstLetter(member.DisplayName)} ma **{points}** punktów!",
                 Color = DiscordColor.Green
             };
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
@@ -41,7 +37,7 @@ namespace Discord_Bot.commands.slash
             foreach (var user in topUsers)
             {
                 var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
-                highscoreList.AppendLine($"{discordMember.DisplayName}: {user.Points}");
+                highscoreList.AppendLine($"{GambleUtils.CapitalizeUserFirstLetter(discordMember.DisplayName)}: {user.Points}");
             }
 
             embed.AddField("Highscores", highscoreList.ToString());
