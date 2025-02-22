@@ -1,10 +1,11 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 class GambleUtils
 {
     public static StringBuilder CapitalizeUserFirstLetter(string username)
     {
-        var name = new StringBuilder(username.Trim());
+        var name = new StringBuilder(Regex.Replace(username.Trim(), @"[^\w\s]+$", ""));
         name[0] = char.ToUpper(name[0]);
         return name;
     }
