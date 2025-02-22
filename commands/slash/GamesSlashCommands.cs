@@ -91,7 +91,7 @@ namespace Discord_Bot.commands.slash
         [SlashCommand("freepoints", "Give You 1000 free points!")]
         public async Task FreePointsCommand(InteractionContext ctx)
         {
-            await ctx.CreateResponseAsync("[Darmowe punkty tylko tutaj!!!](<https://www.youtube.com/watch?v=dQw4w9WgXcQ>)");
+            await ctx.CreateResponseAsync("[Free points in Your area!!!](<https://www.youtube.com/watch?v=dQw4w9WgXcQ>)");
         }
     }
 }
