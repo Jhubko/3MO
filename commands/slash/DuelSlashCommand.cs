@@ -1,12 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using Discord_Bot;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using System.Text.RegularExpressions;
-using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.Interactivity;
-using Discord_Bot;
 
 public class DuelCommand : ApplicationCommandModule
 {

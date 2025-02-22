@@ -2,9 +2,7 @@
 using Discord_Bot.Config;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using Newtonsoft.Json;
-using System;
-using System.Text.Json;
+using System.Text.RegularExpressions;
 
 class VoicePointsManager
 {
@@ -89,5 +87,24 @@ class VoicePointsManager
     public async Task<int> GetUserPoints(ulong userId)
     {
         return await LoadUserPoints(userId);
+    }
+
+    public int ParseGambleAmount(string input, int currentPoints)
+    {
+        input = input.Trim().ToLower();
+
+        if (input == "all")
+            return currentPoints;
+
+        if (Regex.IsMatch(input, @"^\d+%$"))
+        {
+            int percentage = int.Parse(input.Replace("%", ""));
+            return (currentPoints * percentage) / 100;
+        }
+
+        if (int.TryParse(input, out int amount))
+            return amount;
+
+        return -1;
     }
 }

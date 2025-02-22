@@ -60,5 +60,33 @@ namespace Discord_Bot.commands.slash
             }
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Channel: '{channelToChange}' not found on this server.")).ConfigureAwait(false);
         }
+
+        [Command("deleteMessageEmoji")]
+        [SlashCommand("deleteMessageEmoji", "Set emoji to delete messages.")]
+        public async Task DeleteMessageEmojiCommand(InteractionContext ctx, [Option("emoji", "Emoji, that will start vote to delete message.")][RemainingText] DiscordEmoji emoji)
+        {
+            await ctx.DeferAsync();
+
+            if (DiscordEmoji.IsValidUnicode(emoji))
+            {
+                await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Delete emoji was set to: {emoji}")).ConfigureAwait(false);
+                return;
+            }
+            else
+            {
+                foreach (var e in ctx.Guild.Emojis.ToList())
+                {
+                    if (e.Value.Name == emoji.Name)
+                    {
+                        await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                        await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Delete emoji was set to: {emoji}")).ConfigureAwait(false);
+                        return;
+                    }
+                }
+            }
+
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Emoji '{emoji}' was not found.")).ConfigureAwait(false);
+        }
     }
 }

@@ -76,20 +76,6 @@ namespace Discord_Bot
             voicePointsManager = new VoicePointsManager();
             Task.Run(() => voicePointsManager.AddPointsLoop());
 
-
-            var commandsConfig = new CommandsNextConfiguration()
-            {
-                StringPrefixes = new string[] { globalConfig.Prefix },
-                EnableMentionPrefix = true,
-                EnableDms = true,
-                EnableDefaultHelp = false
-            };
-
-            Commands = Client.UseCommandsNext(commandsConfig);
-            Commands.CommandErrored += CommandEventHandler;
-            Commands.RegisterCommands<GamesCommands>();
-            Commands.RegisterCommands<MenagmentCommands>();
-
             UriBuilder builder = new UriBuilder
             {
                 Scheme = globalConfig.Secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
@@ -156,7 +142,7 @@ namespace Discord_Bot
         private static async Task HandleRaffle(DiscordClient client)
         {
             var raffleCommand = new RaffleCommand();
-            var channel = await client.GetChannelAsync(Convert.ToUInt64(globalConfig.GamblingChannelId)); // Replace with your channel ID
+             var channel = await client.GetChannelAsync(Convert.ToUInt64(globalConfig.GamblingChannelId)); // Replace with your channel ID
 
                 CustomInteractionContext ctx = null;
                 if (channel.GuildId.HasValue)

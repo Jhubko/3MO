@@ -1,12 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using Discord_Bot;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using System.Text.RegularExpressions;
-using Discord_Bot;
-using System.Text;
-using System.Xml.Linq;
 
 public class GambleCommand : ApplicationCommandModule
 {
@@ -15,25 +9,17 @@ public class GambleCommand : ApplicationCommandModule
     {
         ulong userId = ctx.User.Id;
         int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-        int amountToGamble = ParseGambleAmount(amountInput, currentPoints);
+        int amountToGamble = Program.voicePointsManager.ParseGambleAmount(amountInput, currentPoints);
+        var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
-        if (amountToGamble <= 0)
+        if (!checkAmout.isProperValue)
         {
-            await ctx.CreateResponseAsync("Niewłaściwa kwota. Podaj numer, wartosć procentową lub 'all'.", true);
-            return;
-        }
-
-        if (currentPoints < amountToGamble)
-        {
-            await ctx.CreateResponseAsync($"Nie masz wystarczającej kwoty żeby zagrać za {amountToGamble} punktów!", true);
+            await ctx.CreateResponseAsync(checkAmout.errorMessage);
             return;
         }
 
         Random random = new Random();
         bool win = random.Next(2) == 0;
-
-        var name = new StringBuilder(ctx.User.Username);
-        name[0] = char.ToUpper(name[0]);
 
         if (win)
         {
@@ -57,24 +43,5 @@ public class GambleCommand : ApplicationCommandModule
         }
 
         Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
-    }
-
-    private int ParseGambleAmount(string input, int currentPoints)
-    {
-        input = input.Trim().ToLower();
-
-        if (input == "all")
-            return currentPoints;
-
-        if (Regex.IsMatch(input, @"^\d+%$"))
-        {
-            int percentage = int.Parse(input.Replace("%", ""));
-            return (currentPoints * percentage) / 100;
-        }
-
-        if (int.TryParse(input, out int amount))
-            return amount;
-
-        return -1;
     }
 }
