@@ -89,8 +89,7 @@ namespace Discord_Bot.commands.slash
         }
 
         [SlashCommand("freepoints", "???")]
-        [Cooldown(1, 60, CooldownBucketType.User)]
-        public async Task DebilCommand(InteractionContext ctx)
+        public async Task FreePointsCommand(InteractionContext ctx)
         {
             await ctx.CreateResponseAsync("[Darmowe punkty tylko tutaj!!!](<https://www.youtube.com/watch?v=dQw4w9WgXcQ>)");
         }
