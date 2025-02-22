@@ -32,9 +32,6 @@ public class GambleCommand : ApplicationCommandModule
         Random random = new Random();
         bool win = random.Next(2) == 0;
 
-        var name = new StringBuilder(ctx.User.Username);
-        name[0] = char.ToUpper(name[0]);
-
         if (win)
         {
             currentPoints += amountToGamble;
