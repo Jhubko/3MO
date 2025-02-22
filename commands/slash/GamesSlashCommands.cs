@@ -88,7 +88,7 @@ namespace Discord_Bot.commands.slash
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds(new List<DiscordEmbed> { startEmbed, userCardEmbed, botCardEmbed, resultEmbed }));
         }
 
-        [SlashCommand("freepoints", "???")]
+        [SlashCommand("freepoints", "Give You 1000 free points!")]
         public async Task FreePointsCommand(InteractionContext ctx)
         {
             await ctx.CreateResponseAsync("[Darmowe punkty tylko tutaj!!!](<https://www.youtube.com/watch?v=dQw4w9WgXcQ>)");
