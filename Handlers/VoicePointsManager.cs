@@ -12,7 +12,7 @@ class VoicePointsManager
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
     {
-        
+
         activeUsers = new HashSet<ulong>();
         Directory.CreateDirectory(folderPath);
     }
@@ -53,7 +53,7 @@ class VoicePointsManager
 
     public async void SaveUserPoints(ulong userId, int points)
     {
-       await jsonWriter.UpdateUserConfig(userId, "Points", points.ToString());
+        await jsonWriter.UpdateUserConfig(userId, "Points", points.ToString());
     }
 
     public async Task OnVoiceStateUpdated(DiscordClient client, VoiceStateUpdateEventArgs e)
@@ -89,6 +89,27 @@ class VoicePointsManager
         return await LoadUserPoints(userId);
     }
 
+    public async Task<List<UserPoints>> GetTopUsers(int count)
+    {
+        var allUsers = await GetAllUsers();
+        return allUsers.OrderByDescending(u => u.Points).Take(count).ToList();
+    }
+
+    private async Task<List<UserPoints>> GetAllUsers()
+    {
+        var users = new List<UserPoints>();
+        foreach (var file in Directory.GetFiles(folderPath, "*.json"))
+        {
+            var userData = await jsonReader.ReadJson<UserConfig>(file);
+
+            if (userData != null)
+            {
+                ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
+                users.Add(new UserPoints { UserId = userId, Points = int.Parse(userData.Points) });
+            }
+        }
+        return users;
+    }
     public int ParseGambleAmount(string input, int currentPoints)
     {
         input = input.Trim().ToLower();
@@ -107,4 +128,10 @@ class VoicePointsManager
 
         return -1;
     }
+}
+
+public class UserPoints
+{
+    public ulong UserId { get; set; }
+    public int Points { get; set; }
 }

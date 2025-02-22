@@ -86,7 +86,7 @@ namespace Discord_Bot
             using var serviceProvider = new ServiceCollection()
                     .AddSingleton(Client)
                     .AddLavalink()
-                    .ConfigureLavalink(x =>  
+                    .ConfigureLavalink(x =>
                     {
                         x.Label = "Lavalink";
                         x.BaseAddress = builder.Uri;
@@ -95,7 +95,7 @@ namespace Discord_Bot
                         x.ReadyTimeout = TimeSpan.FromSeconds(15);
                     })
                     .BuildServiceProvider();
-            
+
             AudioService = serviceProvider.GetRequiredService<IAudioService>();
 
             var SlashCommandConfig = Client.UseSlashCommands(new SlashCommandsConfiguration
@@ -121,40 +121,59 @@ namespace Discord_Bot
             }
 
             StartDeleteBotMessagesTask();
-            ScheduleRaffle();
 
             await Task.Delay(-1);
         }
 
-        private static void ScheduleRaffle()
+        private static async Task ScheduleRaffle()
         {
-            DateTime now = DateTime.Now;
-            DateTime next6Pm = now.Date.AddHours(18);
-            if (now > next6Pm)
+            foreach (var guild in GetGuilds())
             {
-                next6Pm = next6Pm.AddDays(1);
-            }
+                DateTime now = DateTime.Now;
+                DateTime next6Pm = now.Date.AddHours(18);
+                if (now > next6Pm)
+                {
+                    next6Pm = next6Pm.AddDays(1);
+                }
 
-            TimeSpan timeToGo = next6Pm - now;
-            raffleTimer = new Timer(async _ => await HandleRaffle(Client), null, timeToGo, TimeSpan.FromHours(24));
+                TimeSpan timeToGo = next6Pm - now;
+                ResumeRaffle(Client, guild);
+                raffleTimer = new Timer(async _ => await HandleRaffle(Client, guild), null, timeToGo, TimeSpan.FromHours(24));
+            }
         }
 
-        private static async Task HandleRaffle(DiscordClient client)
+        private static async Task ResumeRaffle(DiscordClient client, ulong guild)
+        {
+            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
+            var raffleCommand = new RaffleCommand();
+            var pool = int.Parse(serverConfig.RafflePool);
+            var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
+            CustomInteractionContext ctx = CreateInteractionContext(client, channel);
+            await raffleCommand.ResumeRaffle(ctx, pool);
+        }
+
+        private static async Task HandleRaffle(DiscordClient client, ulong guild)
         {
             var raffleCommand = new RaffleCommand();
-             var channel = await client.GetChannelAsync(Convert.ToUInt64(globalConfig.GamblingChannelId)); // Replace with your channel ID
-
-                CustomInteractionContext ctx = null;
-                if (channel.GuildId.HasValue)
-                {
-                    ctx = new CustomInteractionContext(client, client.GetGuildAsync(channel.GuildId.Value).Result, channel, client.CurrentUser);
-                }
+            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
+            var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
+            CustomInteractionContext ctx = CreateInteractionContext(client, channel);
 
             if (raffleCommand.IsRaffleActive())
             {
                 await raffleCommand.EndRaffle(ctx);
             }
             await raffleCommand.StartRaffle(ctx);
+        }
+
+        private static CustomInteractionContext CreateInteractionContext(DiscordClient client, DiscordChannel channel)
+        {
+            if (channel.GuildId.HasValue)
+            {
+                var guild = client.GetGuildAsync(channel.GuildId.Value).Result;
+                return new CustomInteractionContext(client, guild, channel, client.CurrentUser);
+            }
+            return null;
         }
 
         private static async Task Client_VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs args)
@@ -277,6 +296,7 @@ namespace Discord_Bot
         private static async Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {
             await voicePointsManager.CollectActiveUsers(sender);
+            await ScheduleRaffle();
         }
 
         public static List<ulong> GetGuilds()
