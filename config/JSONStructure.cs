@@ -23,7 +23,7 @@
         public Dictionary<string, List<string>>? BotMessages { get; set; }
         public string? GamblingChannelId { get; set; }
         public string? RafflePool { get; set; }
-        public string? SlotsPool { get; set; } = "0";
+        public string? SlotsPool { get; set; } = "2000";
     }
     public class UserConfig
     {
