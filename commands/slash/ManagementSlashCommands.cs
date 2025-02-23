@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using System.Text.RegularExpressions;
 
 namespace Discord_Bot.commands.slash
 {
@@ -81,29 +82,31 @@ namespace Discord_Bot.commands.slash
 
         [Command("deleteMessageEmoji")]
         [SlashCommand("deleteMessageEmoji", "Set emoji to delete messages.")]
-        public async Task DeleteMessageEmojiCommand(InteractionContext ctx, [Option("emoji", "Emoji, that will start vote to delete message.")][RemainingText] DiscordEmoji emoji)
+        public async Task DeleteMessageEmojiCommand(InteractionContext ctx, [Option("emoji", "Emoji, that will start vote to delete message.")][RemainingText] string emoji)
         {
             await ctx.DeferAsync();
 
             if (DiscordEmoji.IsValidUnicode(emoji))
             {
-                await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji);
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Delete emoji was set to: {emoji}")).ConfigureAwait(false);
                 return;
             }
             else
             {
+                string pattern = "<:([^:]+):\\d+>";
+                Match match = Regex.Match(emoji, pattern);
+                string emojiToSet = match.Groups[1].Value;
                 foreach (var e in ctx.Guild.Emojis.ToList())
                 {
-                    if (e.Value.Name == emoji.Name)
+                    if (e.Value.Name == emojiToSet)
                     {
-                        await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", emoji.GetDiscordName());
+                        await GlobalJsonWriter.UpdateServerConfig(ctx.Guild.Id, "DeleteMessageEmoji", $":{emojiToSet}:");
                         await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Delete emoji was set to: {emoji}")).ConfigureAwait(false);
                         return;
                     }
                 }
             }
-
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Emoji '{emoji}' was not found.")).ConfigureAwait(false);
         }
     }
