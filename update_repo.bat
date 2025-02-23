@@ -28,7 +28,8 @@ if exist "%CONFIG_PATH%" (
 )
 
 echo Starting Discord_Bot.exe...
-start "" build\Discord_Bot.exe
+cd build
+start "" Discord_Bot.exe
 
 echo Done!
 exit
