@@ -6,7 +6,9 @@ using DSharpPlus.SlashCommands;
 
 public class SlotsCommand : ApplicationCommandModule
 {
-    private static readonly string[] Symbols = { "🍒", "🍋", "🫐", "🍇", "🍓", "🍍", "🍋‍🟩", "🍑", "🥥", "🥝"};
+    private static readonly string[] Symbols = {"🍎", "🍏", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🫐",
+    "🍒", "🍑", "🥭", "🍍", "🥝", "🍈", "🥥", "🌰", "🥑", "🍆",
+    "🌽", "🥕", "🧄", "🧅", "🥔", "🥒", "🌶️", "🫑", "🍠", "🥜"};
     private const int BetAmount = 10;
     private const int DefaultPool = 2000; 
     private static IJsonHandler jsonReader = new JSONReader();
