@@ -111,6 +111,7 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<GambleCommand>();
             SlashCommandConfig.RegisterCommands<DuelCommand>();
             SlashCommandConfig.RegisterCommands<RaffleCommand>();
+            SlashCommandConfig.RegisterCommands<SlotsCommand>();
 
             await Client.ConnectAsync();
             foreach (var hostedService in serviceProvider.GetServices<IHostedService>())
