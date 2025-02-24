@@ -1,5 +1,4 @@
-﻿using Discord_Bot.commands;
-using Discord_Bot.commands.slash;
+﻿using Discord_Bot.commands.slash;
 using Discord_Bot.Config;
 using Discord_Bot.other;
 using DSharpPlus;
@@ -16,9 +15,6 @@ using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text.RegularExpressions;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 namespace Discord_Bot
@@ -107,7 +103,7 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<GamesSlashCommands>();
             SlashCommandConfig.RegisterCommands<SearchCommands>();
             SlashCommandConfig.RegisterCommands<MusicCommands>();
-            SlashCommandConfig.RegisterCommands<PointsSlashCommands>();
+            SlashCommandConfig.RegisterCommands<StatsSlashCommands>();
             SlashCommandConfig.RegisterCommands<GambleCommand>();
             SlashCommandConfig.RegisterCommands<DuelCommand>();
             SlashCommandConfig.RegisterCommands<RaffleCommand>();
@@ -224,7 +220,13 @@ namespace Discord_Bot
             }
 
             if (args.Message.Author.IsBot)
+            {
                 await GlobalJsonWriter.UpdateServerConfig(args.Guild.Id, "BotMessages", args.Message.ChannelId.ToString(), args.Message.Id.ToString());
+            }
+            else
+            {
+                await StatsHandler.IncreaseStats(args.Author.Id, "Messages");
+            }
 
 
         }

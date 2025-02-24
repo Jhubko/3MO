@@ -27,7 +27,20 @@
     }
     public class UserConfig
     {
+        public string? Messages { get; set; } = "0";
         public string? Points { get; set; } = "500";
         public string? Tickets { get; set; } = "0";
+        public string? Wins { get; set; } = "0";
+        public string? Losses { get; set; } = "0";
+        public string? WonPoints { get; set; } = "0";
+        public string? LostPoints { get; set; } = "0";
+        public string? GambleWins { get; set; } = "0";
+        public string? GambleLosses { get; set; } = "0";
+        public string? SlotsWins { get; set; } = "0";
+        public string? SlotsLosses { get; set; } = "0";
+        public string? CardsWins { get; set; } = "0";
+        public string? CardsLosses { get; set; } = "0";
+        public string? DuelWins { get; set; } = "0";
+        public string? DuelLosses { get; set; } = "0";
     }
 }

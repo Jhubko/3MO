@@ -1,5 +1,4 @@
 ﻿using Discord_Bot.other;
-using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
@@ -34,7 +33,7 @@ namespace Discord_Bot.commands.slash
             bool isPlayerWinner = false;
             ulong userId = ctx.User.Id;
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-            int amountToGamble = Program.voicePointsManager.ParseGambleAmount(amountInput, currentPoints);
+            int amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
             var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
             if (!checkAmout.isProperValue)
@@ -73,9 +72,16 @@ namespace Discord_Bot.commands.slash
             {
                 isPlayerWinner = true;
                 currentPoints += amountToGamble;
+                await StatsHandler.IncreaseStats(userId, "CardsWins");
+                await StatsHandler.IncreaseStats(userId, "WonPoints", amountToGamble);
             }
             else
+            {
                 currentPoints -= amountToGamble;
+                await StatsHandler.IncreaseStats(userId, "CardsLosses");
+                await StatsHandler.IncreaseStats(userId, "LostPoints", amountToGamble);
+            }
+
 
             var resultEmbed = new DiscordEmbedBuilder
             {

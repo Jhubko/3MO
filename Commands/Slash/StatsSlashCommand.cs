@@ -1,11 +1,13 @@
-﻿using DSharpPlus;
+﻿using Discord_Bot.Config;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using System.Reflection;
 using System.Text;
 
 namespace Discord_Bot.commands.slash
 {
-    public class PointsSlashCommands : ApplicationCommandModule
+    public class StatsSlashCommands : ApplicationCommandModule
     {
         [SlashCommand("points", "Display your voice points or the points of a specified user.")]
         public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
@@ -42,6 +44,31 @@ namespace Discord_Bot.commands.slash
 
             embed.AddField("Highscores", highscoreList.ToString());
 
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
+        }
+
+        [SlashCommand("stats", "Display your Statistics.")]
+        public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
+        {
+            ulong userId = user?.Id ?? ctx.User.Id;
+            UserConfig userStast = await StatsHandler.LoadUserStats(userId);
+            var member = await ctx.Guild.GetMemberAsync(userId);
+            string desc = string.Empty;
+
+            PropertyInfo[] properties = typeof(UserConfig).GetProperties();
+
+            foreach (PropertyInfo stats in properties)
+            {
+                desc += "------------------------\n";
+                desc += $"**{StatsHandler.AddSpacesBeforeCapitalLetters(stats.Name)}**: {stats.GetValue(userStast)}\n";
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = $"{GambleUtils.CapitalizeUserFirstLetter(member.DisplayName)} Stats!",
+                Description = desc,
+                Color = DiscordColor.Blurple
+            };
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
         }
     }
