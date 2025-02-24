@@ -47,7 +47,7 @@ namespace Discord_Bot.commands.slash
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
         }
 
-        [SlashCommand("stats", "Show Statistics.")]
+        [SlashCommand("stats", "Display your Statistics.")]
         public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
