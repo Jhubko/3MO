@@ -1,12 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using Discord_Bot;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using System.Text.RegularExpressions;
-using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.Interactivity;
-using Discord_Bot;
 
 public class DuelCommand : ApplicationCommandModule
 {
@@ -97,6 +93,10 @@ public class DuelCommand : ApplicationCommandModule
             {
                 userPoints += betAmount;
                 opponentPoints -= betAmount;
+                await StatsHandler.IncreaseStats(userId, "DuelWins");
+                await StatsHandler.IncreaseStats(opponentId, "DuelLosses");
+                await StatsHandler.IncreaseStats(userId, "WonPoints", betAmount);
+                await StatsHandler.IncreaseStats(opponentId, "LostPoints", betAmount);
                 Program.voicePointsManager.SaveUserPoints(userId, userPoints);
                 Program.voicePointsManager.SaveUserPoints(opponentId, opponentPoints);
 
@@ -112,6 +112,10 @@ public class DuelCommand : ApplicationCommandModule
             {
                 userPoints -= betAmount;
                 opponentPoints += betAmount;
+                await StatsHandler.IncreaseStats(opponentId, "DuelWins");
+                await StatsHandler.IncreaseStats(userId, "DuelLosses");
+                await StatsHandler.IncreaseStats(userId, "LostPoints", betAmount);
+                await StatsHandler.IncreaseStats(opponentId, "WonPoints", betAmount);
                 Program.voicePointsManager.SaveUserPoints(userId, userPoints);
                 Program.voicePointsManager.SaveUserPoints(opponentId, opponentPoints);
 

@@ -1,5 +1,4 @@
 ﻿using Discord_Bot.other;
-using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
@@ -73,9 +72,16 @@ namespace Discord_Bot.commands.slash
             {
                 isPlayerWinner = true;
                 currentPoints += amountToGamble;
+                await StatsHandler.IncreaseStats(userId, "CardsWins");
+                await StatsHandler.IncreaseStats(userId, "WonPoints", amountToGamble);
             }
             else
+            {
                 currentPoints -= amountToGamble;
+                await StatsHandler.IncreaseStats(userId, "CardsLosses");
+                await StatsHandler.IncreaseStats(userId, "LostPoints", amountToGamble);
+            }
+
 
             var resultEmbed = new DiscordEmbedBuilder
             {

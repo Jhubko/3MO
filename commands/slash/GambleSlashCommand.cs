@@ -1,12 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using Discord_Bot;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using System.Text.RegularExpressions;
-using Discord_Bot;
-using System.Text;
-using System.Xml.Linq;
 
 public class GambleCommand : ApplicationCommandModule
 {
@@ -15,17 +9,12 @@ public class GambleCommand : ApplicationCommandModule
     {
         ulong userId = ctx.User.Id;
         int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-        int amountToGamble = ParseGambleAmount(amountInput, currentPoints);
+        int amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
+        var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
-        if (amountToGamble <= 0)
+        if (!checkAmout.isProperValue)
         {
-            await ctx.CreateResponseAsync("Niewłaściwa kwota. Podaj numer, wartosć procentową lub 'all'.", true);
-            return;
-        }
-
-        if (currentPoints < amountToGamble)
-        {
-            await ctx.CreateResponseAsync($"Nie masz wystarczającej kwoty żeby zagrać za {amountToGamble} punktów!", true);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(checkAmout.errorMessage));
             return;
         }
 
@@ -41,6 +30,8 @@ public class GambleCommand : ApplicationCommandModule
                 Description = $"{ctx.User.Mention} postawiłeś: {amountInput}  i  Wygrałeś: **{2 * amountToGamble}** punktów.\nMasz teraz: **{currentPoints}** punktów.",
                 Color = DiscordColor.Green
             });
+            await StatsHandler.IncreaseStats(userId, "GambleWins");
+            await StatsHandler.IncreaseStats(userId, "WonPoints", amountToGamble);
         }
         else
         {
@@ -51,27 +42,10 @@ public class GambleCommand : ApplicationCommandModule
                 Description = $"{ctx.User.Mention} przegrałeś: **{amountToGamble}** punktów XD.\nZostało Ci: **{currentPoints}** punktów.",
                 Color = DiscordColor.Red
             });
+            await StatsHandler.IncreaseStats(userId, "GambleLosses");
+            await StatsHandler.IncreaseStats(userId, "LostPoints", amountToGamble);
         }
 
         Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
-    }
-
-    private int ParseGambleAmount(string input, int currentPoints)
-    {
-        input = input.Trim().ToLower();
-
-        if (input == "all")
-            return currentPoints;
-
-        if (Regex.IsMatch(input, @"^\d+%$"))
-        {
-            int percentage = int.Parse(input.Replace("%", ""));
-            return (currentPoints * percentage) / 100;
-        }
-
-        if (int.TryParse(input, out int amount))
-            return amount;
-
-        return -1;
     }
 }
