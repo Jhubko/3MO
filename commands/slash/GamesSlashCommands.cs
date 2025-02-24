@@ -33,7 +33,7 @@ namespace Discord_Bot.commands.slash
             bool isPlayerWinner = false;
             ulong userId = ctx.User.Id;
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-            int amountToGamble = Program.voicePointsManager.ParseGambleAmount(amountInput, currentPoints);
+            int amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
             var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
             if (!checkAmout.isProperValue)

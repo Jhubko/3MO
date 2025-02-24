@@ -17,16 +17,12 @@ public class DuelCommand : ApplicationCommandModule
         ulong opponentId = opponent.Id;
         int userPoints = await Program.voicePointsManager.GetUserPoints(userId);
         int opponentPoints = await Program.voicePointsManager.GetUserPoints(opponentId);
-        int betAmount = ParseDuelAmount(amountInput, userPoints);
-        if (betAmount <= 0)
-        {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Niewłaściwa kwota. Podaj numer, wartość procentową lub 'all'."));
-            return;
-        }
+        int betAmount = GambleUtils.ParseGambleAmount(amountInput, userPoints);
+        var checkAmout = GambleUtils.CheckGambleAmout(betAmount, userPoints);
 
-        if (betAmount > userPoints)
+        if (!checkAmout.isProperValue)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Nie masz wystarczającej ilości punktów, aby postawić {betAmount} punktów!"));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(checkAmout.errorMessage));
             return;
         }
 
@@ -128,24 +124,5 @@ public class DuelCommand : ApplicationCommandModule
                 await message.ModifyAsync(new DiscordMessageBuilder().WithEmbed(embedResult).WithContent(""));
             }
         }
-    }
-
-    private int ParseDuelAmount(string input, int currentPoints)
-    {
-        input = input.Trim().ToLower();
-
-        if (input == "all")
-            return currentPoints;
-
-        if (Regex.IsMatch(input, @"^\d+%$"))
-        {
-            int percentage = int.Parse(input.Replace("%", ""));
-            return (currentPoints * percentage) / 100;
-        }
-
-        if (int.TryParse(input, out int amount))
-            return amount;
-
-        return -1;
     }
 }

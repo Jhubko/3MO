@@ -110,25 +110,6 @@ class VoicePointsManager
         }
         return users;
     }
-
-    public int ParseGambleAmount(string input, int currentPoints)
-    {
-        input = input.Trim().ToLower();
-
-        if (input == "all")
-            return currentPoints;
-
-        if (Regex.IsMatch(input, @"^\d+%$"))
-        {
-            int percentage = int.Parse(input.Replace("%", ""));
-            return (currentPoints * percentage) / 100;
-        }
-
-        if (int.TryParse(input, out int amount))
-            return amount;
-
-        return -1;
-    }
 }
 
 public class UserPoints
