@@ -24,6 +24,7 @@
         public string? GamblingChannelId { get; set; }
         public string? RafflePool { get; set; }
         public string? SlotsPool { get; set; } = "2000";
+        public List<ShopItem>? ShopItems { get; set; } = new List<ShopItem>();
     }
     public class UserConfig
     {
@@ -42,5 +43,15 @@
         public string? CardsLosses { get; set; } = "0";
         public string? DuelWins { get; set; } = "0";
         public string? DuelLosses { get; set; } = "0";
+        public Dictionary<string, int>? PurchasedItems { get; set; } = new Dictionary<string, int>();
+        
     }
+}
+
+public class ShopItem
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int BaseCost { get; set; }
+    public int PassivePointsIncrease { get; set; }
 }
