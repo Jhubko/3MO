@@ -42,7 +42,7 @@
         public string? CardsLosses { get; set; } = "0";
         public string? DuelWins { get; set; } = "0";
         public string? DuelLosses { get; set; } = "0";
-        public string? RaffleTickets { get; set; } = "0";
+        public string? RaffleTicketsBought { get; set; } = "0";
         public string? RaffleWins { get; set; } = "0";
         public string? RaffleSpent { get; set; } = "0";
         public string? RaffleWinnings { get; set; } = "0";
