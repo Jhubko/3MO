@@ -191,6 +191,7 @@ public class RaffleCommand : ApplicationCommandModule
                 await jsonWriter.UpdateUserConfig(winnerId, "Points", user_points.ToString());
                 await StatsHandler.IncreaseStats(winnerId, "RaffleWins");
                 await StatsHandler.IncreaseStats(winnerId, "RaffleWinnings", points);
+                await StatsHandler.IncreaseStats(winnerId, "WonPoints", points);
             }
         }
     }
