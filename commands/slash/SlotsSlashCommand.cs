@@ -15,6 +15,31 @@ public class SlotsCommand : ApplicationCommandModule
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
+    [SlashCommand("checkSlotsChances", "Check the chances of winning the slots game!")]
+    public async Task CheckSlotsChances(InteractionContext ctx)
+    {
+        // Does 1 000 000 spins and calculates the win rate
+        var results = new int[2]; // [wins, total]
+        for (int i = 0; i < 1000000; i++)
+        {
+            var reels = SpinReels();
+            if (CheckWin(reels))
+            {
+                results[0]++;
+            }
+            results[1]++;
+        }
+        var winRate = (double)results[0] / results[1] * 100;
+        var embed = new DiscordEmbedBuilder
+        {
+            Title = "🎰 Slots Chances 🎰",
+            Description = $"Szansa na wygraną w grze w automaty wynosi {winRate:F5}%",
+            Color = DiscordColor.Gold
+        };
+
+        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
+    }
+
     [SlashCommand("slots", "Play the slots game!")]
     public async Task Slots(InteractionContext ctx)
     {
@@ -39,15 +64,7 @@ public class SlotsCommand : ApplicationCommandModule
         await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", slotsPool.ToString());
 
         // Spin the reels
-        var reels = new string[3, 3];
-        var random = new Random();
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                reels[i, j] = Symbols[random.Next(Symbols.Length)];
-            }
-        }
+        var reels = SpinReels();
 
         // Check for wins
         bool isWin = CheckWin(reels);
@@ -78,6 +95,21 @@ public class SlotsCommand : ApplicationCommandModule
         };
 
         await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
+    }
+
+
+    private string[,] SpinReels()
+    {
+    var reels = new string[3, 3];
+    var random = new Random();
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            reels[i, j] = Symbols[random.Next(Symbols.Length)];
+        }
+    }
+    return reels;
     }
 
     private bool CheckWin(string[,] reels)
