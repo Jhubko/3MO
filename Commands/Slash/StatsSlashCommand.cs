@@ -51,7 +51,7 @@ namespace Discord_Bot.commands.slash
         public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            UserConfig userStast = await StatsHandler.LoadUserStats(userId);
+            UserConfig userStats = await StatsHandler.LoadUserStats(userId);
             var member = await ctx.Guild.GetMemberAsync(userId);
             string desc = string.Empty;
 
@@ -60,7 +60,7 @@ namespace Discord_Bot.commands.slash
             foreach (PropertyInfo stats in properties)
             {
                 desc += "------------------------\n";
-                desc += $"**{StatsHandler.AddSpacesBeforeCapitalLetters(stats.Name)}**: {stats.GetValue(userStast)}\n";
+                desc += $"**{StatsHandler.AddSpacesBeforeCapitalLetters(stats.Name)}**: {stats.GetValue(userStats)}\n";
             }
 
             var embed = new DiscordEmbedBuilder
