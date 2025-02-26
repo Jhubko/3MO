@@ -14,7 +14,7 @@ public class GambleCommand : ApplicationCommandModule
 
         if (!checkAmout.isProperValue)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(checkAmout.errorMessage));
+            await ctx.CreateResponseAsync(checkAmout.errorMessage);
             return;
         }
 
