@@ -37,6 +37,7 @@ namespace Discord_Bot
         public static VoicePointsManager voicePointsManager;
 
         public static GlobalConfig globalConfig;
+        private static CityHandler cityHandler;
 
 
         static async Task Main(string[] args)
@@ -45,6 +46,7 @@ namespace Discord_Bot
             serverConfigPath = globalConfig?.ConfigPath;
             GlobalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
             configPath = globalConfig.ConfigPath;
+            cityHandler = new CityHandler();
 
             var discordConfig = new DiscordConfiguration()
             {
@@ -99,6 +101,7 @@ namespace Discord_Bot
                 Services = serviceProvider,
             });
 
+
             SlashCommandConfig.RegisterCommands<ManagementSlashCommands>();
             SlashCommandConfig.RegisterCommands<GamesSlashCommands>();
             SlashCommandConfig.RegisterCommands<SearchCommands>();
@@ -108,8 +111,11 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<DuelCommand>();
             SlashCommandConfig.RegisterCommands<RaffleCommand>();
             SlashCommandConfig.RegisterCommands<SlotsCommand>();
+            SlashCommandConfig.RegisterCommands<CitySlashCommands>();
 
             await Client.ConnectAsync();
+
+            cityHandler.GenerateDailyIncome();
             foreach (var hostedService in serviceProvider.GetServices<IHostedService>())
             {
                 await hostedService
@@ -143,10 +149,10 @@ namespace Discord_Bot
         {
             var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
             var raffleCommand = new RaffleCommand();
-            var pool = int.Parse(serverConfig.RafflePool);
+            var pool = serverConfig.RafflePool;
             var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
             CustomInteractionContext ctx = CreateInteractionContext(client, channel);
-            await raffleCommand.ResumeRaffle(ctx, pool);
+            await raffleCommand.ResumeRaffle(ctx, int.Parse(pool));
         }
 
         private static async Task HandleRaffle(DiscordClient client, ulong guild)

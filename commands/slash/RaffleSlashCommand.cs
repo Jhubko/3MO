@@ -43,7 +43,7 @@ public class RaffleCommand : ApplicationCommandModule
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         int currentPoints = int.Parse(userData.Points);
-        int currentTickets =  int.Parse(userData.Tickets);
+        int currentTickets = int.Parse(userData.Tickets);
         int ticketsToBuy = 1;
 
         if (amountInput.ToLower() == "max")

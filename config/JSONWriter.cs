@@ -37,7 +37,13 @@ namespace Discord_Bot.Config
             await _UpdateConfig(filePath, key, value, value2);
         }
 
-        private async Task _UpdateConfig(string filePath, string key, string value, string? value2 = null)
+        public async Task UpdateCityConfig(ulong userID, string key, object value)
+        {
+            string filePath = Path.Combine($"{_serverConfigDir}\\cities", $"{userID}_city.json");
+            await _UpdateConfig(filePath, key, value);
+        }
+
+        public async Task _UpdateConfig(string filePath, string key, object value, string? value2 = null)
         {
             if (!File.Exists(filePath) || new FileInfo(filePath).Length == 0)
             {
@@ -46,20 +52,40 @@ namespace Discord_Bot.Config
 
             var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
 
-            if (IsArrayDataType(key))
+            if (key == "Grid")
             {
-                UpdateArray(jsonData, key, value);
+                UpdateGrid(jsonData, key, value);
+            }
+            else if (IsArrayDataType(key))
+            {
+                UpdateArray(jsonData, key, value.ToString());
             }
             else if (IsDictionaryDataType(key))
             {
-                UpdateDictionary(jsonData, key, value, value2);
+                UpdateDictionary(jsonData, key, value.ToString(), value2);
             }
             else
             {
-                jsonData[key] = value;
+                jsonData[key] = JToken.FromObject(value);
             }
 
             await _jsonHandler.WriteJson(filePath, jsonData);
+        }
+
+        private static void UpdateGrid(JObject jsonData, string key, object value)
+        {
+            if (value is string[][] grid)
+            {
+                JArray gridArray = new JArray();
+
+                foreach (var row in grid)
+                {
+                    JArray rowArray = new JArray(row);
+                    gridArray.Add(rowArray);
+                }
+
+                jsonData[key] = gridArray;
+            }
         }
 
         private static void UpdateArray(JObject jsonData, string key, string value)
