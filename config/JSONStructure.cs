@@ -25,6 +25,12 @@
         public string? RafflePool { get; set; }
         public string? SlotsPool { get; set; } = "2000";
     }
+
+    public class ServerConfigShop
+    {
+        public List<ShopItem>? ShopItems { get; set; } = new List<ShopItem>();
+    }
+    
     public class UserConfig
     {
         public string? Messages { get; set; } = "0";
@@ -47,4 +53,12 @@
         public string? RaffleSpent { get; set; } = "0";
         public string? RaffleWinnings { get; set; } = "0";
     }
+}
+
+public class ShopItem
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int BaseCost { get; set; }
+    public int PassivePointsIncrease { get; set; }
 }

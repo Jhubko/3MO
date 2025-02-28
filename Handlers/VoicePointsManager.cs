@@ -33,7 +33,8 @@ class VoicePointsManager
                             activeUsers.Add(user.Id);
 
                             int currentPoints = await LoadUserPoints(user.Id);
-                            currentPoints += 10;
+                            int passivePoints = await CalculatePassivePoints(user.Id);
+                            currentPoints += passivePoints;
                             SaveUserPoints(user.Id, currentPoints);
                         }
                     }
@@ -78,7 +79,8 @@ class VoicePointsManager
             foreach (ulong userId in activeUsers)
             {
                 int currentPoints = await LoadUserPoints(userId);
-                currentPoints += 10;
+                int passivePoints = await CalculatePassivePoints(userId);
+                currentPoints += passivePoints;
                 SaveUserPoints(userId, currentPoints);
             }
         }
@@ -110,6 +112,25 @@ class VoicePointsManager
         }
         return users;
     }
+    private async Task<int> CalculatePassivePoints(ulong userId)
+    {
+        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
+        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{Program.Client.Guilds.First().Key}_shop.json");
+
+        int passivePoints = 10; // Base passive points
+        var shopCommand = new ShopCommand();
+        var userItems = await shopCommand.GetUserItems(userId);
+        foreach (var item in userItems)
+        {
+            var shopItem = serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(item.Key, StringComparison.OrdinalIgnoreCase));
+            if (shopItem != null)
+            {
+                passivePoints += shopItem.PassivePointsIncrease * item.Value;
+            }
+        }
+
+        return passivePoints;
+    }
 }
 
 public class UserPoints
@@ -117,3 +138,4 @@ public class UserPoints
     public ulong UserId { get; set; }
     public int Points { get; set; }
 }
+
