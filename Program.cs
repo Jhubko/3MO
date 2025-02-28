@@ -112,6 +112,7 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<RaffleCommand>();
             SlashCommandConfig.RegisterCommands<SlotsCommand>();
             SlashCommandConfig.RegisterCommands<CitySlashCommands>();
+            SlashCommandConfig.RegisterCommands<GivePointsCommand>();
 
             await Client.ConnectAsync();
 
