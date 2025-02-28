@@ -12,16 +12,23 @@ class CitySlashCommands : ApplicationCommandModule
     [SlashCommand("buildings", "List all available buildings with their price and income.")]
     public async Task ListAllBuildingsCommand(InteractionContext ctx)
     {
-        var buildingList = new StringBuilder();
+        var embed = new DiscordEmbedBuilder()
+        {
+            Title = "Available Buildings",
+            Color = DiscordColor.Blurple,
+            Description = "Here is the list of available buildings, their costs and income."
+        };
 
         foreach (var building in _cityHandler.Buildings)
         {
-            buildingList.AppendLine($"{building.Emote} {building.Name} - Cost: {building.Cost} points, Income: {building.Income} points");
+            embed.AddField($"{building.Emote} {building.Name}",
+                $"Cost: {building.Cost} points\nIncome: {building.Income} points", true);
         }
 
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().WithContent(buildingList.ToString()));
+        await ctx.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+            new DiscordInteractionResponseBuilder().AddEmbed(embed));
     }
+
 
     [SlashCommand("setcityname", "Set the name of your city.")]
     public async Task SetCityNameCommand(InteractionContext ctx, [Option("name", "New name of the city")] string cityName)
@@ -58,8 +65,15 @@ class CitySlashCommands : ApplicationCommandModule
 
         if (building == null)
         {
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent("Unknown building."));
+            var embed = new DiscordEmbedBuilder()
+            {
+                Title = "Error: Unknown Building",
+                Description = "The building you tried to purchase does not exist. Please make sure the name is correct.",
+                Color = DiscordColor.Red
+            };
+
+            await ctx.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+                new DiscordInteractionResponseBuilder().AddEmbed(embed));
             return;
         }
 
@@ -67,45 +81,58 @@ class CitySlashCommands : ApplicationCommandModule
 
         if (userPoints < buildingCost)
         {
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent("You don't have enough points to buy this building."));
+            var embed = new DiscordEmbedBuilder()
+            {
+                Title = "Error: Not Enough Points",
+                Description = $"You do not have enough points to buy the {building.Name}. You need {buildingCost} points, but you only have {userPoints}.",
+                Color = DiscordColor.Red
+            };
+
+            await ctx.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+                new DiscordInteractionResponseBuilder().AddEmbed(embed));
             return;
         }
 
         var success = await _cityHandler.BuyBuilding(ctx.User.Id, building.Emote, int.Parse(x), int.Parse(y));
+        var responseEmbed = new DiscordEmbedBuilder();
+
         if (success)
         {
             userPoints -= buildingCost;
             _pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
 
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent($"You successfully purchased {building.Name} at location ({x}, {y})."));
+            responseEmbed.Title = "Building Purchased Successfully";
+            responseEmbed.Description = $"You have successfully purchased the {building.Name} at location ({x}, {y}).";
+            responseEmbed.Color = DiscordColor.Green;
         }
         else
         {
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent("The building could not be purchased. Make sure the location is correct and you have enough points."));
+            responseEmbed.Title = "Error: Purchase Failed";
+            responseEmbed.Description = "The building could not be purchased. Make sure the location is correct and you have enough points.";
+            responseEmbed.Color = DiscordColor.Red;
         }
+        await ctx.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(responseEmbed));
     }
 
 
-    [SlashCommand("sellbuilding", "Sell ​​a building from a specific location.")]
+
+    [SlashCommand("sellbuilding", "Sell a building from a specific location.")]
     public async Task SellBuildingCommand(InteractionContext ctx,
                                          [Option("x", "x coordinate")] string x,
                                          [Option("y", "y coordinate")] string y)
     {
         var success = await _cityHandler.SellBuilding(ctx.User.Id, int.Parse(x), int.Parse(y));
-        if (success)
+        var embedBuilder = new DiscordEmbedBuilder()
         {
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent($"You have successfully sold a building at location ({x}, {y})."));
-        }
-        else
-        {
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent("The building could not be sold. Make sure there is a building in this location."));
-        }
+            Color = success ? DiscordColor.Green : DiscordColor.Red, // Używam zielonego koloru dla sukcesu i czerwonego dla błędu
+            Title = success ? "Building Sold Successfully" : "Error Selling Building",
+            Description = success
+                ? $"You have successfully sold a building at location ({x}, {y})."
+                : "The building could not be sold. Make sure there is a building at this location.",
+        };
+        await ctx.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(embedBuilder));
     }
+
 
     [SlashCommand("movebuilding", "Move the building to a new location.")]
     public async Task MoveBuildingCommand(InteractionContext ctx,
@@ -115,17 +142,24 @@ class CitySlashCommands : ApplicationCommandModule
                                          [Option("y2", "Final y coordinate")] string y2)
     {
         var success = await _cityHandler.MoveBuilding(ctx.User.Id, int.Parse(x1), int.Parse(y1), int.Parse(x2), int.Parse(y2));
+
+        var embedBuilder = new DiscordEmbedBuilder()
+        {
+            Color = success ? DiscordColor.Green : DiscordColor.Red,
+            Title = success ? "Building Moved Successfully" : "Failed to Move Building",
+            Description = success
+                ? $"**Building moved:**\nFrom: ({x1}, {y1})\nTo: ({x2}, {y2})"
+                : "Please check if the coordinates are correct and try again.",
+        };
+
         if (success)
         {
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent($"Successfully moved building from ({x1}, {y1}) to ({x2}, {y2})."));
+            embedBuilder.AddField("Coordinates Moved", $"From ({x1}, {y1}) to ({x2}, {y2})", true);
         }
-        else
-        {
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent("Failed to move the building. Make sure both locations are correct."));
-        }
+
+        await ctx.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(embedBuilder));
     }
+
 
     [SlashCommand("collectpoints", "Collect income from buildings in your city.")]
     public async Task CollectPointsCommand(InteractionContext ctx)
@@ -136,8 +170,15 @@ class CitySlashCommands : ApplicationCommandModule
 
         _pointsManager.SaveUserPoints(ctx.User.Id, newPoints);
 
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().WithContent($"You have collected {points} points from your city's income and have them added to your account! Your new balance: {newPoints} points."));
+        var embedBuilder = new DiscordEmbedBuilder()
+        {
+            Color = DiscordColor.Goldenrod, // Używam złotego koloru
+            Title = "City Income Collected",
+            Description = $"You have successfully collected income from your city!\n" +
+                          $"**Income Collected:** {points} points\n" +
+                          $"**New Balance:** {newPoints} points",
+        };
+        await ctx.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(embedBuilder));
     }
 
 }
