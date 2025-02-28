@@ -38,4 +38,11 @@ class GambleUtils
 
         return -1;
     }
+    public static int ParseInt(string input)
+    {
+        if (int.TryParse(input, out int result))
+            return result;
+
+        return -1;
+    }
 }

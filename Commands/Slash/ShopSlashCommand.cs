@@ -17,7 +17,7 @@ public class ShopCommand : ApplicationCommandModule
     {
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json");
+        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json");
 
         var item = serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
         if (item == null)
@@ -62,7 +62,7 @@ public class ShopCommand : ApplicationCommandModule
     [SlashCommand("shoplist", "List all items in the shop.")]
     public async Task ListShopItems(InteractionContext ctx)
     {
-        var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json");
+        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json");
         var userItems = await GetUserItems(ctx.User.Id);
 
         if (serverConfig.ShopItems == null || !serverConfig.ShopItems.Any())
@@ -119,7 +119,8 @@ public class ShopCommand : ApplicationCommandModule
 
     public async Task UpdateUserItems(ulong userId, Dictionary<string, int> items)
     {
-        await jsonWriter.UpdateConfig($"{folderPath}\\{userId}_Items.json", items);
+        var itemsObject = items.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
+        await jsonWriter.UpdateConfig($"{folderPath}\\{userId}_Items.json", itemsObject);
     }
 
     public async Task UpdateUserItem(ulong userId, string item, int amount)

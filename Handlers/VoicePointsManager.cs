@@ -115,7 +115,7 @@ class VoicePointsManager
     private async Task<int> CalculatePassivePoints(ulong userId)
     {
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{Program.Client.Guilds.First().Key}.json");
+        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{Program.Client.Guilds.First().Key}_shop.json");
 
         int passivePoints = 10; // Base passive points
         var shopCommand = new ShopCommand();

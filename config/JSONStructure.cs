@@ -24,8 +24,13 @@
         public string? GamblingChannelId { get; set; }
         public string? RafflePool { get; set; }
         public string? SlotsPool { get; set; } = "2000";
+    }
+
+    public class ServerConfigShop
+    {
         public List<ShopItem>? ShopItems { get; set; } = new List<ShopItem>();
     }
+    
     public class UserConfig
     {
         public string? Messages { get; set; } = "0";
