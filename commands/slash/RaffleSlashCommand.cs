@@ -31,8 +31,8 @@ public class RaffleCommand : ApplicationCommandModule
         await ctx.CreateResponseAsync($"Loteria została rozpoczęta! W puli {rafflePool} punktów. Wpisz /buyticket, aby kupić los.", false);
     }
 
-    [SlashCommand("buyticket", "Kup los na loterie!")]
-    public async Task BuyTicket(InteractionContext ctx, [Option("amount", "Liczba losów do kupienia (liczba lub 'max')")] string amountInput)
+    [SlashCommand("buyticket", "But a ticket for the raffle!")]
+    public async Task BuyTicket(InteractionContext ctx, [Option("amount", "Amount to buy (number lub 'max')")] string amountInput)
     {
         if (!raffleActive)
         {
@@ -82,7 +82,7 @@ public class RaffleCommand : ApplicationCommandModule
         await ctx.CreateResponseAsync($"Masz {currentTickets} losów.", false);
     }
 
-    [SlashCommand("checkraffle", "Sprawdź stan loterii!")]
+    [SlashCommand("checkraffle", "Check raffle pool.")]
     public async Task CheckRaffle(InteractionContext ctx)
     {
         if (!raffleActive)
@@ -170,6 +170,8 @@ public class RaffleCommand : ApplicationCommandModule
 
             if (userData != null)
             {
+                await StatsHandler.IncreaseStats(ulong.Parse(Path.GetFileNameWithoutExtension(file)), "RaffleTicketsBought", int.Parse(userData.Tickets));
+                await StatsHandler.IncreaseStats(ulong.Parse(Path.GetFileNameWithoutExtension(file)), "RaffleSpent", CalculateTotalCost(0, int.Parse(userData.Tickets)));
                 ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
                 await jsonWriter.UpdateUserConfig(userId, "Tickets", "0");
             }
@@ -187,6 +189,9 @@ public class RaffleCommand : ApplicationCommandModule
             {
                 user_points += points;
                 await jsonWriter.UpdateUserConfig(winnerId, "Points", user_points.ToString());
+                await StatsHandler.IncreaseStats(winnerId, "RaffleWins");
+                await StatsHandler.IncreaseStats(winnerId, "RaffleWinnings", points);
+                await StatsHandler.IncreaseStats(winnerId, "WonPoints", points);
             }
         }
     }
