@@ -118,7 +118,8 @@ class VoicePointsManager
         var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{Program.Client.Guilds.First().Key}.json");
 
         int passivePoints = 10; // Base passive points
-        var userItems = await GetUserItems(userId);
+        var shopCommand = new ShopCommand();
+        var userItems = await shopCommand.GetUserItems(userId);
         foreach (var item in userItems)
         {
             var shopItem = serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(item.Key, StringComparison.OrdinalIgnoreCase));
@@ -129,11 +130,6 @@ class VoicePointsManager
         }
 
         return passivePoints;
-    }
-    public async Task<Dictionary<string, int>> GetUserItems(ulong userId)
-    {
-        var userItems = await jsonReader.ReadJson<Dictionary<string, int>>($"{folderPath}\\{userId}_Items.json");
-        return userItems;
     }
 }
 

@@ -40,24 +40,6 @@ namespace Discord_Bot.Config
             string filePath = Path.Combine($"{_serverConfigDir}\\user_points", $"{userID}.json");
             await _UpdateConfig(filePath, key, value, value2);
         }
-        public async Task UpdateUserConfig(ulong userID, string key, Dictionary<string, int> value)
-        {
-            string filePath = Path.Combine($"{_serverConfigDir}\\user_points", $"{userID}.json");
-            await _UpdateConfig(filePath, key, value);
-        }
-
-        private async Task _UpdateConfig(string filePath, string key, Dictionary<string, int> value)
-        {
-            if (!File.Exists(filePath) || new FileInfo(filePath).Length == 0)
-            {
-            _jsonHandler.CreateJson(filePath);
-            }
-
-            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
-            jsonData[key] = JObject.FromObject(value);
-
-            await _jsonHandler.WriteJson(filePath, jsonData);
-        }
 
         private async Task _UpdateConfig(string filePath, string key, string value, string? value2 = null)
         {
@@ -106,5 +88,4 @@ namespace Discord_Bot.Config
         private static bool IsArrayDataType(string dataType) => dataType == "ImageOnlyChannels";
         private static bool IsDictionaryDataType(string dataType) => dataType == "BotMessages";
     }
-    
 }

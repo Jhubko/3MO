@@ -3,6 +3,8 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Discord_Bot.Config;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class ShopCommand : ApplicationCommandModule
 {
@@ -48,8 +50,13 @@ public class ShopCommand : ApplicationCommandModule
 
         await jsonWriter.UpdateUserConfig(userId, "Points", userData.Points);
         await UpdateUserItems(userId, userItems);
-
-        await ctx.CreateResponseAsync($"Kupiłeś {itemName}! Masz teraz {userItems[itemName]} {itemName}(s). Koszt następnego {itemName}: {item.BaseCost * (userItems[itemName] + 1)} punktów.", false);
+                var embedBuy = new DiscordEmbedBuilder
+        {
+            Title = "💰 Nowy zakup 💰",
+            Description = $"{ctx.User.Mention} kupił **{itemName}** Ma teraz {userItems[itemName]} {itemName}!",
+            Color = DiscordColor.Blurple
+        };
+        await ctx.CreateResponseAsync(embed: embedBuy);
     }
 
     [SlashCommand("shoplist", "List all items in the shop.")]
@@ -57,26 +64,32 @@ public class ShopCommand : ApplicationCommandModule
     {
         var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json");
         var userItems = await GetUserItems(ctx.User.Id);
-    
+
         if (serverConfig.ShopItems == null || !serverConfig.ShopItems.Any())
         {
             await ctx.CreateResponseAsync("The shop is currently empty.", true);
             return;
         }
-    
+
         var itemsList = string.Join("\n", serverConfig.ShopItems.Select(i =>
         {
             int itemCount = userItems.ContainsKey(i.Name) ? userItems[i.Name] : 0;
             int nextItemCost = i.BaseCost * (itemCount + 1);
             return $"{i.Name} - {nextItemCost} points" + (i.Description != null ? $" - {i.Description}" : "");
         }));
-    
-        await ctx.CreateResponseAsync($"Items available in the shop:\n{itemsList}", false);
+
+        var embedShopList = new DiscordEmbedBuilder
+        {
+            Title = "🛒 Shop Items 🛒",
+            Description = itemsList,
+            Color = DiscordColor.Blurple
+        };
+
+        await ctx.CreateResponseAsync(embed: embedShopList);
     }
 
-
     [SlashCommand("items", "List your items.")]
-    public async Task ListUserItems(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
+    public async Task ListUserItems(InteractionContext ctx, [Option("user", "The user to check items for")] DiscordUser user = null)
     {
         ulong userId = user?.Id ?? ctx.User.Id;
         var userItems = await GetUserItems(userId);
@@ -88,16 +101,22 @@ public class ShopCommand : ApplicationCommandModule
         }
 
         var itemsList = string.Join("\n", userItems.Select(i => $"{i.Key} - {i.Value}"));
-        await ctx.CreateResponseAsync($"Your items:\n{itemsList}", false);
-    }
+        var embedUserItems = new DiscordEmbedBuilder
+        {
+            Title = "📦 Your Items 📦",
+            Description = itemsList,
+            Color = DiscordColor.Blurple
+        };
 
+        await ctx.CreateResponseAsync(embed: embedUserItems);
+    }
 
     public async Task<Dictionary<string, int>> GetUserItems(ulong userId)
     {
         var userItems = await jsonReader.ReadJson<Dictionary<string, int>>($"{folderPath}\\{userId}_Items.json");
-        return userItems;
+        return userItems ?? new Dictionary<string, int>();
     }
-    
+
     public async Task UpdateUserItems(ulong userId, Dictionary<string, int> items)
     {
         await jsonWriter.UpdateConfig($"{folderPath}\\{userId}_Items.json", items);
