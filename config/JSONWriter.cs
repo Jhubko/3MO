@@ -14,7 +14,11 @@ namespace Discord_Bot.Config
             _configPath = configPath;
             _serverConfigDir = serverConfigDir;
         }
-
+        public async Task UpdateConfig(string filePath, Dictionary<string, int> newConfig)
+        {
+            await _jsonHandler.WriteJson(filePath, newConfig);
+        }
+        
         public async Task UpdateGlobalConfig(string key, string value)
         {
             string filePath = Path.Combine(_configPath, "config.json");
@@ -102,4 +106,5 @@ namespace Discord_Bot.Config
         private static bool IsArrayDataType(string dataType) => dataType == "ImageOnlyChannels";
         private static bool IsDictionaryDataType(string dataType) => dataType == "BotMessages";
     }
+    
 }
