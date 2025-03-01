@@ -1,8 +1,7 @@
-﻿using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
+﻿using Discord_Bot;
 using DSharpPlus;
-using Discord_Bot;
-using System.Text;
+using DSharpPlus.Entities;
+using DSharpPlus.SlashCommands;
 
 class CitySlashCommands : ApplicationCommandModule
 {
@@ -85,7 +84,7 @@ class CitySlashCommands : ApplicationCommandModule
         {
             var embed = new DiscordEmbedBuilder()
             {
-                Title = "Error: Not Enough Points",
+                Title = "❌Error: Not Enough Points❌",
                 Description = $"You do not have enough points to buy the {building.Name}. You need {buildingCost} points, but you only have {userPoints}.",
                 Color = DiscordColor.Red
             };
@@ -103,13 +102,13 @@ class CitySlashCommands : ApplicationCommandModule
             userPoints -= buildingCost;
             _pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
 
-            responseEmbed.Title = "Building Purchased Successfully";
+            responseEmbed.Title = "💰Building Purchased Successfully💰";
             responseEmbed.Description = $"You have successfully purchased the {building.Name} at location ({x}, {y}).";
             responseEmbed.Color = DiscordColor.Green;
         }
         else
         {
-            responseEmbed.Title = "Error: Purchase Failed";
+            responseEmbed.Title = "❌Error: Purchase Failed❌";
             responseEmbed.Description = "The building could not be purchased. Make sure the location is correct and you have enough points.";
             responseEmbed.Color = DiscordColor.Red;
         }
@@ -127,7 +126,7 @@ class CitySlashCommands : ApplicationCommandModule
         var embedBuilder = new DiscordEmbedBuilder()
         {
             Color = success ? DiscordColor.Green : DiscordColor.Red, // Używam zielonego koloru dla sukcesu i czerwonego dla błędu
-            Title = success ? "Building Sold Successfully" : "Error Selling Building",
+            Title = success ? "💰Building Sold Successfully💰" : "❌Error Selling Building❌",
             Description = success
                 ? $"You have successfully sold a building at location ({x}, {y})."
                 : "The building could not be sold. Make sure there is a building at this location.",
@@ -148,7 +147,7 @@ class CitySlashCommands : ApplicationCommandModule
         var embedBuilder = new DiscordEmbedBuilder()
         {
             Color = success ? DiscordColor.Green : DiscordColor.Red,
-            Title = success ? "Building Moved Successfully" : "Failed to Move Building",
+            Title = success ? "🏗️Building Moved Successfully🏗️" : "❌Failed to Move Building❌",
             Description = success
                 ? $"**Building moved:**\nFrom: ({x1}, {y1})\nTo: ({x2}, {y2})"
                 : "Please check if the coordinates are correct and try again.",
@@ -175,7 +174,7 @@ class CitySlashCommands : ApplicationCommandModule
         var embedBuilder = new DiscordEmbedBuilder()
         {
             Color = DiscordColor.Goldenrod, // Używam złotego koloru
-            Title = "City Income Collected",
+            Title = "💰City Income Collected💰",
             Description = $"You have successfully collected income from your city!\n" +
                           $"**Income Collected:** {points} points\n" +
                           $"**New Balance:** {newPoints} points",
