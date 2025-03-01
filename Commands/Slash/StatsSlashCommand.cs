@@ -23,7 +23,6 @@ namespace Discord_Bot.commands.slash
             };
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
         }
-
         [SlashCommand("highscore", "Display the top 10 scores.")]
         public async Task HighscoreCommand(InteractionContext ctx)
         {
@@ -38,13 +37,20 @@ namespace Discord_Bot.commands.slash
             var highscoreList = new StringBuilder();
             foreach (var user in topUsers)
             {
-                var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
-                highscoreList.AppendLine($"{GambleUtils.CapitalizeUserFirstLetter(discordMember.DisplayName)}: {user.Points}");
+                try
+                {
+                    var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
+                    highscoreList.AppendLine($"{GambleUtils.CapitalizeUserFirstLetter(discordMember.DisplayName)}: {user.Points}");
+                }
+                catch (DSharpPlus.Exceptions.NotFoundException)
+                {
+                    highscoreList.AppendLine($"Unknown User: {user.Points}");
+                }
             }
 
             embed.AddField("Highscores", highscoreList.ToString());
 
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
+            await ctx.CreateResponseAsync(embed: embed);
         }
 
         [SlashCommand("stats", "Display your Statistics.")]

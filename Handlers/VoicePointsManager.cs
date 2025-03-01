@@ -101,12 +101,14 @@ class VoicePointsManager
     {
         var users = new List<UserPoints>();
         foreach (var file in Directory.GetFiles(folderPath, "*.json"))
-        {
+        {   
+            var filename = Path.GetFileNameWithoutExtension(file);
+            if (filename.Contains('_')) continue;
             var userData = await jsonReader.ReadJson<UserConfig>(file);
 
             if (userData != null)
             {
-                ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
+                ulong userId = ulong.Parse(filename);
                 users.Add(new UserPoints { UserId = userId, Points = int.Parse(userData.Points) });
             }
         }
