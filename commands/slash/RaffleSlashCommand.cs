@@ -128,8 +128,10 @@ public class RaffleCommand : ApplicationCommandModule
 
         foreach (var file in Directory.GetFiles(folderPath, "*.json"))
         {
+            var filename = Path.GetFileNameWithoutExtension(file);
+            if (filename.Contains('_')) continue;
             var userData = await jsonReader.ReadJson<UserConfig>(file);
-            ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
+            ulong userId = ulong.Parse(filename);
             if (userData != null)
             {
                 for (int i = 0; i < int.Parse(userData.Tickets); i++)
@@ -165,14 +167,15 @@ public class RaffleCommand : ApplicationCommandModule
     {
         foreach (var file in Directory.GetFiles(folderPath, "*.json"))
         {
-            string json = File.ReadAllText(file);
+            var filename = Path.GetFileNameWithoutExtension(file);
+            if (filename.Contains('_')) continue;
             var userData = await jsonReader.ReadJson<UserConfig>(file);
 
             if (userData != null)
             {
-                await StatsHandler.IncreaseStats(ulong.Parse(Path.GetFileNameWithoutExtension(file)), "RaffleTicketsBought", int.Parse(userData.Tickets));
-                await StatsHandler.IncreaseStats(ulong.Parse(Path.GetFileNameWithoutExtension(file)), "RaffleSpent", CalculateTotalCost(0, int.Parse(userData.Tickets)));
-                ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file));
+                await StatsHandler.IncreaseStats(ulong.Parse(filename), "RaffleTicketsBought", int.Parse(userData.Tickets));
+                await StatsHandler.IncreaseStats(ulong.Parse(filename), "RaffleSpent", CalculateTotalCost(0, int.Parse(userData.Tickets)));
+                ulong userId = ulong.Parse(filename);
                 await jsonWriter.UpdateUserConfig(userId, "Tickets", "0");
             }
         }
