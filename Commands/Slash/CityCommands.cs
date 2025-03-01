@@ -34,16 +34,18 @@ class CitySlashCommands : ApplicationCommandModule
     public async Task SetCityNameCommand(InteractionContext ctx, [Option("name", "New name of the city")] string cityName)
     {
         bool success = await _cityHandler.SetCityName(ctx.User.Id, cityName);
-
-        if (success)
+        var embed = new DiscordEmbedBuilder()
         {
-            await ctx.CreateResponseAsync($"The city name has been set to: {cityName}");
-        }
-        else
-        {
-            await ctx.CreateResponseAsync("Failed to set city name. Make sure the name is not empty.");
-        }
+            Title = success ? "City Name Updated!" : "Error",
+            Description = success
+                ? $"🏙️ Your city's name has been set to **{cityName}**!"
+                : "❌ Failed to set city name. Make sure the name is not empty.",
+            Color = success ? DiscordColor.Green : DiscordColor.Red
+        };
+        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+            new DiscordInteractionResponseBuilder().AddEmbed(embed));
     }
+
 
     [SlashCommand("city", "View city.")]
     public async Task ViewCityCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
