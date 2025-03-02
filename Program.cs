@@ -131,7 +131,7 @@ namespace Discord_Bot
                    await RaffleHandlers.HandleRaffle(Client, guild);
                 }
             });
-            taskManager.ScheduleDailyTask("DailyIncome", new TimeSpan(21, 11, 0), async () =>
+            taskManager.ScheduleDailyTask("DailyIncome", new TimeSpan(10, 00, 0), async () =>
             {
                 var cityHandler = new CityHandler();
                 foreach (var guild in GetGuilds())
