@@ -59,8 +59,8 @@ public class SlotsCommand : ApplicationCommandModule
 
         // Update the slots pool
         var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json");
-        var slotsPool = serverConfig.SlotsPool;
-        slotsPool += BetAmount;
+        var slotsPool = int.Parse(serverConfig.SlotsPool);
+        slotsPool += BetAmount - 2;
         await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", slotsPool.ToString());
 
         // Spin the reels
