@@ -73,7 +73,7 @@ public class SlotsCommand : ApplicationCommandModule
             int winAmount = int.Parse(serverConfig.SlotsPool); // Win the entire pool
             currentPoints += winAmount;
             await StatsHandler.IncreaseStats(userId, "SlotsWins");
-            await StatsHandler.IncreaseStats(userId, "WonPoints", (int)currentPoints);
+            await StatsHandler.IncreaseStats(userId, "WonPoints", currentPoints);
             await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool.ToString()); // Reset the pool
             await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
         }
