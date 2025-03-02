@@ -31,6 +31,8 @@ namespace Discord_Bot.other
         {
             var raffleCommand = new RaffleCommand();
             var serverConfig = await Program.jsonHandler.ReadJson<ServerConfig>($"{Program.configPath}\\{guild}.json");
+            if (serverConfig.GamblingChannelId == null)
+                return;
             var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
             CustomInteractionContext ctx = Program.CreateInteractionContext(client, channel);
 
