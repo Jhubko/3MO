@@ -59,7 +59,7 @@ public class SlotsCommand : ApplicationCommandModule
 
         // Update the slots pool
         var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json");
-        var slotsPool = int.Parse(serverConfig.SlotsPool);
+        var slotsPool = serverConfig.SlotsPool;
         slotsPool += BetAmount;
         await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", slotsPool.ToString());
 
@@ -73,7 +73,7 @@ public class SlotsCommand : ApplicationCommandModule
             int winAmount = int.Parse(serverConfig.SlotsPool); // Win the entire pool
             currentPoints += winAmount;
             await StatsHandler.IncreaseStats(userId, "SlotsWins");
-            await StatsHandler.IncreaseStats(userId, "WonPoints", currentPoints);
+            await StatsHandler.IncreaseStats(userId, "WonPoints", (int)currentPoints);
             await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool.ToString()); // Reset the pool
             await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
         }

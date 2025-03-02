@@ -49,7 +49,7 @@ class VoicePointsManager
     private async Task<int> LoadUserPoints(ulong userId)
     {
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        return int.Parse(userConfig.Points); ;
+        return int.Parse(userConfig.Points);
     }
 
     public async void SaveUserPoints(ulong userId, int points)

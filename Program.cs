@@ -14,6 +14,7 @@ using Lavalink4NET;
 using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Text.RegularExpressions;
 
 
@@ -21,7 +22,6 @@ namespace Discord_Bot
 {
     internal class Program
     {
-        private static Timer raffleTimer;
         public static IAudioService? AudioService { get; set; }
         public static DiscordClient? Client { get; set; }
         private static CommandsNextExtension? Commands { get; set; }
@@ -45,6 +45,7 @@ namespace Discord_Bot
             serverConfigPath = globalConfig?.ConfigPath;
             GlobalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
             configPath = globalConfig.ConfigPath;
+            var taskManager = new ScheduledTaskManager();
 
             var discordConfig = new DiscordConfiguration()
             {
@@ -99,6 +100,7 @@ namespace Discord_Bot
                 Services = serviceProvider,
             });
 
+
             SlashCommandConfig.RegisterCommands<ManagementSlashCommands>();
             SlashCommandConfig.RegisterCommands<GamesSlashCommands>();
             SlashCommandConfig.RegisterCommands<SearchCommands>();
@@ -108,10 +110,12 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<DuelCommand>();
             SlashCommandConfig.RegisterCommands<RaffleCommand>();
             SlashCommandConfig.RegisterCommands<SlotsCommand>();
+            SlashCommandConfig.RegisterCommands<CitySlashCommands>();
             SlashCommandConfig.RegisterCommands<GivePointsCommand>();
             SlashCommandConfig.RegisterCommands<ShopCommand>();
 
             await Client.ConnectAsync();
+
             foreach (var hostedService in serviceProvider.GetServices<IHostedService>())
             {
                 await hostedService
@@ -119,53 +123,31 @@ namespace Discord_Bot
                 .ConfigureAwait(false);
             }
 
-            StartDeleteBotMessagesTask();
+            taskManager.ScheduleDailyTask("DeleteMessagesTask", new TimeSpan(22, 00, 0), async () => await MessagesHandler.DeleteBotMessages());
+            taskManager.ScheduleDailyTask("ScheduleRaffle", new TimeSpan(18, 00, 0), async () =>
+            {
+                foreach (var guild in GetGuilds())
+                {
+                   await RaffleHandlers.HandleRaffle(Client, guild);
+                }
+            });
+            taskManager.ScheduleDailyTask("DailyIncome", new TimeSpan(21, 11, 0), async () =>
+            {
+                var cityHandler = new CityHandler();
+                foreach (var guild in GetGuilds())
+                {
+                    var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
+                    var channel = await Client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
+                    CustomInteractionContext ctx = CreateInteractionContext(Client, channel);
+                    await ctx.CreateResponseAsync($"💸 @everyone City revenues have been generated! 💸", false);
+                }
+                await cityHandler.GenerateDailyIncome();
+            });
 
             await Task.Delay(-1);
         }
 
-        private static async Task ScheduleRaffle()
-        {
-            foreach (var guild in GetGuilds())
-            {
-            DateTime now = DateTime.Now;
-            DateTime next6Pm = now.Date.AddHours(18);
-            if (now > next6Pm)
-            {
-                next6Pm = next6Pm.AddDays(1);
-            }
-
-            TimeSpan timeToGo = next6Pm - now;
-            ResumeRaffle(Client, guild);
-            raffleTimer = new Timer(async _ => await HandleRaffle(Client, guild), null, timeToGo, TimeSpan.FromHours(24));
-            }
-        }
-
-        private static async Task ResumeRaffle(DiscordClient client, ulong guild)
-        {
-            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
-            var raffleCommand = new RaffleCommand();
-            var pool = int.Parse(serverConfig.RafflePool);
-            var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
-            CustomInteractionContext ctx = CreateInteractionContext(client, channel);
-            await raffleCommand.ResumeRaffle(ctx, pool);
-        }
-
-        private static async Task HandleRaffle(DiscordClient client, ulong guild)
-        {
-            var raffleCommand = new RaffleCommand();
-            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
-            var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
-            CustomInteractionContext ctx = CreateInteractionContext(client, channel);
-
-            if (raffleCommand.IsRaffleActive())
-            {
-            await raffleCommand.EndRaffle(ctx);
-            }
-            await raffleCommand.StartRaffle(ctx);
-        }
-
-        private static CustomInteractionContext CreateInteractionContext(DiscordClient client, DiscordChannel channel)
+        public static CustomInteractionContext CreateInteractionContext(DiscordClient client, DiscordChannel channel)
         {
             if (channel.GuildId.HasValue)
             {
@@ -178,25 +160,6 @@ namespace Discord_Bot
         private static async Task Client_VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs args)
         {
             await voicePointsManager.OnVoiceStateUpdated(sender, args); // Obsługuje zmiany stanu głosowego
-        }
-
-        private static void StartDeleteBotMessagesTask()
-        {
-            var interval = TimeSpan.FromHours(12).TotalMilliseconds;
-
-            var timer = new System.Timers.Timer(interval);
-            timer.Elapsed += async (sender, e) =>
-            {
-                try
-                {
-                    await MessagesHandler.DeleteBotMessages();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Exception in DeleteBotMessages: {ex.Message}");
-                }
-            };
-            timer.Start();
         }
 
         private static async Task Client_MessageReactionAdded(DiscordClient sender, MessageReactionAddEventArgs args)
@@ -301,7 +264,10 @@ namespace Discord_Bot
         private static async Task Client_Ready(DiscordClient sender, ReadyEventArgs args)
         {
             await voicePointsManager.CollectActiveUsers(sender);
-            await ScheduleRaffle();
+            foreach (var guild in GetGuilds())
+            {
+                await RaffleHandlers.ResumeRaffle(Client, guild);
+            }
         }
 
         public static List<ulong> GetGuilds()
