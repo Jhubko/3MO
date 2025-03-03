@@ -1,6 +1,5 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
@@ -12,26 +11,26 @@ class CityHandler
 
     public readonly List<Building> Buildings = new()
     {
-        new Building { Emote = "🌲", Name = "Tree", Cost = 1000, Income = 5 },
-        new Building { Emote = "🅿️", Name = "Parking", Cost = 5000, Income = 25 },
-        new Building { Emote = "🛣️", Name = "Road", Cost = 7000, Income = 35 },
-        new Building { Emote = "🏠", Name = "House", Cost = 10000, Income = 50 },
-        new Building { Emote = "🏢", Name = "Office", Cost = 25000, Income = 125 },
-        new Building { Emote = "🏤", Name = "Post", Cost = 30000, Income = 150 },
-        new Building { Emote = "🏫", Name = "School", Cost = 35000, Income = 175 },
-        new Building { Emote = "🏬", Name = "Mall", Cost = 50000, Income = 250 },
-        new Building { Emote = "🏦", Name = "Bank", Cost = 60000, Income = 300 },
-        new Building { Emote = "🏥", Name = "Hospital", Cost = 70000, Income = 350 },
-        new Building { Emote = "🏭", Name = "Factory", Cost = 80000, Income = 400 },
-        new Building { Emote = "🏕️", Name = "Camping", Cost = 90000, Income = 450 },
-        new Building { Emote = "⛽", Name = "Gas station", Cost = 120000, Income = 600 },
-        new Building { Emote = "🏙️", Name = "Skyscraper", Cost = 120000, Income = 600 },
-        new Building { Emote = "🏪", Name = "Shop", Cost = 140000, Income = 700 },
-        new Building { Emote = "🏛️", Name = "City Hall", Cost = 180000, Income = 900 },
-        new Building { Emote = "🏰", Name = "Castle", Cost = 220000, Income = 1100 },
-        new Building { Emote = "🏨", Name = "Hotel", Cost = 260000, Income = 1300 },
-        new Building { Emote = "🛬", Name = "Airport", Cost = 320000, Income = 1600 },
-        new Building { Emote = "🎢", Name = "Amusement park", Cost = 450000, Income = 2250 },
+        new Building { Emote = "🌲", Name = "Tree", Cost = 1000, Income = 50 },
+        new Building { Emote = "🅿️", Name = "Parking", Cost = 5000, Income = 250 },
+        new Building { Emote = "🛣️", Name = "Road", Cost = 7000, Income = 350 },
+        new Building { Emote = "🏠", Name = "House", Cost = 10000, Income = 500 },
+        new Building { Emote = "🏢", Name = "Office", Cost = 25000, Income = 1250 },
+        new Building { Emote = "🏤", Name = "Post", Cost = 30000, Income = 1500 },
+        new Building { Emote = "🏫", Name = "School", Cost = 35000, Income = 1750 },
+        new Building { Emote = "🏬", Name = "Mall", Cost = 50000, Income = 2500 },
+        new Building { Emote = "🏦", Name = "Bank", Cost = 60000, Income = 3000 },
+        new Building { Emote = "🏥", Name = "Hospital", Cost = 70000, Income = 3500 },
+        new Building { Emote = "🏭", Name = "Factory", Cost = 80000, Income = 4000 },
+        new Building { Emote = "🏕️", Name = "Camping", Cost = 90000, Income = 4500 },
+        new Building { Emote = "⛽", Name = "Gas station", Cost = 120000, Income = 6000 },
+        new Building { Emote = "🏙️", Name = "Skyscraper", Cost = 120000, Income = 6000 },
+        new Building { Emote = "🏪", Name = "Shop", Cost = 140000, Income = 7000 },
+        new Building { Emote = "🏛️", Name = "City Hall", Cost = 180000, Income = 9000 },
+        new Building { Emote = "🏰", Name = "Castle", Cost = 220000, Income = 11000 },
+        new Building { Emote = "🏨", Name = "Hotel", Cost = 260000, Income = 13000 },
+        new Building { Emote = "🛬", Name = "Airport", Cost = 320000, Income = 16000 },
+        new Building { Emote = "🎢", Name = "Amusement park", Cost = 450000, Income = 22500 },
     };
 
     private static IJsonHandler jsonReader = new JSONReader();
