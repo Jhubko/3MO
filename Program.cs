@@ -138,6 +138,8 @@ namespace Discord_Bot
                 {
                     var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
                     var channel = await Client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
+                    if (channel != null)
+                        continue;
                     CustomInteractionContext ctx = CreateInteractionContext(Client, channel);
                     await ctx.CreateResponseAsync($"💸 @everyone City revenues have been generated! 💸", false);
                 }
