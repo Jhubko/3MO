@@ -131,15 +131,15 @@ namespace Discord_Bot
                    await RaffleHandlers.HandleRaffle(Client, guild);
                 }
             });
-            taskManager.ScheduleDailyTask("DailyIncome", new TimeSpan(10, 00, 0), async () =>
+            taskManager.ScheduleDailyTask("DailyIncome", new TimeSpan(11, 00, 0), async () =>
             {
                 var cityHandler = new CityHandler();
                 foreach (var guild in GetGuilds())
                 {
                     var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
-                    var channel = await Client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
-                    if (channel != null)
+                    if (serverConfig.GamblingChannelId == null)
                         continue;
+                    var channel = await Client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
                     CustomInteractionContext ctx = CreateInteractionContext(Client, channel);
                     await ctx.CreateResponseAsync($"💸 @everyone City revenues have been generated! 💸", false);
                 }
