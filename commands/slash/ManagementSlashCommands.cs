@@ -29,6 +29,7 @@ namespace Discord_Bot.commands.slash
         }
 
         [SlashCommand("defaultRole", "Set default role for server.")]
+        [RequirePermissions(DSharpPlus.Permissions.Administrator)]
         public async Task DefaultRoleCommand(InteractionContext ctx, [Option("newDefaultRole", "Role you want to be default for this server.")][RemainingText] string newDefaultRole)
         {
             await ctx.DeferAsync();
@@ -45,8 +46,8 @@ namespace Discord_Bot.commands.slash
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Role '{newDefaultRole}' not found on this server.")).ConfigureAwait(false);
         }
 
-        [Command("imageOnly")]
         [SlashCommand("imageOnly", "Set image only channels for your channel.")]
+        [RequirePermissions(DSharpPlus.Permissions.Administrator)]
         public async Task ImageOnlyChannelCommand(InteractionContext ctx, [Option("channelToChange", "Channel name you want to be image only channels for your channel")][RemainingText] string channelToChange)
         {
             await ctx.DeferAsync();
@@ -63,8 +64,8 @@ namespace Discord_Bot.commands.slash
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Channel: '{channelToChange}' not found on this server.")).ConfigureAwait(false);
         }
 
-        [Command("raffleChannel")]
         [SlashCommand("raffleChannel", "Set raffle channel for your server.")]
+        [RequirePermissions(DSharpPlus.Permissions.Administrator)]
         public async Task RaffleChannelCommand(InteractionContext ctx, [Option("channelToChange", "Channel name you want to be raffle channel for your server")][RemainingText] string channelToChange)
         {
             await ctx.DeferAsync();
@@ -81,8 +82,8 @@ namespace Discord_Bot.commands.slash
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Channel: '{channelToChange}' not found on this server.")).ConfigureAwait(false);
         }
 
-        [Command("deleteMessageEmoji")]
         [SlashCommand("deleteMessageEmoji", "Set emoji to delete messages.")]
+        [RequirePermissions(DSharpPlus.Permissions.Administrator)]
         public async Task DeleteMessageEmojiCommand(InteractionContext ctx, [Option("emoji", "Emoji, that will start vote to delete message.")][RemainingText] string emoji)
         {
             await ctx.DeferAsync();
