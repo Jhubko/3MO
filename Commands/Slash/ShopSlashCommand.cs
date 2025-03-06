@@ -1,10 +1,7 @@
 using Discord_Bot;
-using DSharpPlus;
+using Discord_Bot.Config;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using Discord_Bot.Config;
-using System.Linq;
-using System.Threading.Tasks;
 
 public class ShopCommand : ApplicationCommandModule
 {
@@ -25,7 +22,7 @@ public class ShopCommand : ApplicationCommandModule
             await ctx.CreateResponseAsync($"Item '{itemName}' not found in the shop.", true);
             return;
         }
-
+        itemName = item.Name;
         int currentPoints = int.Parse(userData.Points);
         var userItems = await GetUserItems(userId);
         int itemCount = userItems.ContainsKey(itemName) ? userItems[itemName] : 0;
