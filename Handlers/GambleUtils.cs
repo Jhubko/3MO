@@ -33,11 +33,21 @@ class GambleUtils
             return (currentPoints * percentage) / 100;
         }
 
-        if (int.TryParse(input, out int amount))
-            return amount;
+        if (Regex.IsMatch(input, @"^\d+[kmb]?$"))
+        {
+            int multiplier = 1;
+            if (input.EndsWith("k")) multiplier = 1000;
+            else if (input.EndsWith("m")) multiplier = 1000000;
+            else if (input.EndsWith("b")) multiplier = 1000000000;
+
+            input = Regex.Replace(input, "[kmb]", "");
+            if (int.TryParse(input, out int amount))
+                return amount * multiplier;
+        }
 
         return -1;
     }
+
     public static int ParseInt(string input)
     {
         if (int.TryParse(input, out int result))
