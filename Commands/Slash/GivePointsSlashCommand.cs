@@ -12,6 +12,19 @@ public class GivePointsCommand : ApplicationCommandModule
         ulong senderId = ctx.User.Id;
         ulong recipientId = recipient.Id;
 
+        if (senderId == recipientId) 
+        {
+            var errorEmbed = new DiscordEmbedBuilder
+            {
+                Title = "❌ Transfer Error ❌",
+                Description = $"Cannot transfer points to yourself!",
+                Color = DiscordColor.Red
+            };
+
+            await ctx.CreateResponseAsync(embed: errorEmbed);
+            return;
+        }
+
         int senderPoints = await Program.voicePointsManager.GetUserPoints(senderId);
         int recipientPoints = await Program.voicePointsManager.GetUserPoints(recipientId);
         int amountToGive = GambleUtils.ParseGambleAmount(amount, senderPoints);
@@ -19,7 +32,14 @@ public class GivePointsCommand : ApplicationCommandModule
 
         if (!checkAmout.isProperValue)
         {
-            await ctx.CreateResponseAsync(checkAmout.errorMessage);
+            var errorEmbed = new DiscordEmbedBuilder
+            {
+                Title = "❌ Transfer Error ❌",
+                Description = $"{checkAmout.errorMessage}",
+                Color = DiscordColor.Red
+            };
+
+            await ctx.CreateResponseAsync(embed: errorEmbed);
             return;
         }
 

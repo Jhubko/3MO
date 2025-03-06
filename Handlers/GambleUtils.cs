@@ -13,10 +13,10 @@ class GambleUtils
     public static (bool isProperValue, string errorMessage) CheckGambleAmout(int amountToGamble, int currentPoints)
     {
         if (amountToGamble <= 0)
-            return (false, "Niewłaściwa kwota. Podaj numer, wartosć procentową lub 'all'.");
+            return (false, "Invalid amount. Enter a number, percentage, or 'all'.");
 
         if (currentPoints < amountToGamble)
-            return (false, $"Nie masz wystarczającej kwoty żeby zagrać za {amountToGamble} punktów!");
+            return (false, $"You don't have enough points: {amountToGamble}!");
 
         return (true, "");
     }
