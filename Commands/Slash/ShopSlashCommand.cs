@@ -75,7 +75,7 @@ public class ShopCommand : ApplicationCommandModule
         {
             int itemCount = userItems.ContainsKey(i.Name) ? userItems[i.Name] : 0;
             int nextItemCost = i.BaseCost * (itemCount + 1);
-            return $"{i.Name} - {nextItemCost} points" + (i.Description != null ? $" - {i.Description}" : "");
+            return $"**{i.Name}** - {nextItemCost} points" + (i.Description != null ? $" - {i.Description}" : "");
         }));
 
         var embedShopList = new DiscordEmbedBuilder
