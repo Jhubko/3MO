@@ -113,6 +113,7 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<CitySlashCommands>();
             SlashCommandConfig.RegisterCommands<GivePointsCommand>();
             SlashCommandConfig.RegisterCommands<ShopCommand>();
+            SlashCommandConfig.RegisterCommands<HangmanCommands>();
 
             await Client.ConnectAsync();
 
