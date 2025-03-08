@@ -92,9 +92,9 @@ public class HangmanCommands : ApplicationCommandModule
             {
                 ulong userId = ctx.User.Id;
                 int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-                activeGames.Remove(ctx.Channel.Id);
-                await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**!\n\n{GetGameState(ctx.Channel.Id)}");
+                await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**!");
                 Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
+                activeGames.Remove(ctx.Channel.Id);
                 return;
             }
             else
@@ -113,9 +113,9 @@ public class HangmanCommands : ApplicationCommandModule
         {
             ulong userId = ctx.User.Id;
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-            activeGames.Remove(ctx.Channel.Id);
-            await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**!\n\n{GetGameState(ctx.Channel.Id)}");
+            await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**!");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
+            activeGames.Remove(ctx.Channel.Id);
             return;
         }
         else if (game.WrongAttempts >= HANGMANPICS.Length - 1)
