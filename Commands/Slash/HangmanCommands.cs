@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 public class HangmanCommands : ApplicationCommandModule
 {
-    private static readonly string[] HANGMANPICS =
+    private static readonly string[] hangmanPics =
     {
         "```\n      \n      \n      \n      \n      \n      \n```",
         "```\n      \n      \n      \n      \n      \n=========" + "\n```",
@@ -92,7 +92,7 @@ public class HangmanCommands : ApplicationCommandModule
             {
                 ulong userId = ctx.User.Id;
                 int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-                await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**!");
+                await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.WordToGuess)}** points!");
                 Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
                 activeGames.Remove(ctx.Channel.Id);
                 return;
@@ -113,12 +113,12 @@ public class HangmanCommands : ApplicationCommandModule
         {
             ulong userId = ctx.User.Id;
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-            await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**!");
+            await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**  and won **{CalculatePoints(game.WordToGuess)}** points!");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
             activeGames.Remove(ctx.Channel.Id);
             return;
         }
-        else if (game.WrongAttempts >= HANGMANPICS.Length - 1)
+        else if (game.WrongAttempts >= hangmanPics.Length - 1)
         {
             await ctx.CreateResponseAsync($"💀 Hanged man hanged! The word is: **{game.WordToGuess}**");
             activeGames.Remove(ctx.Channel.Id);
@@ -142,11 +142,11 @@ public class HangmanCommands : ApplicationCommandModule
             return "❌ No active game in this channel.";
 
         var game = activeGames[channelId];
-        return $"{HANGMANPICS[game.WrongAttempts]}\n" +
+        return $"{hangmanPics[game.WrongAttempts]}\n" +
                $"Word: `{new string(game.GuessedWord)}`\n" +
                $"Wrong letters: `{(game.WrongGuesses.Count > 0 ? string.Join(", ", game.WrongGuesses) : "None")}`\n" +
                $"Wrong words: `{(game.WrongWords.Count > 0 ? string.Join(", ", game.WrongWords) : "None")}`\n" +
-               $"Attempts: {game.WrongAttempts}/{HANGMANPICS.Length - 1}";
+               $"Attempts: {game.WrongAttempts}/{hangmanPics.Length - 1}";
     }
 
     public int CalculatePoints(string word)
