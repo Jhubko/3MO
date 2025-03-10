@@ -47,7 +47,7 @@ public class HangmanCommands : ApplicationCommandModule
         var game = new HangmanGameState(word);
         activeGames[ctx.Channel.Id] = game;
 
-        await StartTimer(ctx.Channel.Id, game, ctx);
+        await StartTimer(ctx.Channel.Id, ctx);
 
         await ctx.CreateResponseAsync($"🕹 **New Hangman Game!** You have **5 minutes** to guess the word and win **{CalculatePoints(game.WordToGuess)} points**! Guess the letters or word with the command /guess <letter/word>\n\n{GetGameState(ctx.Channel.Id)}");
     }
@@ -173,7 +173,7 @@ public class HangmanCommands : ApplicationCommandModule
         }
     }
 
-    private async Task StartTimer(ulong channelId, HangmanGameState game, InteractionContext ctx)
+    private async Task StartTimer(ulong channelId, InteractionContext ctx)
     {
         var timerTask = Task.Delay(300000).ContinueWith(async _ =>
         {
