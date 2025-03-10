@@ -19,7 +19,12 @@ public class HangmanCommands : ApplicationCommandModule
         "```\n  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n      |\n=========" + "\n```"
     };
 
-    private static readonly HttpClient httpClient = new();
+    private static readonly HttpClient httpClient = new HttpClient
+    {
+        Timeout = TimeSpan.FromSeconds(1)
+    };
+    private static List<string> wordCache = new List<string>();
+    private static int cacheSize = 100;
     private static Dictionary<ulong, HangmanGameState> activeGames = new();
     private static Dictionary<ulong, Task> activeTimers = new();
 
@@ -33,19 +38,16 @@ public class HangmanCommands : ApplicationCommandModule
         }
 
         string word = await GetRandomWord();
+        if (string.IsNullOrEmpty(word))
+        {
+            await ctx.CreateResponseAsync("❌ Failed to retrieve a word. Try again later.", true);
+            return;
+        }
+
         var game = new HangmanGameState(word);
         activeGames[ctx.Channel.Id] = game;
 
-        var timerTask = Task.Delay(300000).ContinueWith(async _ =>
-        {
-            if (activeGames.ContainsKey(ctx.Channel.Id))
-            {
-                activeGames.Remove(ctx.Channel.Id);
-                await ctx.Channel.SendMessageAsync($"⏳ Time's up! The game has ended. The word was **{game.WordToGuess}**.");
-            }
-        });
-
-        activeTimers[ctx.Channel.Id] = timerTask;
+        await StartTimer(ctx.Channel.Id, ctx);
 
         await ctx.CreateResponseAsync($"🕹 **New Hangman Game!** You have **5 minutes** to guess the word and win **{CalculatePoints(game.WordToGuess)} points**! Guess the letters or word with the command /guess <letter/word>\n\n{GetGameState(ctx.Channel.Id)}");
     }
@@ -95,6 +97,7 @@ public class HangmanCommands : ApplicationCommandModule
                 await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.WordToGuess)}** points!");
                 Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
                 activeGames.Remove(ctx.Channel.Id);
+                activeTimers.Remove(ctx.Channel.Id);
                 return;
             }
             else
@@ -116,11 +119,13 @@ public class HangmanCommands : ApplicationCommandModule
             await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**  and won **{CalculatePoints(game.WordToGuess)}** points!");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
             activeGames.Remove(ctx.Channel.Id);
+            activeTimers.Remove(ctx.Channel.Id);
             return;
         }
         else if (game.WrongAttempts >= hangmanPics.Length - 1)
         {
             await ctx.CreateResponseAsync($"💀 Hanged man hanged! The word is: **{game.WordToGuess}**");
+            activeTimers.Remove(ctx.Channel.Id);
             activeGames.Remove(ctx.Channel.Id);
         }
         else
@@ -131,10 +136,58 @@ public class HangmanCommands : ApplicationCommandModule
 
     private async Task<string> GetRandomWord()
     {
-        string response = await httpClient.GetStringAsync("https://random-word-api.herokuapp.com/word");
-        var words = JsonConvert.DeserializeObject<List<string>>(response);
-        return words[0].ToLower();
+        try
+        {
+            if (wordCache.Count == 0)
+            {
+                HttpResponseMessage response = await httpClient.GetAsync("https://random-word-api.herokuapp.com/word?number=" + cacheSize);
+                response.EnsureSuccessStatusCode();
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                var words = JsonConvert.DeserializeObject<List<string>>(jsonResponse);
+
+                if (words != null && words.Count > 0)
+                {
+                    wordCache = words;  
+                }
+            }
+
+            if (wordCache.Count > 0)
+            {
+                var random = new Random();
+                string randomWord = wordCache[random.Next(wordCache.Count)].ToLower();
+                wordCache.Remove(randomWord);
+
+                if (wordCache.Count == 0)
+                {
+                    return await GetRandomWord();
+                }
+
+                return randomWord;
+            }
+
+            return string.Empty; 
+        }
+        catch (Exception ex)
+        {
+            return string.Empty;
+        }
     }
+
+    private async Task StartTimer(ulong channelId, InteractionContext ctx)
+    {
+        var timerTask = Task.Delay(300000).ContinueWith(async _ =>
+        {
+            if (activeGames.ContainsKey(channelId))
+            {
+                var currentGame = activeGames[channelId];
+                await ctx.Channel.SendMessageAsync($"⏳ Time's up! The game has ended. The word was **{currentGame.WordToGuess}**.");
+                activeGames.Remove(channelId);
+                activeTimers.Remove(channelId);
+            }
+        });
+        activeTimers[channelId] = timerTask;
+    }
+
 
     private string GetGameState(ulong channelId)
     {
