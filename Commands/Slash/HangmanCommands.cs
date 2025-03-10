@@ -21,7 +21,7 @@ public class HangmanCommands : ApplicationCommandModule
 
     private static readonly HttpClient httpClient = new HttpClient
     {
-        Timeout = TimeSpan.FromSeconds(3)
+        Timeout = TimeSpan.FromSeconds(1)
     };
     private static List<string> wordCache = new List<string>();
     private static int cacheSize = 100;
@@ -43,20 +43,11 @@ public class HangmanCommands : ApplicationCommandModule
             await ctx.CreateResponseAsync("❌ Failed to retrieve a word. Try again later.", true);
             return;
         }
+
         var game = new HangmanGameState(word);
         activeGames[ctx.Channel.Id] = game;
 
-        var timerTask = Task.Delay(300000).ContinueWith(async _ =>
-        {
-            if (activeGames.ContainsKey(ctx.Channel.Id))
-            {
-                activeGames.Remove(ctx.Channel.Id);
-                await ctx.Channel.SendMessageAsync($"⏳ Time's up! The game has ended. The word was **{game.WordToGuess}**.");
-                activeTimers.Remove(ctx.Channel.Id);
-            }
-        });
-
-        activeTimers[ctx.Channel.Id] = timerTask;
+        await StartTimer(ctx.Channel.Id, game, ctx);
 
         await ctx.CreateResponseAsync($"🕹 **New Hangman Game!** You have **5 minutes** to guess the word and win **{CalculatePoints(game.WordToGuess)} points**! Guess the letters or word with the command /guess <letter/word>\n\n{GetGameState(ctx.Channel.Id)}");
     }
@@ -181,6 +172,22 @@ public class HangmanCommands : ApplicationCommandModule
             return string.Empty;
         }
     }
+
+    private async Task StartTimer(ulong channelId, HangmanGameState game, InteractionContext ctx)
+    {
+        var timerTask = Task.Delay(300000).ContinueWith(async _ =>
+        {
+            if (activeGames.ContainsKey(channelId))
+            {
+                var currentGame = activeGames[channelId];
+                await ctx.Channel.SendMessageAsync($"⏳ Time's up! The game has ended. The word was **{currentGame.WordToGuess}**.");
+                activeGames.Remove(channelId);
+                activeTimers.Remove(channelId);
+            }
+        });
+        activeTimers[channelId] = timerTask;
+    }
+
 
     private string GetGameState(ulong channelId)
     {
