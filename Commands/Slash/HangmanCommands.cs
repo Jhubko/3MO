@@ -24,7 +24,7 @@ public class HangmanCommands : ApplicationCommandModule
         Timeout = TimeSpan.FromSeconds(3)
     };
     private static List<string> wordCache = new List<string>();
-    private static int cacheSize = 50;
+    private static int cacheSize = 100;
     private static Dictionary<ulong, HangmanGameState> activeGames = new();
     private static Dictionary<ulong, Task> activeTimers = new();
 
@@ -149,7 +149,7 @@ public class HangmanCommands : ApplicationCommandModule
         {
             if (wordCache.Count == 0)
             {
-                HttpResponseMessage response = await httpClient.GetAsync("https://random-word-api.herokuapp.com/word?lang=pl&number=" + cacheSize);
+                HttpResponseMessage response = await httpClient.GetAsync("https://random-word-api.herokuapp.com/word?number=" + cacheSize);
                 response.EnsureSuccessStatusCode();
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 var words = JsonConvert.DeserializeObject<List<string>>(jsonResponse);
