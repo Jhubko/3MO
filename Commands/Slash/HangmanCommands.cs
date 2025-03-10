@@ -42,6 +42,7 @@ public class HangmanCommands : ApplicationCommandModule
             {
                 activeGames.Remove(ctx.Channel.Id);
                 await ctx.Channel.SendMessageAsync($"⏳ Time's up! The game has ended. The word was **{game.WordToGuess}**.");
+                activeTimers.Remove(ctx.Channel.Id);
             }
         });
 
@@ -95,6 +96,7 @@ public class HangmanCommands : ApplicationCommandModule
                 await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.WordToGuess)}** points!");
                 Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
                 activeGames.Remove(ctx.Channel.Id);
+                activeTimers.Remove(ctx.Channel.Id);
                 return;
             }
             else
@@ -116,11 +118,13 @@ public class HangmanCommands : ApplicationCommandModule
             await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**  and won **{CalculatePoints(game.WordToGuess)}** points!");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
             activeGames.Remove(ctx.Channel.Id);
+            activeTimers.Remove(ctx.Channel.Id);
             return;
         }
         else if (game.WrongAttempts >= hangmanPics.Length - 1)
         {
             await ctx.CreateResponseAsync($"💀 Hanged man hanged! The word is: **{game.WordToGuess}**");
+            activeTimers.Remove(ctx.Channel.Id);
             activeGames.Remove(ctx.Channel.Id);
         }
         else
