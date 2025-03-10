@@ -135,7 +135,12 @@ public class HangmanCommands : ApplicationCommandModule
 
     private async Task<string> GetRandomWord()
     {
-        string response = await httpClient.GetStringAsync("https://random-word-api.herokuapp.com/word");
+        string response = string.Empty;
+        using (HttpClient client = new HttpClient())
+        {
+            response = await httpClient.GetStringAsync("https://random-word-api.herokuapp.com/word?lang=pl");
+        }     
+        httpClient.Dispose();
         var words = JsonConvert.DeserializeObject<List<string>>(response);
         return words[0].ToLower();
     }
