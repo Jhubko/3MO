@@ -19,7 +19,10 @@ public class HangmanCommands : ApplicationCommandModule
         "```\n  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n      |\n=========" + "\n```"
     };
 
-    private static readonly HttpClient httpClient = new();
+    private static readonly HttpClient httpClient = new HttpClient
+    {
+        Timeout = TimeSpan.FromSeconds(3)
+    };
     private static Dictionary<ulong, HangmanGameState> activeGames = new();
     private static Dictionary<ulong, Task> activeTimers = new();
 
@@ -33,6 +36,11 @@ public class HangmanCommands : ApplicationCommandModule
         }
 
         string word = await GetRandomWord();
+        if (string.IsNullOrEmpty(word))
+        {
+            await ctx.CreateResponseAsync("❌ Failed to retrieve a word. Try again later.", true);
+            return;
+        }
         var game = new HangmanGameState(word);
         activeGames[ctx.Channel.Id] = game;
 
@@ -135,14 +143,18 @@ public class HangmanCommands : ApplicationCommandModule
 
     private async Task<string> GetRandomWord()
     {
-        string response = string.Empty;
-        using (HttpClient client = new HttpClient())
+        try
         {
-            response = await httpClient.GetStringAsync("https://random-word-api.herokuapp.com/word?lang=pl");
-        }     
-        httpClient.Dispose();
-        var words = JsonConvert.DeserializeObject<List<string>>(response);
-        return words[0].ToLower();
+            HttpResponseMessage response = await httpClient.GetAsync("https://random-word-api.herokuapp.com/word?lang=pl");
+            response.EnsureSuccessStatusCode();
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            var words = JsonConvert.DeserializeObject<List<string>>(jsonResponse);
+            return words != null && words.Count > 0 ? words[0].ToLower() : string.Empty;
+        }
+        catch (Exception ex)
+        {
+            return string.Empty;
+        }
     }
 
     private string GetGameState(ulong channelId)
