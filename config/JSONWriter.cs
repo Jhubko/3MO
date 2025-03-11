@@ -8,6 +8,7 @@ namespace Discord_Bot.Config
         private readonly string _configPath;
         private readonly string _serverConfigDir;
 
+        private static readonly SemaphoreSlim FileSemaphore = new SemaphoreSlim(1, 1);
         public JSONWriter(IJsonHandler jsonHandler, string configPath, string serverConfigDir)
         {
             _jsonHandler = jsonHandler;
@@ -65,31 +66,44 @@ namespace Discord_Bot.Config
 
         public async Task _UpdateConfig(string filePath, string key, object value, string? value2 = null)
         {
-            if (!File.Exists(filePath) || new FileInfo(filePath).Length == 0)
-            {
-                _jsonHandler.CreateJson(filePath);
-            }
+            await FileSemaphore.WaitAsync();
 
-            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
+            try
+            {
+                if (!File.Exists(filePath) || new FileInfo(filePath).Length == 0)
+                {
+                    _jsonHandler.CreateJson(filePath);
+                }
 
-            if (key == "Grid")
-            {
-                UpdateGrid(jsonData, key, value);
-            }
-            else if (IsArrayDataType(key))
-            {
-                UpdateArray(jsonData, key, value.ToString());
-            }
-            else if (IsDictionaryDataType(key))
-            {
-                UpdateDictionary(jsonData, key, value.ToString(), value2);
-            }
-            else
-            {
-                jsonData[key] = JToken.FromObject(value);
-            }
+                var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
 
-            await _jsonHandler.WriteJson(filePath, jsonData);
+                if (key == "Grid")
+                {
+                    UpdateGrid(jsonData, key, value);
+                }
+                else if (IsArrayDataType(key))
+                {
+                    UpdateArray(jsonData, key, value.ToString());
+                }
+                else if (IsDictionaryDataType(key))
+                {
+                    UpdateDictionary(jsonData, key, value.ToString(), value2);
+                }
+                else
+                {
+                    jsonData[key] = JToken.FromObject(value);
+                }
+
+                await _jsonHandler.WriteJson(filePath, jsonData);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Błąd zapisu pliku: {ex.Message}");
+            }
+            finally
+            {
+                FileSemaphore.Release();
+            }
         }
 
         private static void UpdateGrid(JObject jsonData, string key, object value)

@@ -1,6 +1,7 @@
 using Discord_Bot;
 using Discord_Bot.Config;
 using DSharpPlus;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
@@ -43,30 +44,70 @@ public class SlotsCommand : ApplicationCommandModule
     [SlashCommand("slots", "Play the slots game!")]
     public async Task Slots(InteractionContext ctx)
     {
+        await ctx.DeferAsync();
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         int currentPoints = int.Parse(userData.Points);
 
         if (currentPoints < BetAmount)
         {
-            await ctx.CreateResponseAsync($"Nie masz wystarczającej ilości punktów, aby zagrać. Potrzebujesz {BetAmount} punktów.", true);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Nie masz wystarczającej ilości punktów, aby zagrać. Potrzebujesz {BetAmount} punktów."));
             return;
         }
 
-        // Deduct the bet amount
         currentPoints -= BetAmount;
         await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
 
-        // Update the slots pool
         var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json");
         var slotsPool = int.Parse(serverConfig.SlotsPool);
         slotsPool += BetAmount - 2;
         await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", slotsPool.ToString());
 
-        // Spin the reels
+        Random random = new Random();
+        int captchaChance = random.Next(1, 101);
+        if (captchaChance <= 5) 
+        {
+            int num1 = random.Next(1, 10);
+            int num2 = random.Next(1, 10);
+            int correctAnswer = num1 + num2;
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Zanim zagraż, rozwiąż prostą zagadkę matematyczną: {num1} + {num2} = ?"));
+            var messageTaskCompletionSource = new TaskCompletionSource<string>();
+            async Task MessageCreatedEventHandler(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+            {
+                if (e.Author.Id == userId)
+                {
+                    if (int.TryParse(e.Message.Content, out int userAnswer) && userAnswer == correctAnswer)
+                        messageTaskCompletionSource.SetResult(e.Message.Content);
+                    else
+                        messageTaskCompletionSource.SetResult(null);
+                }
+            }
+
+            ctx.Client.MessageCreated += MessageCreatedEventHandler;
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
+            var completedTask = await Task.WhenAny(messageTaskCompletionSource.Task, timeoutTask);
+            ctx.Client.MessageCreated -= MessageCreatedEventHandler;
+            if (completedTask == messageTaskCompletionSource.Task)
+            {
+                if (messageTaskCompletionSource.Task.Result != null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brawo! Możesz teraz kontynuować grę."));
+                }
+                else
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Odpowiedź była błędna. Spróbuj ponownie."));
+                    return;
+                }
+            }
+            else
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Nie odpowiedziałeś w czasie. Spróbuj ponownie."));
+                return;
+            }
+        }
+
         var reels = SpinReels();
 
-        // Check for wins
         bool isWin = CheckWin(reels);
         if (isWin)
         {
@@ -94,8 +135,9 @@ public class SlotsCommand : ApplicationCommandModule
             Color = isWin ? DiscordColor.Green : DiscordColor.Red
         };
 
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }
+
 
 
     private string[,] SpinReels()
