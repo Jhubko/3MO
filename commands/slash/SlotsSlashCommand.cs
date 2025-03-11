@@ -66,7 +66,7 @@ public class SlotsCommand : ApplicationCommandModule
 
         Random random = new Random();
         int captchaChance = random.Next(1, 101);
-        if (captchaChance <= 100)
+        if (captchaChance <= 5)
         {
             if (captchaCooldowns.TryGetValue(ctx.User.Id, out DateTime cooldownEnd) && cooldownEnd > DateTime.UtcNow)
             {
