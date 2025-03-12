@@ -26,7 +26,7 @@ public class HangmanCommands : ApplicationCommandModule
     private static List<string> wordCache = new List<string>();
     private static int cacheSize = 100;
     private static Dictionary<ulong, HangmanGameState> activeGames = new();
-    private static Dictionary<ulong, Task> activeTimers = new();
+    private static Dictionary<ulong, CancellationTokenSource> activeTimers = new();
 
     [SlashCommand("hangman", "Start a game of hangman.")]
     public async Task StartGame(InteractionContext ctx)
@@ -49,13 +49,13 @@ public class HangmanCommands : ApplicationCommandModule
 
         if (activeTimers.ContainsKey(ctx.Channel.Id))
         {
+            activeTimers[ctx.Channel.Id].Cancel();
             activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);
         }
 
-        await StartTimer(ctx.Channel.Id, ctx);
-
         await ctx.CreateResponseAsync($"🕹 **New Hangman Game!** You have **5 minutes** to guess the word and win **{CalculatePoints(game.WordToGuess)} points**! Guess the letters or word with the command /guess <letter/word>\n\n{GetGameState(ctx.Channel.Id)}");
+        await StartTimer(ctx.Channel.Id, ctx);
     }
 
     [SlashCommand("guess", "Guess a letter or the whole word in Hangman.")]
@@ -102,8 +102,10 @@ public class HangmanCommands : ApplicationCommandModule
                 int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
                 await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.WordToGuess)}** points!");
                 Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
-                activeGames.Remove(ctx.Channel.Id);
+                activeTimers[ctx.Channel.Id].Cancel();
+                activeTimers[ctx.Channel.Id].Dispose();
                 activeTimers.Remove(ctx.Channel.Id);
+                activeGames.Remove(ctx.Channel.Id);
                 return;
             }
             else
@@ -124,13 +126,17 @@ public class HangmanCommands : ApplicationCommandModule
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
             await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**  and won **{CalculatePoints(game.WordToGuess)}** points!");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
-            activeGames.Remove(ctx.Channel.Id);
+            activeTimers[ctx.Channel.Id].Cancel();
+            activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);
+            activeGames.Remove(ctx.Channel.Id);
             return;
         }
         else if (game.WrongAttempts >= hangmanPics.Length - 1)
         {
             await ctx.CreateResponseAsync($"💀 Hanged man hanged! The word is: **{game.WordToGuess}**");
+            activeTimers[ctx.Channel.Id].Cancel();
+            activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);
             activeGames.Remove(ctx.Channel.Id);
         }
@@ -181,17 +187,29 @@ public class HangmanCommands : ApplicationCommandModule
 
     private async Task StartTimer(ulong channelId, InteractionContext ctx)
     {
-        var timerTask = Task.Delay(300000).ContinueWith(async _ =>
+        if (activeTimers.ContainsKey(channelId))
         {
-            if (activeGames.ContainsKey(channelId))
+            activeTimers[channelId].Cancel();
+            activeTimers[channelId].Dispose();
+        }
+
+        var cts = new CancellationTokenSource();
+        activeTimers[channelId] = cts;
+
+        try
+        {
+            await Task.Delay(300000, cts.Token);
+            if (!cts.Token.IsCancellationRequested && activeGames.ContainsKey(channelId))
             {
                 var currentGame = activeGames[channelId];
                 await ctx.Channel.SendMessageAsync($"⏳ Time's up! The game has ended. The word was **{currentGame.WordToGuess}**.");
                 activeGames.Remove(channelId);
                 activeTimers.Remove(channelId);
             }
-        });
-        activeTimers[channelId] = timerTask;
+        }
+        catch (TaskCanceledException)
+        {
+        }
     }
 
 

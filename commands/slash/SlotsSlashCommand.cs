@@ -15,12 +15,11 @@ public class SlotsCommand : ApplicationCommandModule
     private static IJsonHandler jsonReader = new JSONReader();
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-    private static Dictionary<ulong, DateTime> captchaCooldowns = new();
+    private static Dictionary<ulong, (DateTime CooldownEnd, bool RequiresCaptcha)> captchaCooldowns = new();
 
     [SlashCommand("checkSlotsChances", "Check the chances of winning the slots game!")]
     public async Task CheckSlotsChances(InteractionContext ctx)
     {
-        // Does 1 000 000 spins and calculates the win rate
         var results = new int[2]; // [wins, total]
         for (int i = 0; i < 1000000; i++)
         {
@@ -56,6 +55,39 @@ public class SlotsCommand : ApplicationCommandModule
             return;
         }
 
+        if (captchaCooldowns.TryGetValue(userId, out var cooldownData) && cooldownData.CooldownEnd > DateTime.UtcNow)
+        {
+            TimeSpan remaining = cooldownData.CooldownEnd - DateTime.UtcNow;
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"❌ Musisz poczekać {remaining.Seconds} sekund przed kolejną próbą."));
+            return;
+        }
+
+        Random random = new Random();
+        bool requiresCaptcha = cooldownData.RequiresCaptcha || random.Next(1, 101) <= 5;
+
+        if (requiresCaptcha)
+        {
+            Random rnd = new Random();
+            int num1 = rnd.Next(1, 10);
+            int num2 = rnd.Next(1, 10);
+            int correctAnswer = num1 + num2;
+
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"🔢 Zanim zagrasz, rozwiąż zagadkę: {num1} + {num2} = ?"));
+            var interactivity = ctx.Client.GetInteractivity();
+            var response = await interactivity.WaitForMessageAsync(m => m.Author.Id == ctx.User.Id, TimeSpan.FromSeconds(15));
+
+            if (response.TimedOut || response.Result.Content != correctAnswer.ToString())
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("❌ Zła odpowiedź! Musisz poczekać 60 sekund."));
+                captchaCooldowns[userId] = (DateTime.UtcNow.AddSeconds(60), true);
+                return;
+            }
+
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("✅ Poprawna odpowiedź! Możesz grać."));
+            captchaCooldowns[userId] = (DateTime.UtcNow, false);
+        }
+
+        // Kontynuacja gry
         currentPoints -= BetAmount;
         await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
 
@@ -64,46 +96,16 @@ public class SlotsCommand : ApplicationCommandModule
         slotsPool += BetAmount - 2;
         await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", slotsPool.ToString());
 
-        Random random = new Random();
-        int captchaChance = random.Next(1, 101);
-        if (captchaChance <= 5)
-        {
-            if (captchaCooldowns.TryGetValue(ctx.User.Id, out DateTime cooldownEnd) && cooldownEnd > DateTime.UtcNow)
-            {
-                TimeSpan remaining = cooldownEnd - DateTime.UtcNow;
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"❌ Musisz poczekać {remaining.Seconds} sekund przed kolejną próbą."));
-                return;
-            }
-
-            Random rnd = new Random();
-            int num1 = rnd.Next(1, 10);
-            int num2 = rnd.Next(1, 10);
-            int correctAnswer = num1 + num2;
-
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Zanim zagrasz, rozwiąż zagadkę: {num1} + {num2} = ?"));
-            var interactivity = ctx.Client.GetInteractivity();
-            var response = await interactivity.WaitForMessageAsync(m => m.Author.Id == ctx.User.Id, TimeSpan.FromSeconds(15));
-
-            if (response.TimedOut || response.Result.Content != correctAnswer.ToString())
-            {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("❌ Zła odpowiedź! Musisz poczekać 60 sekund."));
-                captchaCooldowns[ctx.User.Id] = DateTime.UtcNow.AddSeconds(60);
-                return;
-            }
-
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("✅ Poprawna odpowiedź! Możesz grać."));
-        }
-
         var reels = SpinReels();
-
         bool isWin = CheckWin(reels);
+
         if (isWin)
         {
-            int winAmount = int.Parse(serverConfig.SlotsPool); // Win the entire pool
+            int winAmount = int.Parse(serverConfig.SlotsPool);
             currentPoints += winAmount;
             await StatsHandler.IncreaseStats(userId, "SlotsWins");
             await StatsHandler.IncreaseStats(userId, "WonPoints", currentPoints);
-            await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool.ToString()); // Reset the pool
+            await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool.ToString());
             await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
         }
         else
@@ -124,8 +126,6 @@ public class SlotsCommand : ApplicationCommandModule
 
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }
-
-
 
     private string[,] SpinReels()
     {
