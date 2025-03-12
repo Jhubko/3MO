@@ -56,6 +56,13 @@ public class SlotsCommand : ApplicationCommandModule
             return;
         }
 
+        if (captchaCooldowns.TryGetValue(ctx.User.Id, out DateTime cooldownEnd) && cooldownEnd > DateTime.UtcNow)
+        {
+            TimeSpan remaining = cooldownEnd - DateTime.UtcNow;
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"❌ Musisz poczekać {remaining.Seconds} sekund przed kolejną próbą."));
+            return;
+        }
+
         currentPoints -= BetAmount;
         await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
 
@@ -68,13 +75,6 @@ public class SlotsCommand : ApplicationCommandModule
         int captchaChance = random.Next(1, 101);
         if (captchaChance <= 5)
         {
-            if (captchaCooldowns.TryGetValue(ctx.User.Id, out DateTime cooldownEnd) && cooldownEnd > DateTime.UtcNow)
-            {
-                TimeSpan remaining = cooldownEnd - DateTime.UtcNow;
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"❌ Musisz poczekać {remaining.Seconds} sekund przed kolejną próbą."));
-                return;
-            }
-
             Random rnd = new Random();
             int num1 = rnd.Next(1, 10);
             int num2 = rnd.Next(1, 10);
