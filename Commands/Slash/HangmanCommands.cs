@@ -54,9 +54,8 @@ public class HangmanCommands : ApplicationCommandModule
             activeTimers.Remove(ctx.Channel.Id);
         }
 
-        await StartTimer(ctx.Channel.Id, ctx);
-
         await ctx.CreateResponseAsync($"🕹 **New Hangman Game!** You have **5 minutes** to guess the word and win **{CalculatePoints(game.WordToGuess)} points**! Guess the letters or word with the command /guess <letter/word>\n\n{GetGameState(ctx.Channel.Id)}");
+        await StartTimer(ctx.Channel.Id, ctx);
     }
 
     [SlashCommand("guess", "Guess a letter or the whole word in Hangman.")]
