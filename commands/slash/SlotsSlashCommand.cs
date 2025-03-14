@@ -87,7 +87,6 @@ public class SlotsCommand : ApplicationCommandModule
             captchaCooldowns[userId] = (DateTime.UtcNow, false);
         }
 
-        // Kontynuacja gry
         currentPoints -= BetAmount;
         await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
 
@@ -104,7 +103,7 @@ public class SlotsCommand : ApplicationCommandModule
             int winAmount = int.Parse(serverConfig.SlotsPool);
             currentPoints += winAmount;
             await StatsHandler.IncreaseStats(userId, "SlotsWins");
-            await StatsHandler.IncreaseStats(userId, "WonPoints", currentPoints);
+            await StatsHandler.IncreaseStats(userId, "WonPoints", winAmount);
             await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool.ToString());
             await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
         }
