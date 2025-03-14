@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Config;
+using Discord_Bot.other;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
@@ -23,36 +24,48 @@ namespace Discord_Bot.commands.slash
             };
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
         }
-        [SlashCommand("highscore", "Display the top 10 scores.")]
-        public async Task HighscoreCommand(InteractionContext ctx)
+        [SlashCommand("highscore", "Display the top 10 scores for a specific category.")]
+        public async Task HighscoreCommand(InteractionContext ctx, [Option("category", "The category of statistics to display")][Autocomplete(typeof(HighscoreAutocomplete))] string category = "Points")
         {
-            var topUsers = await Program.voicePointsManager.GetTopUsers(10);
-
-            var embed = new DiscordEmbedBuilder
             {
-                Title = "Top 10 Scores",
-                Color = DiscordColor.Gold
-            };
+                string[] validCategories = typeof(UserConfig).GetProperties()
+                    .Select(p => p.Name)
+                    .ToArray();
 
-            var highscoreList = new StringBuilder();
-            foreach (var user in topUsers)
-            {
-                try
+                if (!validCategories.Contains(category))
                 {
-                    var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
-                    highscoreList.AppendLine($"{GambleUtils.CapitalizeUserFirstLetter(discordMember.DisplayName)}: {user.Points}");
+                    await ctx.CreateResponseAsync($"Nieznana kategoria. Dostępne: {string.Join(", ", validCategories)}");
+                    return;
                 }
-                catch (DSharpPlus.Exceptions.NotFoundException)
+
+                var topUsers = await Program.voicePointsManager.GetTopUsersByCategory(10, category);
+
+                var embed = new DiscordEmbedBuilder
                 {
-                    highscoreList.AppendLine($"Unknown User: {user.Points}");
+                    Title = $"Top 10 - {category}",
+                    Color = DiscordColor.Gold
+                };
+
+                var highscoreList = new StringBuilder();
+                foreach (var user in topUsers)
+                {
+                    try
+                    {
+                        var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
+                        highscoreList.AppendLine($"{GambleUtils.CapitalizeUserFirstLetter(discordMember.DisplayName)}: {user.Points}");
+                    }
+                    catch (DSharpPlus.Exceptions.NotFoundException)
+                    {
+                        highscoreList.AppendLine($"Unknown User: {user.Points}");
+                    }
                 }
+
+                embed.AddField("Highscores", highscoreList.ToString());
+
+                await ctx.CreateResponseAsync(embed: embed);
             }
 
-            embed.AddField("Highscores", highscoreList.ToString());
-
-            await ctx.CreateResponseAsync(embed: embed);
         }
-
         [SlashCommand("stats", "Display your Statistics.")]
         public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
         {

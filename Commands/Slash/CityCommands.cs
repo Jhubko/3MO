@@ -1,4 +1,5 @@
 ﻿using Discord_Bot;
+using Discord_Bot.other;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
@@ -66,66 +67,66 @@ class CitySlashCommands : ApplicationCommandModule
 
     [SlashCommand("buybuilding", "Buy a building on a specific site.")]
     public async Task BuyBuildingCommand(InteractionContext ctx,
-                                        [Option("building", "Select a building", true)] string buildingName,
-                                        [Option("x", "x coordinate")] string x,
-                                        [Option("y", "y coordinate")] string y)
+    [Option("building", "Select a building")][Autocomplete(typeof(BuildingAutocomplete))] string buildingName,
+    [Option("x", "x coordinate")] string x,
+    [Option("y", "y coordinate")] string y)
     {
-        int userPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
-
-        var building = _cityHandler.Buildings.FirstOrDefault(b => b.Name.ToLower() == buildingName.ToLower());
-
-        if (building == null)
         {
-            var embed = new DiscordEmbedBuilder()
+            int userPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
+
+            var building = _cityHandler.Buildings.FirstOrDefault(b => b.Name.ToLower() == buildingName.ToLower());
+
+            if (building == null)
             {
-                Title = "Error: Unknown Building",
-                Description = "The building you tried to purchase does not exist. Please make sure the name is correct.",
-                Color = DiscordColor.Red
-            };
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "Error: Unknown Building",
+                    Description = "The building you tried to purchase does not exist. Please make sure the name is correct.",
+                    Color = DiscordColor.Red
+                };
 
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(embed));
-            return;
-        }
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().AddEmbed(embed));
+                return;
+            }
 
-        int buildingCost = building.Cost;
+            int buildingCost = building.Cost;
 
-        if (userPoints < buildingCost)
-        {
-            var embed = new DiscordEmbedBuilder()
+            if (userPoints < buildingCost)
             {
-                Title = "❌Error: Not Enough Points❌",
-                Description = $"You do not have enough points to buy the {building.Name}. You need {buildingCost} points, but you only have {userPoints}.",
-                Color = DiscordColor.Red
-            };
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "❌Error: Not Enough Points❌",
+                    Description = $"You do not have enough points to buy the {building.Name}. You need {buildingCost} points, but you only have {userPoints}.",
+                    Color = DiscordColor.Red
+                };
 
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().AddEmbed(embed));
-            return;
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().AddEmbed(embed));
+                return;
+            }
+
+            var success = await _cityHandler.BuyBuilding(ctx.User.Id, building.Emote, int.Parse(x), int.Parse(y));
+            var responseEmbed = new DiscordEmbedBuilder();
+
+            if (success)
+            {
+                userPoints -= buildingCost;
+                _pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
+
+                responseEmbed.Title = "💰Building Purchased Successfully💰";
+                responseEmbed.Description = $"You have successfully purchased the {building.Name} at location ({x}, {y}).";
+                responseEmbed.Color = DiscordColor.Green;
+            }
+            else
+            {
+                responseEmbed.Title = "❌Error: Purchase Failed❌";
+                responseEmbed.Description = "The building could not be purchased. Make sure the location is correct and you have enough points.";
+                responseEmbed.Color = DiscordColor.Red;
+            }
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(responseEmbed));
         }
-
-        var success = await _cityHandler.BuyBuilding(ctx.User.Id, building.Emote, int.Parse(x), int.Parse(y));
-        var responseEmbed = new DiscordEmbedBuilder();
-
-        if (success)
-        {
-            userPoints -= buildingCost;
-            _pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
-
-            responseEmbed.Title = "💰Building Purchased Successfully💰";
-            responseEmbed.Description = $"You have successfully purchased the {building.Name} at location ({x}, {y}).";
-            responseEmbed.Color = DiscordColor.Green;
-        }
-        else
-        {
-            responseEmbed.Title = "❌Error: Purchase Failed❌";
-            responseEmbed.Description = "The building could not be purchased. Make sure the location is correct and you have enough points.";
-            responseEmbed.Color = DiscordColor.Red;
-        }
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(responseEmbed));
     }
-
-
 
     [SlashCommand("sellbuilding", "Sell a building from a specific location.")]
     public async Task SellBuildingCommand(InteractionContext ctx,
