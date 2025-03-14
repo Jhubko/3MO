@@ -192,5 +192,3 @@ class CityHandler
         return result;
     }
 }
-
-
