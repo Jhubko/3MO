@@ -39,7 +39,7 @@ public class GivePointsCommand : ApplicationCommandModule
                 Color = DiscordColor.Red
             };
 
-            await ctx.CreateResponseAsync(embed: errorEmbed);
+            await ctx.CreateResponseAsync(embed: errorEmbed, true);
             return;
         }
 

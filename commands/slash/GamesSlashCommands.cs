@@ -28,7 +28,6 @@ namespace Discord_Bot.commands.slash
         [SlashCommand("cards", "Play simple card game with bot.")]
         public async Task CardCommand(InteractionContext ctx, [Option("amount", "Amount of points to gamble (number, %, or 'all')")] string amountInput)
         {
-            await ctx.DeferAsync();
             var userCard = new CardSystem();
             bool isPlayerWinner = false;
             ulong userId = ctx.User.Id;
@@ -38,10 +37,11 @@ namespace Discord_Bot.commands.slash
 
             if (!checkAmout.isProperValue)
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(checkAmout.errorMessage));
+                await ctx.CreateResponseAsync(checkAmout.errorMessage, true);
                 return;
             }
 
+            await ctx.DeferAsync();
             var startEmbed = new DiscordEmbedBuilder
             {
                 Title = $"{GambleUtils.CapitalizeUserFirstLetter(ctx.User.Username)} Rozpoczynasz gre w karty za {amountToGamble}!",

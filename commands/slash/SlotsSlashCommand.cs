@@ -2,7 +2,6 @@ using Discord_Bot;
 using Discord_Bot.Config;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 
 public class SlotsCommand : ApplicationCommandModule
@@ -11,16 +10,15 @@ public class SlotsCommand : ApplicationCommandModule
     "🍒", "🍑", "🥭", "🍍", "🥝", "🍈", "🥥", "🌰", "🥑", "🍆",
     "🌽", "🥕", "🧄", "🧅", "🥔", "🥒", "🌶️", "🫑", "🍠", "🥜"};
     private const int BetAmount = 10;
-    private const int DefaultPool = 2000; 
+    private const int DefaultPool = 2000;
     private static IJsonHandler jsonReader = new JSONReader();
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-    private static Dictionary<ulong, (DateTime CooldownEnd, bool RequiresCaptcha)> captchaCooldowns = new();
 
     [SlashCommand("checkSlotsChances", "Check the chances of winning the slots game!")]
     public async Task CheckSlotsChances(InteractionContext ctx)
     {
-        var results = new int[2]; // [wins, total]
+        var results = new int[2];
         for (int i = 0; i < 1000000; i++)
         {
             var reels = SpinReels();
@@ -44,47 +42,55 @@ public class SlotsCommand : ApplicationCommandModule
     [SlashCommand("slots", "Play the slots game!")]
     public async Task Slots(InteractionContext ctx)
     {
-        await ctx.DeferAsync();
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         int currentPoints = int.Parse(userData.Points);
 
         if (currentPoints < BetAmount)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Nie masz wystarczającej ilości punktów, aby zagrać. Potrzebujesz {BetAmount} punktów."));
+            await ctx.CreateResponseAsync($"Nie masz wystarczającej ilości punktów, aby zagrać. Potrzebujesz {BetAmount} punktów.", true);
             return;
         }
 
-        if (captchaCooldowns.TryGetValue(userId, out var cooldownData) && cooldownData.CooldownEnd > DateTime.UtcNow)
+        if (CaptchaHandler.MustCompleteCaptcha(userId))
         {
-            TimeSpan remaining = cooldownData.CooldownEnd - DateTime.UtcNow;
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"❌ Musisz poczekać {remaining.Seconds} sekund przed kolejną próbą."));
+            await ctx.CreateResponseAsync("❌ Musisz ukończyć CAPTCHA przed dalszą grą.", true);
+            return;
+        }
+
+        if (CaptchaHandler.CheckCaptchaCooldown(userId))
+        {
+            TimeSpan remaining = CaptchaHandler.GetRemainingCooldownTime(userId);
+            await ctx.CreateResponseAsync($"❌ Musisz poczekać {remaining.Seconds} sekund przed kolejną próbą.", true);
             return;
         }
 
         Random random = new Random();
-        bool requiresCaptcha = cooldownData.RequiresCaptcha || random.Next(1, 101) <= 5;
+        bool requiresCaptcha = random.Next(1, 101) <= 5;
 
         if (requiresCaptcha)
         {
-            Random rnd = new Random();
-            int num1 = rnd.Next(1, 10);
-            int num2 = rnd.Next(1, 10);
+            int num1 = random.Next(1, 10);
+            int num2 = random.Next(1, 10);
             int correctAnswer = num1 + num2;
+            string filePath = CaptchaHandler.GenerateCaptchaImage(num1, num2);
 
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"🔢 Zanim zagrasz, rozwiąż zagadkę: {num1} + {num2} = ?"));
-            var interactivity = ctx.Client.GetInteractivity();
-            var response = await interactivity.WaitForMessageAsync(m => m.Author.Id == ctx.User.Id, TimeSpan.FromSeconds(15));
-
-            if (response.TimedOut || response.Result.Content != correctAnswer.ToString())
+            using (var fileStream = new FileStream(filePath, FileMode.Open))
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("❌ Zła odpowiedź! Musisz poczekać 60 sekund."));
-                captchaCooldowns[userId] = (DateTime.UtcNow.AddSeconds(60), true);
-                return;
+                await ctx.CreateResponseAsync(new DiscordInteractionResponseBuilder()
+                        .WithContent("🛑 Przed grą rozwiąż CAPTCHA 🛑")
+                        .AddFile("captcha.png", fileStream).AsEphemeral());
+                CaptchaHandler.SetCaptchaCooldown(userId, 60, true);
             }
 
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("✅ Poprawna odpowiedź! Możesz grać."));
-            captchaCooldowns[userId] = (DateTime.UtcNow, false);
+            File.Delete(filePath);
+
+            if (!await CaptchaHandler.VerifyCaptchaAnswer(ctx, correctAnswer))
+            {
+                await ctx.DeleteResponseAsync();
+                CaptchaHandler.SetCaptchaCooldown(userId, 60, false);
+                return;
+            }
         }
 
         currentPoints -= BetAmount;
@@ -116,60 +122,47 @@ public class SlotsCommand : ApplicationCommandModule
         var embed = new DiscordEmbedBuilder
         {
             Title = "🎰 Slots 🎰",
-            Description = $"{reels[0, 0]} | {reels[0, 1]} | {reels[0, 2]}\n" +
-                          $"{reels[1, 0]} | {reels[1, 1]} | {reels[1, 2]}\n" +
-                          $"{reels[2, 0]} | {reels[2, 1]} | {reels[2, 2]}\n\n" +
-                          (isWin ? $"🎉 Wygrałeś! Masz teraz {currentPoints} punktów. Pula zresetowana do {DefaultPool}" : $"Przegrałeś. Masz teraz {currentPoints} punktów. W puli {slotsPool}"),
+            Description = 
+                  $"{reels[0, 0]} | {reels[0, 1]} | {reels[0, 2]}\n" +
+                  $"{reels[1, 0]} | {reels[1, 1]} | {reels[1, 2]}\n" +
+                  $"{reels[2, 0]} | {reels[2, 1]} | {reels[2, 2]}\n\n" +
+                  (isWin ? $"🎉 Wygrałeś! Masz teraz {currentPoints} punktów. Pula zresetowana do {DefaultPool}" : $"Przegrałeś. Masz teraz {currentPoints} punktów. W puli {slotsPool}"),
             Color = isWin ? DiscordColor.Green : DiscordColor.Red
         };
 
-        await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+        try
+        {
+            await ctx.CreateResponseAsync(new DiscordInteractionResponseBuilder().AddEmbed(embed));
+        }
+        catch
+        {
+            await ctx.DeleteResponseAsync();
+            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed));
+        }
     }
 
     private string[,] SpinReels()
     {
-    var reels = new string[3, 3];
-    var random = new Random();
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
+        var reels = new string[3, 3];
+        var random = new Random();
+        for (int i = 0; i < 3; i++)
         {
-            reels[i, j] = Symbols[random.Next(Symbols.Length)];
+            for (int j = 0; j < 3; j++)
+            {
+                reels[i, j] = Symbols[random.Next(Symbols.Length)];
+            }
         }
-    }
-    return reels;
+        return reels;
     }
 
     private bool CheckWin(string[,] reels)
     {
-        // Check rows
         for (int i = 0; i < 3; i++)
         {
-            if (reels[i, 0] == reels[i, 1] && reels[i, 1] == reels[i, 2])
-            {
-                return true;
-            }
+            if (reels[i, 0] == reels[i, 1] && reels[i, 1] == reels[i, 2]) return true;
+            if (reels[0, i] == reels[1, i] && reels[1, i] == reels[2, i]) return true;
         }
-
-        // Check columns
-        for (int i = 0; i < 3; i++)
-        {
-            if (reels[0, i] == reels[1, i] && reels[1, i] == reels[2, i])
-            {
-                return true;
-            }
-        }
-
-        // Check diagonals
-        if (reels[0, 0] == reels[1, 1] && reels[1, 1] == reels[2, 2])
-        {
-            return true;
-        }
-        if (reels[0, 2] == reels[1, 1] && reels[1, 1] == reels[2, 0])
-        {
-            return true;
-        }
-
-        return false;
+        return (reels[0, 0] == reels[1, 1] && reels[1, 1] == reels[2, 2]) ||
+               (reels[0, 2] == reels[1, 1] && reels[1, 1] == reels[2, 0]);
     }
 }

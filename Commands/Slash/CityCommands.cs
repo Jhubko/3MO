@@ -33,8 +33,7 @@ class CitySlashCommands : ApplicationCommandModule
 
         embed.Description = $"```\n{buildingList.ToString()}\n```";
 
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().AddEmbed(embed));
+        await ctx.CreateResponseAsync(embed, true);
     }
 
 
@@ -52,8 +51,7 @@ class CitySlashCommands : ApplicationCommandModule
                 : "❌ Failed to set city name. Make sure the name is not empty.",
             Color = success ? DiscordColor.Green : DiscordColor.Red
         };
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().AddEmbed(embed));
+        await ctx.CreateResponseAsync(embed, true);
     }
 
 
@@ -85,8 +83,7 @@ class CitySlashCommands : ApplicationCommandModule
                     Color = DiscordColor.Red
                 };
 
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().AddEmbed(embed));
+                await ctx.CreateResponseAsync(embed, true);
                 return;
             }
 
@@ -101,8 +98,7 @@ class CitySlashCommands : ApplicationCommandModule
                     Color = DiscordColor.Red
                 };
 
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().AddEmbed(embed));
+                await ctx.CreateResponseAsync(embed, true);
                 return;
             }
 
@@ -124,7 +120,7 @@ class CitySlashCommands : ApplicationCommandModule
                 responseEmbed.Description = "The building could not be purchased. Make sure the location is correct and you have enough points.";
                 responseEmbed.Color = DiscordColor.Red;
             }
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(responseEmbed));
+            await ctx.CreateResponseAsync(responseEmbed, true);
         }
     }
 
@@ -142,7 +138,7 @@ class CitySlashCommands : ApplicationCommandModule
                 ? $"You have successfully sold a building at location ({x}, {y})."
                 : "The building could not be sold. Make sure there is a building at this location.",
         };
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embedBuilder));
+        await ctx.CreateResponseAsync(embedBuilder, true);
     }
 
 
@@ -169,7 +165,7 @@ class CitySlashCommands : ApplicationCommandModule
             embedBuilder.AddField("Coordinates Moved", $"From ({x1}, {y1}) to ({x2}, {y2})", true);
         }
 
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embedBuilder));
+        await ctx.CreateResponseAsync(embedBuilder, true);
     }
 
 
@@ -190,7 +186,7 @@ class CitySlashCommands : ApplicationCommandModule
                           $"**Income Collected:** {points} points\n" +
                           $"**New Balance:** {newPoints} points",
         };
-        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embedBuilder));
+        await ctx.CreateResponseAsync(embedBuilder, true);
     }
 
 }

@@ -14,7 +14,7 @@ public class GambleCommand : ApplicationCommandModule
 
         if (!checkAmout.isProperValue)
         {
-            await ctx.CreateResponseAsync(checkAmout.errorMessage);
+            await ctx.CreateResponseAsync(checkAmout.errorMessage, true);
             return;
         }
 

@@ -17,7 +17,7 @@ namespace Discord_Bot.commands.slash
         [SlashCommand("help", "Show information about all commands.")]
         public async Task HelpCommand(InteractionContext ctx)
         {
-            await ctx.DeferAsync();
+            await ctx.DeferAsync(true);
 
             var helpEmbed = Buttons.helpCommandEmbed;
 
@@ -125,7 +125,6 @@ namespace Discord_Bot.commands.slash
             var shopFilePath = $"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json";
             var serverConfig = await jsonReader.ReadJson<ServerConfigShop>(shopFilePath) ?? new ServerConfigShop();
 
-            // Check for duplicate item
             if (serverConfig.ShopItems.Any(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Item '{name}' already exists in the shop."));
@@ -139,7 +138,7 @@ namespace Discord_Bot.commands.slash
             BaseCost = GambleUtils.ParseInt(baseCost),
             PassivePointsIncrease = GambleUtils.ParseInt(passivePointsIncrease)
             };
-            // If base cost or passive points less equal 0, return invalid value response
+
             if (shopItem.BaseCost < 0 || shopItem.PassivePointsIncrease < 0)
             {
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Base price or/and passive points increase are invalid."));
@@ -185,7 +184,6 @@ namespace Discord_Bot.commands.slash
             };
             await GlobalJsonWriter.UpdateConfig(shopFilePath, serverConfigDict);
 
-            // Remove the item from all users
             await RemoveItemFromAllUsers(name);
 
             var embed = new DiscordEmbedBuilder
