@@ -14,7 +14,6 @@ using Lavalink4NET;
 using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Text.RegularExpressions;
 
 

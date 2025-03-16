@@ -60,7 +60,7 @@ public class RaffleCommand : ApplicationCommandModule
 
         if (currentPoints < totalCost)
         {
-            await ctx.CreateResponseAsync($"Nie masz tyle punktów bambiku, nie stać cię na {ticketsToBuy} losów. Wróć z {totalCost} punktami.", false);
+            await ctx.CreateResponseAsync($"Nie masz tyle punktów bambiku, nie stać cię na {ticketsToBuy} losów. Wróć z {totalCost} punktami.", true);
             return;
         }
 
@@ -70,7 +70,7 @@ public class RaffleCommand : ApplicationCommandModule
         await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
         await jsonWriter.UpdateUserConfig(userId, "Tickets", currentTickets.ToString());
         await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "RafflePool", rafflePool.ToString());
-        await ctx.CreateResponseAsync($"{ctx.User.Mention} kupił {ticketsToBuy} losów za {totalCost} punktów. Łączna liczba losów: {currentTickets}. Aktualna pula: {rafflePool} punktów.", false);
+        await ctx.CreateResponseAsync($"{ctx.User.Mention} kupił {ticketsToBuy} losów za {totalCost} punktów. Łączna liczba losów: {currentTickets}. Aktualna pula: {rafflePool} punktów.");
     }
 
     [SlashCommand("checktickets", "Sprawdź liczbę swoich losów!")]
@@ -79,7 +79,7 @@ public class RaffleCommand : ApplicationCommandModule
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         int currentTickets = int.Parse(userData.Tickets);
-        await ctx.CreateResponseAsync($"Masz {currentTickets} losów.", false);
+        await ctx.CreateResponseAsync($"Masz {currentTickets} losów.", true);
     }
 
     [SlashCommand("checkraffle", "Check raffle pool.")]
@@ -91,7 +91,7 @@ public class RaffleCommand : ApplicationCommandModule
             return;
         }
 
-        await ctx.CreateResponseAsync($"Aktualna pula: {rafflePool} punktów. Loteria kończy się codziennie o 18:00", false);
+        await ctx.CreateResponseAsync($"Aktualna pula: {rafflePool} punktów. Loteria kończy się codziennie o 18:00", true);
     }
 
     public async Task ResumeRaffle(CustomInteractionContext ctx, int pool)

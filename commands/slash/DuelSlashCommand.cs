@@ -11,8 +11,6 @@ public class DuelCommand : ApplicationCommandModule
                                        [Option("opponent", "The player you want to challenge")] DiscordUser opponent,
                                        [Option("amount", "Amount of points to bet (number, %, or 'all')")] string amountInput)
     {
-
-        await ctx.DeferAsync();
         ulong userId = ctx.User.Id;
         ulong opponentId = opponent.Id;
         int userPoints = await Program.voicePointsManager.GetUserPoints(userId);
@@ -22,16 +20,17 @@ public class DuelCommand : ApplicationCommandModule
 
         if (!checkAmout.isProperValue)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(checkAmout.errorMessage));
+            await ctx.CreateResponseAsync(checkAmout.errorMessage, true);
             return;
         }
 
         if (betAmount > opponentPoints)
         {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{opponent.Username} nie ma wystarczających punktów, aby zagrać za {betAmount}!"));
+            await ctx.CreateResponseAsync($"{opponent.Username} nie ma wystarczających punktów, aby zagrać za {betAmount}!", true);
             return;
         }
 
+        await ctx.DeferAsync();
         var embedRequest = new DiscordEmbedBuilder
         {
             Title = "⚔️ Pojedynek! ⚔️",
@@ -54,7 +53,6 @@ public class DuelCommand : ApplicationCommandModule
             TimeSpan.FromSeconds(60)
         );
 
-        // Sprawdzanie odpowiedzi
         if (reactionResult.TimedOut)
         {
             var embedTimeout = new DiscordEmbedBuilder
