@@ -14,7 +14,7 @@ public class WordleCommands : ApplicationCommandModule
     {
         if (activeGames.ContainsKey(ctx.Channel.Id))
         {
-            await ctx.CreateResponseAsync("🎮 The game is already in progress on this channel! Use `/wguess <letter>`.");
+            await ctx.CreateResponseAsync("🎮 The game is already in progress on this channel! Use `/wguess <word>`.");
             return;
         }
 
@@ -35,7 +35,7 @@ public class WordleCommands : ApplicationCommandModule
             activeTimers.Remove(ctx.Channel.Id);
         }
 
-        await ctx.CreateResponseAsync($"🕹 **New Wordle Game!** You have **5 minutes** to guess the word and win points**! Guess tword with the command /wguess \n{GetGameState(ctx.Channel.Id)}");
+        await ctx.CreateResponseAsync($"🕹 **New Wordle Game!** You have **5 minutes** to guess the word and win **points**! Guess tword with the command /wguess \n{GetGameState(ctx.Channel.Id)}");
         await _wordGamesHandler.StartTimer(ctx.Channel.Id, ctx, activeTimers, activeGames);
     }
 
@@ -61,10 +61,12 @@ public class WordleCommands : ApplicationCommandModule
             await ctx.CreateResponseAsync($"⚠ Invalid Word. Enter 5 character word", true);
             return;
         }
+
+        game.GuessedWords.Add(input);
+        game.WordleStrucutreToShow.Add(CheckWord(input, game));
+
         if (input == game.WordToGuess)
         {
-            game.GuessedWords.Add(input);
-            game.WordleStrucutreToShow.Add(CheckWord(input, game));
             ulong userId = ctx.User.Id;
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
             await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.GuessedWords)}** points! \n{GetGameState(ctx.Channel.Id)}");
@@ -77,7 +79,7 @@ public class WordleCommands : ApplicationCommandModule
         }
         else if (game.GuessedWords.Count >= totalGuesses)
         {
-            await ctx.CreateResponseAsync($"💀 You lost! The word is: **{game.WordToGuess}**");
+            await ctx.CreateResponseAsync($"💀 You lost! The word is: **{game.WordToGuess}**  \n{GetGameState(ctx.Channel.Id)}");
             activeTimers[ctx.Channel.Id].Cancel();
             activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);
@@ -85,8 +87,6 @@ public class WordleCommands : ApplicationCommandModule
         }
         else
         {
-            game.GuessedWords.Add(input);
-            game.WordleStrucutreToShow.Add(CheckWord(input, game));
             await ctx.CreateResponseAsync(GetGameState(ctx.Channel.Id));
         }
     }
@@ -94,7 +94,8 @@ public class WordleCommands : ApplicationCommandModule
     private string GetGameState(ulong channelId)
     {
         var game = activeGames[channelId];
-        string wordleStructure = "🔠 Wordle 🔠```";
+        List<char> englishLetters = Enumerable.Range('A', 26).Select(c => ((char)c)).ToList();
+        string wordleStructure = "🔠 Wordle 🔠\n```";
 
         if (game.WordleStrucutreToShow.Count != 0)
         {
@@ -115,7 +116,10 @@ public class WordleCommands : ApplicationCommandModule
                 wordleStructure += $"{string.Join(" ", Enumerable.Repeat("⬜ _", wordLenght))}\n";
             }
         }
-        wordleStructure += "```";
+        wordleStructure += "```" +
+            $"Letters to use: `{(game.WrongLetters.Count > 0 ? string.Join(", ", englishLetters.Where(c => !game.WrongLetters.Contains(c))) : string.Join(", ", englishLetters))}`" +
+            $"\nLetters in word: `{(game.GoodLetters.Count > 0 ? string.Join(", ", game.GoodLetters) : "None")}`";
+
         return wordleStructure;
     }
 
@@ -128,11 +132,20 @@ public class WordleCommands : ApplicationCommandModule
             char upper = char.ToUpper(word[i]);
 
             if (word[i] == game.WordToGuess[i])
+            {
+                game.GoodLetters.Add(upper);
                 checkedWord += $"🟩 {upper} ";
+            }
             else if (game.WordToGuess.Contains(word[i]))
+            {
+                game.GoodLetters.Add(upper);
                 checkedWord += $"🟨 {upper} ";
+            }
             else
+            {
+                game.WrongLetters.Add(upper);
                 checkedWord += $"⬜ {upper} ";
+            }
         }
         return checkedWord;
     }
@@ -161,6 +174,8 @@ public class WordleGameState
     public string WordToGuess { get; set; }
     public List<string> GuessedWords { get; set; } = new List<string>();
     public List<string> WordleStrucutreToShow { get; set; } = new List<string>();
+    public HashSet<char> WrongLetters { get; set; } = new();
+    public HashSet<char> GoodLetters { get; set; } = new();
 
     public WordleGameState(string word)
     {
