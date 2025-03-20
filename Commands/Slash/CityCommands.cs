@@ -120,7 +120,7 @@ class CitySlashCommands : ApplicationCommandModule
                 responseEmbed.Description = "The building could not be purchased. Make sure the location is correct and you have enough points.";
                 responseEmbed.Color = DiscordColor.Red;
             }
-            await ctx.CreateResponseAsync(responseEmbed, true);
+            await ctx.CreateResponseAsync(responseEmbed);
         }
     }
 
@@ -132,7 +132,7 @@ class CitySlashCommands : ApplicationCommandModule
         var success = await _cityHandler.SellBuilding(ctx.User.Id, int.Parse(x), int.Parse(y));
         var embedBuilder = new DiscordEmbedBuilder()
         {
-            Color = success ? DiscordColor.Green : DiscordColor.Red, // Używam zielonego koloru dla sukcesu i czerwonego dla błędu
+            Color = success ? DiscordColor.Green : DiscordColor.Red,
             Title = success ? "💰Building Sold Successfully💰" : "❌Error Selling Building❌",
             Description = success
                 ? $"You have successfully sold a building at location ({x}, {y})."
