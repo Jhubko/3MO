@@ -113,6 +113,7 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<GivePointsCommand>();
             SlashCommandConfig.RegisterCommands<ShopCommand>();
             SlashCommandConfig.RegisterCommands<HangmanCommands>();
+            SlashCommandConfig.RegisterCommands<WordleCommands>();
 
             await Client.ConnectAsync();
 
