@@ -1,5 +1,4 @@
 ﻿using Discord_Bot;
-using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 public class WordleCommands : ApplicationCommandModule
 {

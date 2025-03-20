@@ -1,7 +1,5 @@
 ﻿using Discord_Bot;
-using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using Newtonsoft.Json;
 
 public class HangmanCommands : ApplicationCommandModule
 {
