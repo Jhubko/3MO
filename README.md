@@ -8,47 +8,74 @@
 </h1>
 
 <p align="center">
-  <a href="#key-features">Key Features</a> •
+  <a href="#-key-features">Key Features</a> •
   <a href="#how-to-use">How To Use</a> •
   <a href="#credits">Credits</a> •
   <a href="#license">License</a>
 </p>
 
-## Key Features
+# 🌟 Key Features  
 
-* Playing music from YouTube 
-  - Adding songs or playlist from youtube.
-  - Possibility to pause or resume.
-  - Skipping current song.
-  - Show current queue.
-  - Volume adjustment.
-  - Shuffle queue.
-  - Add song to queue as next.
-  - Play song instead of current song.
-* Searching images 
-  - Can search selected image from google.
-  - Can send random meme from reddit.
-  - Can send random wikipedia article.
-* ChatGPT
-  - Can answer a questions using chatGPT
-* Weather Commands
-  - Check current weather.
-  - Check forecast for seven next days.
-* Games
-  - Card Game
-  - Random number generator (dices)
-* Help Command
-  - Help command with description of all commands.
-* Management Commands
-  - Set a default role for server.
-  - Set channel as an image only channel.
-  - Set an emoji that will be used as a vote to delete message.
-  - Deleting bot messages after 12h.
-<h3><b>And many more in the future</b></h3>
+## 🎙 Voice Points System  
+Earn points just by being active in voice channels.  
+
+## 🏙 City Builder  
+Build and manage your own city using your points:  
+- **Buy and sell buildings** from a large list of options.  
+- **Move buildings** within your city to organize it as you like.  
+- **Name your city** to make it truly yours.  
+- **View other players' cities** and see how they are developing.  
+- **Collect daily income** from your built structures.  
+
+## 🎰 Casino  
+Try your luck and multiply your points in various games:  
+- **Gamble** – Bet a specific amount to either double it or lose it.  
+- **Slots** – Play for a small price and win big prizes.  
+- **Card Game** – Challenge the bot and win the bet.  
+- **Daily Raffle** – Buy a ticket and win the daily prize.  
+- **Duel** – Compete against other players.  
+- **Gifting** – Share points with friends.  
+
+## 🎮 Games  
+- **Wordle** – Guess the word and earn points.  
+- **Hangman** – Guess the letters correctly to win points.  
+
+## 🏆 Highscore & Statistics  
+- **Highscore Command** – View leaderboards based on different parameters.
+- **Statistics Tracking** – The bot records wins and losses from games and casino activities, allowing players to track their progress.  
+
+## 🔢 Utility Commands  
+- **Random Number Generator** – Generate a random number for any purpose.  
+
+## 🎵 YouTube Music Player  
+- Add songs and playlists.  
+- Pause, resume, or skip songs.  
+- View and shuffle the queue.  
+- Adjust volume.  
+
+## 🌐 Information Search 
+- Search for images on Google.  
+- Get a random meme from Reddit.  
+- Receive a random Wikipedia article.  
+
+## 🤖 ChatGPT  
+- Get answers to your questions with AI-powered responses.  
+
+## ☀ Weather Commands  
+- Check the current weather.  
+- Get a 7-day forecast.  
+
+## 🛠 Management Commands  
+- Set a default role for the server.  
+- Create an image-only channel.  
+- Set an emoji for message deletion voting.  
+- Automatically delete bot messages after 12 hours.  
+
+## ✨ And many more features coming soon! 🚀  
 
 ## How To Use
 
-To use bot you can simply download this repository fill the config file and coplile solution
+To use bot you can simply download this repository fill the config file and run update_repo.bat
 
 ## Credits
 
