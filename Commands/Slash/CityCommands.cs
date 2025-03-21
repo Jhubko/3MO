@@ -109,6 +109,8 @@ class CitySlashCommands : ApplicationCommandModule
             {
                 userPoints -= buildingCost;
                 _pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
+                await StatsHandler.IncreaseStats(ctx.User.Id, "BuildingsBought");
+                await StatsHandler.IncreaseStats(ctx.User.Id, "BoildingsSpent", buildingCost);
 
                 responseEmbed.Title = "💰Building Purchased Successfully💰";
                 responseEmbed.Description = $"You have successfully purchased the {building.Name} at location ({x}, {y}).";
@@ -130,6 +132,7 @@ class CitySlashCommands : ApplicationCommandModule
                                          [Option("y", "y coordinate")] string y)
     {
         var success = await _cityHandler.SellBuilding(ctx.User.Id, int.Parse(x), int.Parse(y));
+        await StatsHandler.IncreaseStats(ctx.User.Id, "BuildingsSold");
         var embedBuilder = new DiscordEmbedBuilder()
         {
             Color = success ? DiscordColor.Green : DiscordColor.Red,
@@ -175,7 +178,7 @@ class CitySlashCommands : ApplicationCommandModule
         var points = await _cityHandler.GetCityPoints(ctx.User.Id);
         int currentPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
         int newPoints = currentPoints + points;
-
+        await StatsHandler.IncreaseStats(ctx.User.Id, "TotalCityIncome", points);
         _pointsManager.SaveUserPoints(ctx.User.Id, newPoints);
 
         var embedBuilder = new DiscordEmbedBuilder()

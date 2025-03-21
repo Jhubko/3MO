@@ -70,6 +70,7 @@ public class WordleCommands : ApplicationCommandModule
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
             await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.GuessedWords)}** points! \n{GetGameState(ctx.Channel.Id)}");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.GuessedWords));
+            await StatsHandler.IncreaseStats(ctx.User.Id, "WordleWins");
             activeTimers[ctx.Channel.Id].Cancel();
             activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);
@@ -79,6 +80,7 @@ public class WordleCommands : ApplicationCommandModule
         else if (game.GuessedWords.Count >= totalGuesses)
         {
             await ctx.CreateResponseAsync($"💀 You lost! The word is: **{game.WordToGuess}**  \n{GetGameState(ctx.Channel.Id)}");
+            await StatsHandler.IncreaseStats(ctx.User.Id, "WordleLosses");
             activeTimers[ctx.Channel.Id].Cancel();
             activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);

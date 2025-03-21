@@ -47,7 +47,8 @@ public class GivePointsCommand : ApplicationCommandModule
         recipientPoints += amountToGive;
         Program.voicePointsManager.SaveUserPoints(senderId, senderPoints);
         Program.voicePointsManager.SaveUserPoints(recipientId, recipientPoints);
-
+        await StatsHandler.IncreaseStats(senderId, "GivedPoints", amountToGive);
+        await StatsHandler.IncreaseStats(recipientId, "ReceivedPoints", amountToGive);
 
         var embedTransfer = new DiscordEmbedBuilder
         {

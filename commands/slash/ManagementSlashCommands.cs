@@ -1,10 +1,8 @@
 ﻿using Discord_Bot.Config;
 using Discord_Bot.other;
-using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 
 namespace Discord_Bot.commands.slash
