@@ -55,6 +55,9 @@
         public string? RaffleSpent { get; set; } = "0";
         public string? RaffleWinnings { get; set; } = "0";
         public string? TotalCityIncome { get; set; } = "0";
+        public string? BoildingsSpent { get; set; } = "0";
+        public string? BuildingsBought { get; set; } = "0";
+        public string? BuildingsSold { get; set; } = "0";
         public string? WordleWins { get; set; } = "0";
         public string? WordleLosses { get; set; } = "0";
         public string? HangmanWins { get; set; } = "0";
