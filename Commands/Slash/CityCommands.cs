@@ -175,7 +175,7 @@ class CitySlashCommands : ApplicationCommandModule
         var points = await _cityHandler.GetCityPoints(ctx.User.Id);
         int currentPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
         int newPoints = currentPoints + points;
-
+        await StatsHandler.IncreaseStats(ctx.User.Id, "TotalCityIncome", points);
         _pointsManager.SaveUserPoints(ctx.User.Id, newPoints);
 
         var embedBuilder = new DiscordEmbedBuilder()

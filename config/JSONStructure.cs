@@ -40,6 +40,8 @@
         public string? Losses { get; set; } = "0";
         public string? WonPoints { get; set; } = "0";
         public string? LostPoints { get; set; } = "0";
+        public string? GivedPoints { get; set; } = "0";
+        public string? ReceivedPoints { get; set; } = "0";
         public string? GambleWins { get; set; } = "0";
         public string? GambleLosses { get; set; } = "0";
         public string? SlotsWins { get; set; } = "0";
@@ -52,6 +54,11 @@
         public string? RaffleWins { get; set; } = "0";
         public string? RaffleSpent { get; set; } = "0";
         public string? RaffleWinnings { get; set; } = "0";
+        public string? TotalCityIncome { get; set; } = "0";
+        public string? WordleWins { get; set; } = "0";
+        public string? WordleLosses { get; set; } = "0";
+        public string? HangmanWins { get; set; } = "0";
+        public string? HangmanLosses { get; set; } = "0";
     }
 }
 

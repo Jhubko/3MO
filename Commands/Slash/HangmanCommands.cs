@@ -119,6 +119,7 @@ public class HangmanCommands : ApplicationCommandModule
             ulong userId = ctx.User.Id;
             int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
             await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**  and won **{CalculatePoints(game.WordToGuess)}** points!");
+            await StatsHandler.IncreaseStats(ctx.User.Id, "HangmanWins");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
             activeTimers[ctx.Channel.Id].Cancel();
             activeTimers[ctx.Channel.Id].Dispose();
@@ -129,6 +130,7 @@ public class HangmanCommands : ApplicationCommandModule
         else if (game.WrongAttempts >= hangmanPics.Length - 1)
         {
             await ctx.CreateResponseAsync($"💀 Hanged man hanged! The word is: **{game.WordToGuess}**");
+            await StatsHandler.IncreaseStats(ctx.User.Id, "HangmanLosses");
             activeTimers[ctx.Channel.Id].Cancel();
             activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);
