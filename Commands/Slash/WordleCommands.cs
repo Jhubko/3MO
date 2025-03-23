@@ -48,7 +48,8 @@ public class WordleCommands : ApplicationCommandModule
             return;
         }
 
-        if (await _wordGamesHandler.CheckIfWordExist(input) == false)
+        var game = activeGames[ctx.Channel.Id];
+        if (await _wordGamesHandler.CheckIfWordExist(input) == false && input != game.WordToGuess)
         {
             await ctx.CreateResponseAsync($"⚠ Word do not exist!", true);
             return;
@@ -60,7 +61,6 @@ public class WordleCommands : ApplicationCommandModule
             return;
         }
 
-        var game = activeGames[ctx.Channel.Id];
         game.GuessedWords.Add(input);
         game.WordleStrucutreToShow.Add(CheckWord(input, game));
 
