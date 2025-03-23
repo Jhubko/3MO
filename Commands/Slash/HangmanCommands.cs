@@ -31,7 +31,7 @@ public class HangmanCommands : ApplicationCommandModule
             return;
         }
 
-        string word = await _wordGamesHandler.GetRandomWord("https://random-word-api.herokuapp.com/word?number=");
+        string word = await _wordGamesHandler.GetRandomWord();
         if (string.IsNullOrEmpty(word))
         {
             await ctx.CreateResponseAsync("❌ Failed to retrieve a word. Try again later.", true);

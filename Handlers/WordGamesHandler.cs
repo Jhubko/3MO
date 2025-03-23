@@ -7,11 +7,17 @@ class WordGamesHandler
     {
         Timeout = TimeSpan.FromSeconds(1)
     };
-    private static List<string> wordCache = new List<string>();
+    private static List<string> allWordsCache = new List<string>();
+    private static List<string> wordleWordsCache = new List<string>();
+    private static string baseLink = "https://random-word-api.herokuapp.com/word?number=";
+    private static string wordleLink = "https://random-word-api.herokuapp.com/word?length=5&number=";
     private static int cacheSize = 100;
 
-    public async Task<string> GetRandomWord(string linkBase)
+    public async Task<string> GetRandomWord(bool isWordle = false)
     {
+        List<string> wordCache = isWordle ? wordleWordsCache : allWordsCache;
+        string linkBase = isWordle ? wordleLink : baseLink;
+
         try
         {
             if (wordCache.Count == 0)
@@ -23,25 +29,18 @@ class WordGamesHandler
 
                 if (words != null && words.Count > 0)
                 {
-                    wordCache = words;
+                    if (isWordle)
+                        wordleWordsCache = words;
+                    else
+                        allWordsCache = words;
                 }
+                return await GetRandomWord(isWordle);
             }
 
-            if (wordCache.Count > 0)
-            {
-                var random = new Random();
-                string randomWord = wordCache[random.Next(wordCache.Count)].ToLower();
-                wordCache.Remove(randomWord);
-
-                if (wordCache.Count == 0)
-                {
-                    return await GetRandomWord(linkBase + cacheSize);
-                }
-
-                return randomWord;
-            }
-
-            return string.Empty;
+            var random = new Random();
+            string randomWord = wordCache[random.Next(wordCache.Count)].ToLower();
+            wordCache.Remove(randomWord);
+            return randomWord;
         }
         catch (Exception ex)
         {

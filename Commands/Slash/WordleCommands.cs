@@ -17,7 +17,7 @@ public class WordleCommands : ApplicationCommandModule
             return;
         }
 
-        string word = await _wordGamesHandler.GetRandomWord("https://random-word-api.herokuapp.com/word?length=5&number="); ;
+        string word = await _wordGamesHandler.GetRandomWord(true); ;
         if (string.IsNullOrEmpty(word))
         {
             await ctx.CreateResponseAsync("❌ Failed to retrieve a word. Try again later.", true);
@@ -41,7 +41,6 @@ public class WordleCommands : ApplicationCommandModule
     [SlashCommand("wguess", "Guess a word in Wordle.")]
     public async Task WordleGuess(InteractionContext ctx, [Option("input", "Give a word to guess.")] string input)
     {
-        var game = activeGames[ctx.Channel.Id];
         input = input.ToLower();
         if (!activeGames.ContainsKey(ctx.Channel.Id))
         {
@@ -61,6 +60,7 @@ public class WordleCommands : ApplicationCommandModule
             return;
         }
 
+        var game = activeGames[ctx.Channel.Id];
         game.GuessedWords.Add(input);
         game.WordleStrucutreToShow.Add(CheckWord(input, game));
 
@@ -85,6 +85,7 @@ public class WordleCommands : ApplicationCommandModule
             activeTimers[ctx.Channel.Id].Dispose();
             activeTimers.Remove(ctx.Channel.Id);
             activeGames.Remove(ctx.Channel.Id);
+            return;
         }
         else
         {
