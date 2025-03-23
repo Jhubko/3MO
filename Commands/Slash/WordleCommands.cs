@@ -119,7 +119,8 @@ public class WordleCommands : ApplicationCommandModule
             }
         }
         wordleStructure += "```" +
-            $"Letters to use: `{(game.WrongLetters.Count > 0 ? string.Join(", ", englishLetters.Where(c => !game.WrongLetters.Contains(c))) : string.Join(", ", englishLetters))}`" +
+            $"Letters not used: `{(game.WrongLetters.Count > 0 ? string.Join(", ", englishLetters.Where(c => !game.WrongLetters.Contains(c) && !game.GoodLetters.Contains(c))) : string.Join(", ", englishLetters))}`" +
+            $"\nLetters not in word: `{(game.WrongLetters.Count > 0 ? string.Join(", ", game.WrongLetters) : "None")}`" +
             $"\nLetters in word: `{(game.GoodLetters.Count > 0 ? string.Join(", ", game.GoodLetters) : "None")}`";
 
         return wordleStructure;
