@@ -218,27 +218,52 @@ namespace Discord_Bot
         {
             var backButton = new DiscordButtonComponent(ButtonStyle.Primary, "backButton", "Back");
 
-            switch (args.Interaction.Data.CustomId)
+            if (args.Interaction.Data.ComponentType == ComponentType.StringSelect && args.Interaction.Data.CustomId == "help_menu")
             {
-                case "gamesButton":
-                    await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(Buttons.gamesCommandEmbed).AddComponents(backButton));
-                    break;
-                case "mngmtButton":
-                    await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(Buttons.managementCommandsEmbed).AddComponents(backButton));
-                    break;
-                case "searchButton":
-                    await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(Buttons.searchCommandEmbed).AddComponents(backButton));
-                    break;
-                case "musicButton":
-                    await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(Buttons.musicCommandEmbed).AddComponents(backButton));
-                    break;
-                case "backButton":
-                    await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(Buttons.helpCommandEmbed).AddComponents(Buttons.gamesButton, Buttons.searchButton, Buttons.mngmtButton, Buttons.musicButton));
-                    break;
+                var selectedValue = args.Interaction.Data.Values[0];
 
+                DiscordEmbedBuilder selectedEmbed = selectedValue switch
+                {
+                    "casino" => Buttons.casinoCommandEmbed,
+                    "shop" => Buttons.shopCommandEmbed,
+                    "city" => Buttons.cityCommandEmbed,
+                    "stats" => Buttons.statsCommandEmbed,
+                    "games" => Buttons.gamesCommandEmbed,
+                    "music" => Buttons.musicCommandEmbed,
+                    "search" => Buttons.searchCommandEmbed,
+                    "mngmt" => Buttons.managementCommandsEmbed,
+                    _ => Buttons.helpCommandEmbed
+                };
 
+                await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+                    new DiscordInteractionResponseBuilder()
+                        .AddEmbed(selectedEmbed)
+                        .AddComponents(backButton));
+
+                return;
+            }
+
+            if (args.Interaction.Data.CustomId == "backButton")
+            {
+                var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię", new List<DiscordSelectComponentOption>
+                {
+                    new DiscordSelectComponentOption("Casino", "casino"),
+                    new DiscordSelectComponentOption("Shop", "shop"),
+                    new DiscordSelectComponentOption("City", "city"),
+                    new DiscordSelectComponentOption("Stats", "stats"),
+                    new DiscordSelectComponentOption("Games", "games"),
+                    new DiscordSelectComponentOption("Music", "music"),
+                    new DiscordSelectComponentOption("Search", "search"),
+                    new DiscordSelectComponentOption("Management", "mngmt")
+                });
+
+                await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+                    new DiscordInteractionResponseBuilder()
+                        .AddEmbed(Buttons.helpCommandEmbed)
+                        .AddComponents(selectMenu));
             }
         }
+
 
         private static async Task CommandEventHandler(CommandsNextExtension sender, CommandErrorEventArgs e)
         {

@@ -40,6 +40,15 @@ Try your luck and multiply your points in various games:
 - **Wordle** – Guess the word and earn points.  
 - **Hangman** – Guess the letters correctly to win points.  
 
+## 🛍️ Shop
+Manage and enhance your inventory:
+Check your owned items and their quantities.
+
+## 🛍️ Shop
+Manage and enhance your inventory:
+- **Purchase** items from the shop using your points.
+- **Create** new items and customise your shop.
+
 ## 🏆 Highscore & Statistics  
 - **Highscore Command** – View leaderboards based on different parameters.
 - **Statistics Tracking** – The bot records wins and losses from games and casino activities, allowing players to track their progress.  

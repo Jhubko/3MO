@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.4.9" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.9" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.4.9" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.4.9" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.4.9" />
+    <PackageReference Include="DSharpPlus" Version="4.5.0" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.5.0" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.5.0" />
+    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.5.0" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.5.0" />
     <PackageReference Include="Google.Apis" Version="1.68.0" />
     <PackageReference Include="Google.Apis.Core" Version="1.68.0" />
     <PackageReference Include="Google.Apis.CustomSearchAPI.v1" Version="1.68.0.3395" />
