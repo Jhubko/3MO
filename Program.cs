@@ -224,15 +224,15 @@ namespace Discord_Bot
 
                 DiscordEmbedBuilder selectedEmbed = selectedValue switch
                 {
-                    "casino" => Buttons.casinoCommandEmbed,
-                    "shop" => Buttons.shopCommandEmbed,
-                    "city" => Buttons.cityCommandEmbed,
-                    "stats" => Buttons.statsCommandEmbed,
-                    "games" => Buttons.gamesCommandEmbed,
-                    "music" => Buttons.musicCommandEmbed,
-                    "search" => Buttons.searchCommandEmbed,
-                    "mngmt" => Buttons.managementCommandsEmbed,
-                    _ => Buttons.helpCommandEmbed
+                    "casino" => HelpContent.casinoCommandEmbed,
+                    "shop" => HelpContent.shopCommandEmbed,
+                    "city" => HelpContent.cityCommandEmbed,
+                    "stats" => HelpContent.statsCommandEmbed,
+                    "games" => HelpContent.gamesCommandEmbed,
+                    "music" => HelpContent.musicCommandEmbed,
+                    "search" => HelpContent.searchCommandEmbed,
+                    "mngmt" => HelpContent.managementCommandsEmbed,
+                    _ => HelpContent.helpCommandEmbed
                 };
 
                 await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
@@ -259,7 +259,7 @@ namespace Discord_Bot
 
                 await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
                     new DiscordInteractionResponseBuilder()
-                        .AddEmbed(Buttons.helpCommandEmbed)
+                        .AddEmbed(HelpContent.helpCommandEmbed)
                         .AddComponents(selectMenu));
             }
         }

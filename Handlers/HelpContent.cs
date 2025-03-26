@@ -2,7 +2,7 @@
 
 namespace Discord_Bot.other
 {
-    internal class Buttons
+    internal class HelpContent
     {
         public static DiscordEmbedBuilder casinoCommandEmbed = new DiscordEmbedBuilder()
         {

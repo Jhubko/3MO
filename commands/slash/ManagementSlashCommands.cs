@@ -17,7 +17,7 @@ namespace Discord_Bot.commands.slash
         {
             await ctx.DeferAsync(true);
 
-            var helpEmbed = Buttons.helpCommandEmbed;
+            var helpEmbed = HelpContent.helpCommandEmbed;
 
             var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię", new List<DiscordSelectComponentOption>
             {

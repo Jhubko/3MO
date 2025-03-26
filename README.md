@@ -34,20 +34,16 @@ Try your luck and multiply your points in various games:
 - **Card Game** – Challenge the bot and win the bet.  
 - **Daily Raffle** – Buy a ticket and win the daily prize.  
 - **Duel** – Compete against other players.  
-- **Gifting** – Share points with friends.  
-
-## 🎮 Games  
-- **Wordle** – Guess the word and earn points.  
-- **Hangman** – Guess the letters correctly to win points.  
-
-## 🛍️ Shop
-Manage and enhance your inventory:
-Check your owned items and their quantities.
+- **Gifting** – Share points with friends.   
 
 ## 🛍️ Shop
 Manage and enhance your inventory:
 - **Purchase** items from the shop using your points.
 - **Create** new items and customise your shop.
+
+## 🎮 Games  
+- **Wordle** – Guess the word and earn points.  
+- **Hangman** – Guess the letters correctly to win points. 
 
 ## 🏆 Highscore & Statistics  
 - **Highscore Command** – View leaderboards based on different parameters.
