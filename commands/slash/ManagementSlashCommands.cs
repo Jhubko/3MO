@@ -19,12 +19,25 @@ namespace Discord_Bot.commands.slash
 
             var helpEmbed = Buttons.helpCommandEmbed;
 
+            var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię", new List<DiscordSelectComponentOption>
+            {
+                new DiscordSelectComponentOption("Casino", "casino"),
+                new DiscordSelectComponentOption("Shop", "shop"),
+                new DiscordSelectComponentOption("City", "city"),
+                new DiscordSelectComponentOption("Stats", "stats"),
+                new DiscordSelectComponentOption("Games", "games"),
+                new DiscordSelectComponentOption("Music", "music"),
+                new DiscordSelectComponentOption("Search", "search"),
+                new DiscordSelectComponentOption("Management", "mngmt")
+            });
+
             var message = new DiscordWebhookBuilder()
                 .AddEmbed(helpEmbed)
-                .AddComponents(Buttons.gamesButton, Buttons.searchButton, Buttons.mngmtButton, Buttons.musicButton);
+                .AddComponents(selectMenu);
 
             await ctx.EditResponseAsync(message);
         }
+
 
         [SlashCommand("defaultRole", "Set default role for server.")]
         [RequirePermissions(DSharpPlus.Permissions.Administrator)]
@@ -112,10 +125,10 @@ namespace Discord_Bot.commands.slash
 
         [SlashCommand("createShopItem", "Create a new item in the shop.")]
         [RequirePermissions(DSharpPlus.Permissions.Administrator)]
-        public async Task CreateShopItemCommand(InteractionContext ctx, 
-            [Option("name", "The name of the item")] string name, 
-            [Option("description", "The description of the item")] string description, 
-            [Option("basePrice", "The base price of the item")] string baseCost, 
+        public async Task CreateShopItemCommand(InteractionContext ctx,
+            [Option("name", "The name of the item")] string name,
+            [Option("description", "The description of the item")] string description,
+            [Option("basePrice", "The base price of the item")] string baseCost,
             [Option("passivePointsIncrease", "The passive points increase of the item")] string passivePointsIncrease)
         {
             await ctx.DeferAsync();
@@ -125,22 +138,22 @@ namespace Discord_Bot.commands.slash
 
             if (serverConfig.ShopItems.Any(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Item '{name}' already exists in the shop."));
-            return;
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Item '{name}' already exists in the shop."));
+                return;
             }
 
             var shopItem = new ShopItem
             {
-            Name = name,
-            Description = description,
-            BaseCost = GambleUtils.ParseInt(baseCost),
-            PassivePointsIncrease = GambleUtils.ParseInt(passivePointsIncrease)
+                Name = name,
+                Description = description,
+                BaseCost = GambleUtils.ParseInt(baseCost),
+                PassivePointsIncrease = GambleUtils.ParseInt(passivePointsIncrease)
             };
 
             if (shopItem.BaseCost < 0 || shopItem.PassivePointsIncrease < 0)
             {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Base price or/and passive points increase are invalid."));
-            return;
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Base price or/and passive points increase are invalid."));
+                return;
             }
 
             serverConfig.ShopItems.Add(shopItem);
@@ -152,9 +165,9 @@ namespace Discord_Bot.commands.slash
 
             var embed = new DiscordEmbedBuilder
             {
-            Title = "Shop Item Created",
-            Description = $"Item '{name}' has been created and added to the shop.",
-            Color = DiscordColor.Green
+                Title = "Shop Item Created",
+                Description = $"Item '{name}' has been created and added to the shop.",
+                Color = DiscordColor.Green
             };
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
         }
@@ -171,8 +184,8 @@ namespace Discord_Bot.commands.slash
             var itemToRemove = serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (itemToRemove == null)
             {
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Item '{name}' not found in the shop."));
-            return;
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Item '{name}' not found in the shop."));
+                return;
             }
 
             serverConfig.ShopItems.Remove(itemToRemove);
@@ -186,9 +199,9 @@ namespace Discord_Bot.commands.slash
 
             var embed = new DiscordEmbedBuilder
             {
-            Title = "Shop Item Removed",
-            Description = $"Item '{name}' has been removed from the shop and from all users.",
-            Color = DiscordColor.Red
+                Title = "Shop Item Removed",
+                Description = $"Item '{name}' has been removed from the shop and from all users.",
+                Color = DiscordColor.Red
             };
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
         }
@@ -197,16 +210,16 @@ namespace Discord_Bot.commands.slash
         {
             foreach (var file in Directory.GetFiles($"{Program.serverConfigPath}\\user_points", "*_Items.json"))
             {
-            var userItems = await jsonReader.ReadJson<Dictionary<string, int>>(file);
-            if (userItems != null)
-            {
-                var itemKey = userItems.Keys.FirstOrDefault(k => k.Equals(itemName, StringComparison.OrdinalIgnoreCase));
-                if (itemKey != null)
+                var userItems = await jsonReader.ReadJson<Dictionary<string, int>>(file);
+                if (userItems != null)
                 {
-                userItems[itemKey] = 0;
-                await GlobalJsonWriter.UpdateConfig(file, userItems);
+                    var itemKey = userItems.Keys.FirstOrDefault(k => k.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+                    if (itemKey != null)
+                    {
+                        userItems[itemKey] = 0;
+                        await GlobalJsonWriter.UpdateConfig(file, userItems);
+                    }
                 }
-            }
             }
         }
     }
