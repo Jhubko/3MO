@@ -3,13 +3,13 @@ using Discord_Bot.Config;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 class VoicePointsManager
 {
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
     private HashSet<ulong> activeUsers;
     private static IJsonHandler jsonReader = new JSONReader();
+    private readonly InventoryManager inventoryManager = new InventoryManager();
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
     {
@@ -127,10 +127,9 @@ class VoicePointsManager
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guild.Id}_shop.json");
 
-        int passivePoints = 10; // Base passive points
-        var shopCommand = new ShopCommand();
-        var userItems = await shopCommand.GetUserItems(userId);
-        foreach (var item in userItems)
+        int passivePoints = 10;
+        var userItems = await inventoryManager.GetUserItems(userId);
+        foreach (var item in userItems.Items)
         {
             var shopItem = serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(item.Key, StringComparison.OrdinalIgnoreCase));
             if (shopItem != null)

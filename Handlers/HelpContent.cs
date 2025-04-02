@@ -27,12 +27,21 @@ namespace Discord_Bot.other
                 "**/wordle** - Zaczyna gre w wordle"
         };
 
+        public static DiscordEmbedBuilder fishingCommandEmbed = new DiscordEmbedBuilder()
+        {
+            Color = DiscordColor.Aquamarine,
+            Title = "Fishing Commands",
+            Description = "**/fish** - Lista dostępnych ryb \n" +
+                "**/fishing** - Zaczyna łowienie\n" +
+                "**/sellfish** - Sprzedaj wybraną rybe\n"
+        };
+
         public static DiscordEmbedBuilder shopCommandEmbed = new DiscordEmbedBuilder()
         {
             Color = DiscordColor.Gold,
             Title = "Shop Commands",
             Description = "**/buy** - Kup przedmiot ze sklepu\n" +
-                  "**/shoplist** - Wyświetl listę dostępnych przedmiotów w sklepie\n" +
+                  "**/shop** - Wyświetl listę dostępnych przedmiotów w sklepie\n" +
                   "**/items** - Sprawdź swoje przedmioty"
         };
 
@@ -53,12 +62,13 @@ namespace Discord_Bot.other
         {
             Color = DiscordColor.Blurple,
             Title = "Management Commands",
-            Description = "**/help**  -> Pokazuję komendy z opisami \n" +
-                "**/defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników \n" +
-                "**/imageOnly**  -> Ustawia który kanał będzie usuwał wiadomości tekstowe \n" +
-                "**/raffleChannel**  -> Ustawia na którym beda informacje o loteriach \n" +
+            Description = "**/help**  -> Pokazuję komendy z opisami\n" +
+                "**/defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników\n" +
+                "**/imageOnly**  -> Ustawia który kanał będzie usuwał wiadomości tekstowe\n" +
+                "**/raffleChannel**  -> Ustawia na którym beda informacje o loteriach\n" +
                 "**/createShopItem**  -> Dodaje nowy przedmiot do sklepu\n" +
                 "**/removeShopItem**  -> Usuwa podany item ze sklepu\n" +
+                "**/editfish**  -> Dodaj/Edytuj/Usuń ryby z listy\n" +
                 "**/deleteMessageEmoji**   -> Ustawia emoji, które będzie usuwało wiadomości"
         };
 
@@ -73,10 +83,11 @@ namespace Discord_Bot.other
                 "**2. Games** - Komendy do gier, takich jak wisielec i wordle.\n" +
                 "**3. Shop** - Komendy do zarządzania sklepem i przedmiotami.\n" +
                 "**4. City** - Komendy związane z budowaniem i zarządzaniem miastem.\n" +
-                "**5. Stats** - Komendy do przeglądania statystyk graczy i punktów.\n" +
-                "**6. Music** - Komendy do odtwarzania muzyki na kanale głosowym.\n" +
-                "**7. Search** - Komendy do wyszukiwania memów, artykułów i obrazków.\n" +
-                "**8. Management** - Komendy administracyjne i zarządzanie botem.\n\n" +
+                "**5. Fishing** - Komendy związane z wędkowaniem.\n" +
+                "**6. Stats** - Komendy do przeglądania statystyk graczy i punktów.\n" +
+                "**7. Music** - Komendy do odtwarzania muzyki na kanale głosowym.\n" +
+                "**8. Search** - Komendy do wyszukiwania memów, artykułów i obrazków.\n" +
+                "**9. Management** - Komendy administracyjne i zarządzanie botem.\n\n" +
                 "═════════════════════════════════════\n" +
                 "Wybierz kategorię z rozwijanego menu, aby uzyskać szczegóły."
         };

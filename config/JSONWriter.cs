@@ -14,27 +14,7 @@ namespace Discord_Bot.Config
             _jsonHandler = jsonHandler;
             _configPath = configPath;
             _serverConfigDir = serverConfigDir;
-        }
-        
-        public async Task UpdateConfig<T>(string filePath, Dictionary<string, T> newConfig)
-        {
-            if (!File.Exists(filePath) || new FileInfo(filePath).Length == 0)
-            {
-            _jsonHandler.CreateJson(filePath);
-            }
-
-            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
-
-            foreach (var kvp in newConfig)
-            {
-            jsonData[kvp.Key] = JToken.FromObject(kvp.Value);
-            if (kvp.Value is int intValue && intValue == 0)
-            {
-                jsonData.Remove(kvp.Key);
-            }
-            }
-            await _jsonHandler.WriteJson(filePath, jsonData);
-        }
+        }      
         
         public async Task UpdateGlobalConfig(string key, string value)
         {
@@ -49,22 +29,41 @@ namespace Discord_Bot.Config
         public async Task UpdateServerConfig(ulong serverId, string key, string value, string? value2 = null)
         {
             string filePath = Path.Combine(_serverConfigDir, $"{serverId}.json");
-            await _UpdateConfig(filePath, key, value, value2);
+            await UpdateConfig(filePath, key, value, value2);
         }
 
         public async Task UpdateUserConfig(ulong userID, string key, string value, string? value2 = null)
         {
             string filePath = Path.Combine($"{_serverConfigDir}\\user_points", $"{userID}.json");
-            await _UpdateConfig(filePath, key, value, value2);
+            await UpdateConfig(filePath, key, value, value2);
         }
 
         public async Task UpdateCityConfig(ulong userID, string key, object value)
         {
             string filePath = Path.Combine($"{_serverConfigDir}\\cities", $"{userID}_city.json");
-            await _UpdateConfig(filePath, key, value);
+            await UpdateConfig(filePath, key, value);
+        }
+        public async Task UpdateShopConfig<T>(string filePath, Dictionary<string, T> newConfig)
+        {
+            if (!File.Exists(filePath) || new FileInfo(filePath).Length == 0)
+            {
+                _jsonHandler.CreateJson(filePath);
+            }
+
+            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
+
+            foreach (var kvp in newConfig)
+            {
+                jsonData[kvp.Key] = JToken.FromObject(kvp.Value);
+                if (kvp.Value is int intValue && intValue == 0)
+                {
+                    jsonData.Remove(kvp.Key);
+                }
+            }
+            await _jsonHandler.WriteJson(filePath, jsonData);
         }
 
-        public async Task _UpdateConfig(string filePath, string key, object value, string? value2 = null)
+        public async Task UpdateConfig(string filePath, string key, object value, string? value2 = null)
         {
             await FileSemaphore.WaitAsync();
 

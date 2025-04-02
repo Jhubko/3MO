@@ -14,6 +14,7 @@ using Lavalink4NET;
 using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text;
 using System.Text.RegularExpressions;
 
 
@@ -23,7 +24,6 @@ namespace Discord_Bot
     {
         public static IAudioService? AudioService { get; set; }
         public static DiscordClient? Client { get; set; }
-        private static CommandsNextExtension? Commands { get; set; }
 
         public static IJsonHandler jsonHandler = new JSONReader();
 
@@ -36,6 +36,8 @@ namespace Discord_Bot
         public static VoicePointsManager voicePointsManager;
 
         public static GlobalConfig globalConfig;
+
+        private static InventoryManager inventoryManager;
 
 
         static async Task Main(string[] args)
@@ -68,7 +70,7 @@ namespace Discord_Bot
             Client.MessageCreated += Client_MessageCreated;
             Client.VoiceStateUpdated += Client_VoiceStateUpdated;
 
-
+            inventoryManager = new InventoryManager();
             voicePointsManager = new VoicePointsManager();
             Task.Run(() => voicePointsManager.AddPointsLoop());
 
@@ -82,7 +84,7 @@ namespace Discord_Bot
             using var serviceProvider = new ServiceCollection()
                     .AddSingleton(Client)
                     .AddLavalink()
-                    .ConfigureLavalink(x =>  
+                    .ConfigureLavalink(x =>
                     {
                         x.Label = "Lavalink";
                         x.BaseAddress = builder.Uri;
@@ -91,7 +93,7 @@ namespace Discord_Bot
                         x.ReadyTimeout = TimeSpan.FromSeconds(15);
                     })
                     .BuildServiceProvider();
-            
+
             AudioService = serviceProvider.GetRequiredService<IAudioService>();
 
             var SlashCommandConfig = Client.UseSlashCommands(new SlashCommandsConfiguration
@@ -114,6 +116,7 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<ShopCommand>();
             SlashCommandConfig.RegisterCommands<HangmanCommands>();
             SlashCommandConfig.RegisterCommands<WordleCommands>();
+            SlashCommandConfig.RegisterCommands<FishingCommand>();
 
             await Client.ConnectAsync();
 
@@ -129,7 +132,7 @@ namespace Discord_Bot
             {
                 foreach (var guild in GetGuilds())
                 {
-                   await RaffleHandlers.HandleRaffle(Client, guild);
+                    await RaffleHandlers.HandleRaffle(Client, guild);
                 }
             });
             taskManager.ScheduleDailyTask("DailyIncome", new TimeSpan(11, 00, 0), async () =>
@@ -142,7 +145,7 @@ namespace Discord_Bot
                         continue;
                     var channel = await Client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
                     CustomInteractionContext ctx = CreateInteractionContext(Client, channel);
-                    await ctx.CreateResponseAsync($"💸 @everyone City revenues have been generated! 💸", false);
+                    await ctx.CreateResponseAsync($"💸 City revenues have been generated! 💸", false);
                 }
                 await cityHandler.GenerateDailyIncome();
             });
@@ -154,8 +157,8 @@ namespace Discord_Bot
         {
             if (channel.GuildId.HasValue)
             {
-            var guild = client.GetGuildAsync(channel.GuildId.Value).Result;
-            return new CustomInteractionContext(client, guild, channel, client.CurrentUser);
+                var guild = client.GetGuildAsync(channel.GuildId.Value).Result;
+                return new CustomInteractionContext(client, guild, channel, client.CurrentUser);
             }
             return null;
         }
@@ -217,6 +220,27 @@ namespace Discord_Bot
         private static async Task Client_ComponentInteractionCreated(DiscordClient sender, ComponentInteractionCreateEventArgs args)
         {
             var backButton = new DiscordButtonComponent(ButtonStyle.Primary, "backButton", "Back");
+            var fishList = await inventoryManager.LoadFishDataAsync(args.Guild.Id);
+
+            if (args.Interaction.Data.ComponentType == ComponentType.StringSelect && args.Interaction.Data.CustomId == "pageSelect")
+            {
+                int selectedPage = int.Parse(args.Interaction.Data.Values.First());
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = "🐟 Lista Ryb 🐟",
+                    Description = $"```\n{FishingCommand.GetFishPage(fishList, selectedPage)}\n```",
+                    Color = DiscordColor.Blurple
+                };
+
+                var selectComponent = new DiscordSelectComponent("pageSelect", "Wybierz stronę",
+                    Enumerable.Range(1, (int)Math.Ceiling((double)fishList.Count / 10))
+                    .Select(i => new DiscordSelectComponentOption($"Strona {i}", i.ToString())).ToArray(), false);
+
+                await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+                    new DiscordInteractionResponseBuilder()
+                        .AddEmbed(embed)
+                        .AddComponents(selectComponent));
+            }
 
             if (args.Interaction.Data.ComponentType == ComponentType.StringSelect && args.Interaction.Data.CustomId == "help_menu")
             {
@@ -232,6 +256,7 @@ namespace Discord_Bot
                     "music" => HelpContent.musicCommandEmbed,
                     "search" => HelpContent.searchCommandEmbed,
                     "mngmt" => HelpContent.managementCommandsEmbed,
+                    "fish" => HelpContent.fishingCommandEmbed,
                     _ => HelpContent.helpCommandEmbed
                 };
 
@@ -252,9 +277,10 @@ namespace Discord_Bot
                     new DiscordSelectComponentOption("City", "city"),
                     new DiscordSelectComponentOption("Stats", "stats"),
                     new DiscordSelectComponentOption("Games", "games"),
+                    new DiscordSelectComponentOption("Fishing", "fish"),
                     new DiscordSelectComponentOption("Music", "music"),
                     new DiscordSelectComponentOption("Search", "search"),
-                    new DiscordSelectComponentOption("Management", "mngmt")
+                    new DiscordSelectComponentOption("Management", "mngmt"),
                 });
 
                 await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
@@ -283,9 +309,7 @@ namespace Discord_Bot
                     Title = "Please wait for the cooldown to end",
                     Description = $"Time: {timeLeft}"
                 };
-
                 await e.Context.Channel.SendMessageAsync(embed: coolDownMessage);
-
             }
         }
 

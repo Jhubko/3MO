@@ -1,0 +1,176 @@
+[
+  {
+    "Name": "Szczupak",
+    "MinWeight": 1.5,
+    "MaxWeight": 15.0,
+    "BasePrice": 40
+  },
+  {
+    "Name": "Sum",
+    "MinWeight": 4.0,
+    "MaxWeight": 30.0,
+    "BasePrice": 50
+  },
+  {
+    "Name": "Troć",
+    "MinWeight": 0.5,
+    "MaxWeight": 5.0,
+    "BasePrice": 80
+  },
+  {
+    "Name": "Pstrąg",
+    "MinWeight": 0.3,
+    "MaxWeight": 4.0,
+    "BasePrice": 60
+  },
+  {
+    "Name": "Węgorz",
+    "MinWeight": 0.5,
+    "MaxWeight": 3.0,
+    "BasePrice": 100
+  },
+  {
+    "Name": "Wzdręga",
+    "MinWeight": 0.2,
+    "MaxWeight": 0.8,
+    "BasePrice": 15
+  },
+  {
+    "Name": "Leszcz",
+    "MinWeight": 0.5,
+    "MaxWeight": 7.0,
+    "BasePrice": 12
+  },
+  {
+    "Name": "Sielawa",
+    "MinWeight": 0.3,
+    "MaxWeight": 2.0,
+    "BasePrice": 75
+  },
+  {
+    "Name": "Sandacz",
+    "MinWeight": 1.0,
+    "MaxWeight": 10.0,
+    "BasePrice": 45
+  },
+  {
+    "Name": "Boleń",
+    "MinWeight": 0.5,
+    "MaxWeight": 8.0,
+    "BasePrice": 35
+  },
+  {
+    "Name": "Karp",
+    "MinWeight": 2.0,
+    "MaxWeight": 20.0,
+    "BasePrice": 25
+  },
+  {
+    "Name": "Brzana",
+    "MinWeight": 0.5,
+    "MaxWeight": 4.0,
+    "BasePrice": 55
+  },
+  {
+    "Name": "Jaź",
+    "MinWeight": 0.5,
+    "MaxWeight": 3.0,
+    "BasePrice": 30
+  },
+  {
+    "Name": "Kleń",
+    "MinWeight": 0.3,
+    "MaxWeight": 2.5,
+    "BasePrice": 25
+  },
+  {
+    "Name": "Lin",
+    "MinWeight": 0.3,
+    "MaxWeight": 3.5,
+    "BasePrice": 30
+  },
+  {
+    "Name": "Miętus",
+    "MinWeight": 0.2,
+    "MaxWeight": 3.0,
+    "BasePrice": 65
+  },
+  {
+    "Name": "Okoń",
+    "MinWeight": 0.2,
+    "MaxWeight": 2.5,
+    "BasePrice": 20
+  },
+  {
+    "Name": "Płoć",
+    "MinWeight": 0.1,
+    "MaxWeight": 1.5,
+    "BasePrice": 15
+  },
+  {
+    "Name": "Ukleja",
+    "MinWeight": 0.02,
+    "MaxWeight": 0.1,
+    "BasePrice": 50
+  },
+  {
+    "Name": "Karaś",
+    "MinWeight": 0.3,
+    "MaxWeight": 3.0,
+    "BasePrice": 15
+  },
+  {
+    "Name": "Certa",
+    "MinWeight": 0.2,
+    "MaxWeight": 2.0,
+    "BasePrice": 45
+  },
+  {
+    "Name": "Świnka",
+    "MinWeight": 0.5,
+    "MaxWeight": 2.5,
+    "BasePrice": 35
+  },
+  {
+    "Name": "Głowacica",
+    "MinWeight": 3.0,
+    "MaxWeight": 20.0,
+    "BasePrice": 200
+  },
+  {
+    "Name": "Kiełb",
+    "MinWeight": 0.02,
+    "MaxWeight": 0.3,
+    "BasePrice": 80
+  },
+  {
+    "Name": "Strzebla potokowa",
+    "MinWeight": 0.02,
+    "MaxWeight": 0.1,
+    "BasePrice": 200
+  },
+  {
+    "Name": "Różanka",
+    "MinWeight": 0.01,
+    "MaxWeight": 0.05,
+    "BasePrice": 180
+  },
+  {
+    "Name": "Głowacz białopłetwy",
+    "MinWeight": 0.05,
+    "MaxWeight": 0.3,
+    "BasePrice": 25
+  },
+  {
+    "Name": "Minóg rzeczny",
+    "MinWeight": 0.1,
+    "MaxWeight": 0.5,
+    "BasePrice": 90
+  },
+  {
+    "Name": "Jelec",
+    "MinWeight": 0.1,
+    "MaxWeight": 0.6,
+    "BasePrice": 20
+  }
+]

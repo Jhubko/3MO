@@ -39,4 +39,33 @@ namespace Discord_Bot.other
             return await Task.FromResult(filteredCategories);
         }
     }
+
+    public class FishAutocomplete : IAutocompleteProvider
+    {
+        private readonly InventoryManager _inventoryManager = new InventoryManager();
+
+        public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+        {
+            var userInventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+
+            if (userInventory?.Fish == null || userInventory.Fish.Count == 0)
+            {
+                return new List<DiscordAutoCompleteChoice>(); // Brak podpowiedzi, jeśli nie ma ryb
+            }
+
+            var fishNames = userInventory.Fish
+                .Select(f => f.Name)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToList();
+
+            string userInput = ctx.OptionValue?.ToString() ?? "";
+            var filteredFish = fishNames
+                .Where(name => name.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+                .Take(25)
+                .Select(name => new DiscordAutoCompleteChoice(name, name));
+
+            return await Task.FromResult(filteredFish);
+        }
+    }
 }

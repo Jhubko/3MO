@@ -30,7 +30,13 @@
     {
         public List<ShopItem>? ShopItems { get; set; } = new List<ShopItem>();
     }
-    
+
+    public class UserInventory
+    {
+        public List<FishItem> Fish { get; set; } = new List<FishItem>();
+        public Dictionary<string, int> Items { get; set; } = new Dictionary<string, int>();
+    }
+
     public class UserConfig
     {
         public string? Messages { get; set; } = "0";
@@ -62,6 +68,9 @@
         public string? WordleLosses { get; set; } = "0";
         public string? HangmanWins { get; set; } = "0";
         public string? HangmanLosses { get; set; } = "0";
+        public string? FishCaught { get; set; } = "0";
+        public string? FishBreakoffs { get; set; } = "0";
+
     }
 }
 
@@ -71,4 +80,18 @@ public class ShopItem
     public string Description { get; set; }
     public int BaseCost { get; set; }
     public int PassivePointsIncrease { get; set; }
+}
+public class Fish
+{
+    public string? Name { get; set; }
+    public double MinWeight { get; set; }
+    public double MaxWeight { get; set; }
+    public int BasePrice { get; set; }
+}
+
+public class FishItem
+{
+    public string? Name { get; set; }
+    public double Weight { get; set; }
+    public int Price { get; set; }
 }
