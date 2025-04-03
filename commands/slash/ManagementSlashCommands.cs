@@ -110,7 +110,7 @@ namespace Discord_Bot.commands.slash
                 });
 
                 File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
-                await ctx.CreateResponseAsync($"✅ Ryba {name} została dodana do bazy danych.", true);
+                await ctx.CreateResponseAsync($"✅ Ryba {name} została dodana do bazy danych.");
             }
             else if (action.ToLower() == "edit")
             {
@@ -131,7 +131,7 @@ namespace Discord_Bot.commands.slash
                     fishToEdit.BasePrice = basePrice.Value;
 
                 File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
-                await ctx.CreateResponseAsync($"✅ Ryba {name} została zaktualizowana.", true);
+                await ctx.CreateResponseAsync($"✅ Ryba {name} została zaktualizowana.");
             }
             else if (action.ToLower() == "remove")
             {
@@ -145,7 +145,7 @@ namespace Discord_Bot.commands.slash
                 fishList.Remove(fishToRemove);
 
                 File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
-                await ctx.CreateResponseAsync($"✅ Ryba {name} została usunięta z bazy danych.", true);
+                await ctx.CreateResponseAsync($"✅ Ryba {name} została usunięta z bazy danych.");
             }
             else
             {
