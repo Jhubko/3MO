@@ -49,16 +49,17 @@ public class FishingCommand : ApplicationCommandModule
         userPoints -= fishingPrice;
         pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
 
-        await ctx.CreateResponseAsync("🎣 Zarzuciłeś wędkę... czekaj na branie!");
-        await Task.Delay(random.Next(30000, 600000));
+        await ctx.CreateResponseAsync($"🎣{ctx.User.Mention} Zarzuciłeś wędkę... czekaj na branie!");
 
         if (random.NextDouble() < 0.2)
         {
-            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("❌ Nic nie złapało się na haczyk. Spróbuj ponownie!"));
+            await Task.Delay(600000);
+            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"❌ {ctx.User.Mention} Nic nie złapało się na haczyk. Spróbuj ponownie!"));
             fishingUsers.Remove(ctx.User.Id);
             return;
         }
 
+        await Task.Delay(random.Next(30000, 600000));
         var fish = fishList[random.Next(fishList.Count)];
         double weight = Math.Round(random.NextDouble() * (fish.MaxWeight - fish.MinWeight) + fish.MinWeight, 2);
         int difficulty = Math.Min(20, Math.Max(1, (int)Math.Ceiling(Math.Log10(weight) * 10)));
@@ -79,7 +80,7 @@ public class FishingCommand : ApplicationCommandModule
             if (reaction.TimedOut)
             {
                 await StatsHandler.IncreaseStats(ctx.User.Id, "FishBreakoffs");
-                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("❌ Ryba uciekła!"));
+                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"❌ {ctx.User.Mention} Ryba uciekła!"));
                 fishingUsers.Remove(ctx.User.Id);
                 return;
             }
@@ -89,15 +90,8 @@ public class FishingCommand : ApplicationCommandModule
             {
                 var oldMessage = message;
                 message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"🐟 {ctx.User.Mention} 🐟 Ryba się wyrywa! Kliknij 🎣 jeszcze raz!"));
-                try
-                {
-                    await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":fishing_pole_and_fish:"));
-                }
-                catch 
-                { 
-                    //Its fine to leave it blank, Try is just to not create reaction to already deleted message.
-                }
-                
+                if(message != null)
+                    await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":fishing_pole_and_fish:"));               
                 await oldMessage.DeleteAsync();
             }
         }
