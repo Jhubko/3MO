@@ -27,6 +27,12 @@ Build and manage your own city using your points:
 - **View other players' cities** and see how they are developing.  
 - **Collect daily income** from your built structures.  
 
+## 🎣 Fishing System
+Try your luck and become a fishing master:
+- **Catch Fish**  -Cast your line and catch various types of fish.
+- **Sell Fish** - Trade your catch for points.
+- **Edit Fish List** – Customize the available fish species.
+
 ## 🎰 Casino  
 Try your luck and multiply your points in various games:  
 - **Gamble** – Bet a specific amount to either double it or lose it.  
