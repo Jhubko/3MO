@@ -29,7 +29,7 @@ Build and manage your own city using your points:
 
 ## 🎣 Fishing System
 Try your luck and become a fishing master:
-- **Catch Fish**  -Cast your line and catch various types of fish.
+- **Catch Fish** - Cast your line and catch various types of fish.
 - **Sell Fish** - Trade your catch for points.
 - **Edit Fish List** – Customize the available fish species.
 
