@@ -3,6 +3,7 @@ using Discord_Bot.other;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 
 namespace Discord_Bot.commands.slash
@@ -11,6 +12,8 @@ namespace Discord_Bot.commands.slash
     {
         private static IJsonHandler jsonReader = new JSONReader();
         private JSONWriter GlobalJsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+        private static string? configPath = Program.globalConfig.ConfigPath;
+        private readonly InventoryManager inventoryManager = new InventoryManager();
 
         [SlashCommand("help", "Show information about all commands.")]
         public async Task HelpCommand(InteractionContext ctx)
@@ -36,6 +39,118 @@ namespace Discord_Bot.commands.slash
                 .AddComponents(selectMenu);
 
             await ctx.EditResponseAsync(message);
+        }
+
+        [SlashCommand("editfish", "Edit fish data in the fish database.")]
+        [RequirePermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task EditFish(InteractionContext ctx,
+            [Option("action", "The action to perform (add, edit, remove)")] string action,
+            [Option("name", "The name of the fish")] string name,
+            [Option("minweight", "The minimum weight of the fish", true)] string minWeightStr = null,
+            [Option("maxweight", "The maximum weight of the fish", true)] string maxWeightStr = null,
+            [Option("baseprice", "The base price of the fish", true)] string basePriceStr = null)
+        {
+
+            var fishList = await inventoryManager.LoadFishDataAsync(ctx.Guild.Id);
+
+            double? minWeight = null, maxWeight = null;
+            int? basePrice = null;
+
+            if (!string.IsNullOrEmpty(minWeightStr) && double.TryParse(minWeightStr, out double parsedMinWeight))
+            {
+                minWeight = parsedMinWeight;
+            }
+            else if (!string.IsNullOrEmpty(minWeightStr))
+            {
+                await ctx.CreateResponseAsync("❌ Parametr minweight musi być liczbą.", true);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(maxWeightStr) && double.TryParse(maxWeightStr, out double parsedMaxWeight))
+            {
+                maxWeight = parsedMaxWeight;
+            }
+            else if (!string.IsNullOrEmpty(maxWeightStr))
+            {
+                await ctx.CreateResponseAsync("❌ Parametr maxweight musi być liczbą.", true);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(basePriceStr) && int.TryParse(basePriceStr, out int parsedBasePrice))
+            {
+                basePrice = parsedBasePrice;
+            }
+            else if (!string.IsNullOrEmpty(basePriceStr))
+            {
+                await ctx.CreateResponseAsync("❌ Parametr baseprice musi być liczbą całkowitą.", true);
+                return;
+            }
+
+            if (action.ToLower() == "add")
+            {
+                if (string.IsNullOrEmpty(name) || minWeight == null || maxWeight == null || basePrice == null)
+                {
+                    await ctx.CreateResponseAsync("❌ Proszę podać wszystkie wymagane parametry (name, minweight, maxweight, baseprice).", true);
+                    return;
+                }
+
+                var existingFish = fishList.FirstOrDefault(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (existingFish != null)
+                {
+                    await ctx.CreateResponseAsync($"❌ Ryba o nazwie {name} już istnieje w bazie danych.", true);
+                    return;
+                }
+
+                fishList.Add(new Fish
+                {
+                    Name = name,
+                    MinWeight = minWeight.Value,
+                    MaxWeight = maxWeight.Value,
+                    BasePrice = basePrice.Value
+                });
+
+                File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
+                await ctx.CreateResponseAsync($"✅ Ryba {name} została dodana do bazy danych.", true);
+            }
+            else if (action.ToLower() == "edit")
+            {
+                var fishToEdit = fishList.FirstOrDefault(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (fishToEdit == null)
+                {
+                    await ctx.CreateResponseAsync($"❌ Nie znaleziono ryby o nazwie {name}.", true);
+                    return;
+                }
+
+                if (minWeight.HasValue)
+                    fishToEdit.MinWeight = minWeight.Value;
+
+                if (maxWeight.HasValue)
+                    fishToEdit.MaxWeight = maxWeight.Value;
+
+                if (basePrice.HasValue)
+                    fishToEdit.BasePrice = basePrice.Value;
+
+                File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
+                await ctx.CreateResponseAsync($"✅ Ryba {name} została zaktualizowana.", true);
+            }
+            else if (action.ToLower() == "remove")
+            {
+                var fishToRemove = fishList.FirstOrDefault(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (fishToRemove == null)
+                {
+                    await ctx.CreateResponseAsync($"❌ Nie znaleziono ryby o nazwie {name}.", true);
+                    return;
+                }
+
+                fishList.Remove(fishToRemove);
+
+                File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
+                await ctx.CreateResponseAsync($"✅ Ryba {name} została usunięta z bazy danych.", true);
+            }
+            else
+            {
+                await ctx.CreateResponseAsync("❌ Nieznana akcja. Wybierz jedną z akcji: add, edit, remove.", true);
+            }
         }
 
 
@@ -161,7 +276,7 @@ namespace Discord_Bot.commands.slash
             {
             { "ShopItems", serverConfig.ShopItems }
             };
-            await GlobalJsonWriter.UpdateConfig(shopFilePath, serverConfigDict);
+            await GlobalJsonWriter.UpdateShopConfig(shopFilePath, serverConfigDict);
 
             var embed = new DiscordEmbedBuilder
             {
@@ -193,7 +308,7 @@ namespace Discord_Bot.commands.slash
             {
             { "ShopItems", serverConfig.ShopItems }
             };
-            await GlobalJsonWriter.UpdateConfig(shopFilePath, serverConfigDict);
+            await GlobalJsonWriter.UpdateShopConfig(shopFilePath, serverConfigDict);
 
             await RemoveItemFromAllUsers(name);
 
@@ -217,7 +332,7 @@ namespace Discord_Bot.commands.slash
                     if (itemKey != null)
                     {
                         userItems[itemKey] = 0;
-                        await GlobalJsonWriter.UpdateConfig(file, userItems);
+                        await GlobalJsonWriter.UpdateShopConfig(file, userItems);
                     }
                 }
             }
