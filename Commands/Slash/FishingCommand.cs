@@ -102,7 +102,7 @@ public class FishingCommand : ApplicationCommandModule
             }
         }
         await message.DeleteAsync();
-        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"✅ Gratulacje! Złowiłeś {fish.Name} o wadze {weight}kg!"));
+        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"✅ Gratulacje {ctx.User.Mention}! Złowiłeś {fish.Name} o wadze {weight}kg!"));
         await inventoryManager.SaveFishToInventory(ctx.User.Id, fish.Name, weight, fish.BasePrice);
         await StatsHandler.IncreaseStats(ctx.User.Id, "FishCaught");
         fishingUsers.Remove(ctx.User.Id);
