@@ -54,7 +54,7 @@ public class FishingCommand : ApplicationCommandModule
 
         if (random.NextDouble() < 0.2)
         {
-            await ctx.CreateResponseAsync("❌ Nic nie złapało się na haczyk. Spróbuj ponownie!");
+            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("❌ Nic nie złapało się na haczyk. Spróbuj ponownie!"));
             fishingUsers.Remove(ctx.User.Id);
             return;
         }
