@@ -12,8 +12,10 @@ namespace Discord_Bot.other
 
         public static async Task DeleteUnwantedMessage(MessageReactionAddEventArgs args, DiscordEmoji emoji)
         {
-            var deleteMessageReactions = await args.Message.GetReactionsAsync(emoji);
             var message = await args.Channel.GetMessageAsync(args.Message.Id);
+            if (message == null)
+                return;
+            var deleteMessageReactions = await args.Message.GetReactionsAsync(emoji);
             var mentionAuthor = message.Author.Mention;
             bool adminReaction = false;
 

@@ -32,7 +32,7 @@ namespace Discord_Bot.Config
             await UpdateConfig(filePath, key, value, value2);
         }
 
-        public async Task UpdateUserConfig(ulong userID, string key, string value, string? value2 = null)
+        public async Task UpdateUserConfig(ulong userID, string key, object value, string? value2 = null)
         {
             string filePath = Path.Combine($"{_serverConfigDir}\\user_points", $"{userID}.json");
             await UpdateConfig(filePath, key, value, value2);
@@ -139,7 +139,6 @@ namespace Discord_Bot.Config
             obj[subKey] = array;
             jsonData[key] = obj;
         }
-
         private static bool IsArrayDataType(string dataType) => dataType == "ImageOnlyChannels";
         private static bool IsDictionaryDataType(string dataType) => dataType == "BotMessages";
     }

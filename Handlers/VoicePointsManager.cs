@@ -46,7 +46,6 @@ class VoicePointsManager
         Console.WriteLine("Active users have been collected and their points updated.");
     }
 
-
     private async Task<int> LoadUserPoints(ulong userId)
     {
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
@@ -92,33 +91,6 @@ class VoicePointsManager
         return await LoadUserPoints(userId);
     }
 
-    public async Task<List<UserPoints>> GetTopUsersByCategory(int count, string category)
-    {
-        var allUsers = await GetAllUsersByCategory(category);
-        return allUsers.OrderByDescending(u => u.Points).Take(count).ToList();
-    }
-
-    private async Task<List<UserPoints>> GetAllUsersByCategory(string category)
-    {
-        var users = new List<UserPoints>();
-        foreach (var file in Directory.GetFiles(folderPath, "*.json"))
-        {
-            var filename = Path.GetFileNameWithoutExtension(file);
-            if (filename.Contains('_')) continue;
-
-            var userData = await jsonReader.ReadJson<UserConfig>(file);
-            if (userData != null)
-            {
-                ulong userId = ulong.Parse(filename);
-                PropertyInfo property = typeof(UserConfig).GetProperty(category);
-                int statValue = property != null ? int.Parse(property.GetValue(userData)?.ToString() ?? "0") : 0;
-
-                users.Add(new UserPoints { UserId = userId, Points = statValue });
-            }
-        }
-        return users;
-    }
-
     private async Task<int> CalculatePassivePoints(ulong userId)
     {
         var guild = Program.Client.Guilds.Values
@@ -146,5 +118,6 @@ public class UserPoints
 {
     public ulong UserId { get; set; }
     public int Points { get; set; }
+    public string? ExtraInfo { get; internal set; }
 }
 

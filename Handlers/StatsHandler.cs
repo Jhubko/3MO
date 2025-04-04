@@ -8,6 +8,7 @@ class StatsHandler
     private readonly static string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
     private static IJsonHandler jsonReader = new JSONReader();
     private static JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+    private static readonly InventoryManager inventoryManager = new InventoryManager();
     public async static Task<UserConfig> LoadUserStats(ulong userId)
     {
         return await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
@@ -42,6 +43,73 @@ class StatsHandler
     public static string AddSpacesBeforeCapitalLetters(string input)
     {
         return Regex.Replace(input, "(?<!^)([A-Z])", " $1");
+    }
+
+    public static async Task<List<UserPoints>> GetTopUsersByCategory(int count, string category)
+    {
+        var allUsers = await GetAllUsersByCategory(category);
+        return allUsers.OrderByDescending(u => u.Points).Take(count).ToList();
+    }
+
+
+    private static async Task<List<UserPoints>> GetAllUsersByCategory(string category)
+    {
+        var users = new List<UserPoints>();
+
+        foreach (var file in Directory.GetFiles(folderPath, "*.json"))
+        {
+            var filename = Path.GetFileNameWithoutExtension(file);
+            if (filename.Contains('_')) continue;
+
+            var userData = await jsonReader.ReadJson<UserConfig>(file);
+            if (userData != null)
+            {
+                ulong userId = ulong.Parse(filename);
+
+                if (category == "HeaviestFish")
+                {
+                    FishItem heaviestFish = userData.HeaviestFish;
+                    if (heaviestFish != null && heaviestFish.Weight > 0)
+                    {
+                        users.Add(new UserPoints
+                        {
+                            UserId = userId,
+                            Points = (int)heaviestFish.Weight,
+                            ExtraInfo = $"{heaviestFish.Name} - {heaviestFish.Weight} kg"
+                        });
+                    }
+                }
+                else
+                {
+                    PropertyInfo property = typeof(UserConfig).GetProperty(category);
+                    int statValue = property != null ? int.Parse(property.GetValue(userData)?.ToString() ?? "0") : 0;
+
+                    users.Add(new UserPoints { UserId = userId, Points = statValue });
+                }
+            }
+        }
+        return users;
+    }
+
+    public async static Task calculateHeaviestFish(ulong userId, string fishName, double weight, int basePrice)
+    {
+        UserInventory userInventory = await inventoryManager.GetUserItems(userId);
+        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
+        double currentHeaviestFish = userConfig.HeaviestFish.Weight;
+        int price = (int)(basePrice * (weight / 2));
+        
+        var newFish = new FishItem
+        {
+            Name = fishName,
+            Weight = weight,
+            Price = price
+        };
+
+        if (currentHeaviestFish == 0 || newFish.Weight > currentHeaviestFish)
+        {
+            await jsonWriter.UpdateUserConfig(userId, "HeaviestFish", newFish);
+            return;
+        }
     }
 
 }
