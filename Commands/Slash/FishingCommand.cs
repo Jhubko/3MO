@@ -90,16 +90,17 @@ public class FishingCommand : ApplicationCommandModule
             {
                 var oldMessage = message;
                 message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"🐟 {ctx.User.Mention} 🐟 Ryba się wyrywa! Kliknij 🎣 jeszcze raz!"));
-                if(message != null)
-                    await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":fishing_pole_and_fish:"));               
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":fishing_pole_and_fish:"));               
                 await oldMessage.DeleteAsync();
             }
         }
         await message.DeleteAsync();
         await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"✅ Gratulacje {ctx.User.Mention}! Złowiłeś {fish.Name} o wadze {weight}kg!"));
         await inventoryManager.SaveFishToInventory(ctx.User.Id, fish.Name, weight, fish.BasePrice);
+        await StatsHandler.calculateHeaviestFish(ctx.User.Id, fish.Name, weight, fish.BasePrice);
         await StatsHandler.IncreaseStats(ctx.User.Id, "FishCaught");
         fishingUsers.Remove(ctx.User.Id);
+
     }
 
 
