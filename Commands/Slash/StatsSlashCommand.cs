@@ -38,11 +38,11 @@ namespace Discord_Bot.commands.slash
                     return;
                 }
 
-                var topUsers = await Program.voicePointsManager.GetTopUsersByCategory(10, category);
+                var topUsers = await StatsHandler.GetTopUsersByCategory(10, category);
 
                 var embed = new DiscordEmbedBuilder
                 {
-                    Title = $"Top 10 - {category}",
+                    Title = $"Top 10 - {StatsHandler.AddSpacesBeforeCapitalLetters(category)}",
                     Color = DiscordColor.Gold
                 };
 
@@ -52,11 +52,20 @@ namespace Discord_Bot.commands.slash
                     try
                     {
                         var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
-                        highscoreList.AppendLine($"{GambleUtils.CapitalizeUserFirstLetter(discordMember.DisplayName)}: {user.Points}");
+
+                        string valueToDisplay = category == "HeaviestFish"
+                            ? user.ExtraInfo ?? $"{user.Points} kg"
+                            : user.Points.ToString();
+
+                        highscoreList.AppendLine($"{GambleUtils.CapitalizeUserFirstLetter(discordMember.DisplayName)}: {valueToDisplay}");
                     }
                     catch (DSharpPlus.Exceptions.NotFoundException)
                     {
-                        highscoreList.AppendLine($"Unknown User: {user.Points}");
+                        string valueToDisplay = category == "HeaviestFish"
+                            ? user.ExtraInfo ?? $"{user.Points} kg"
+                            : user.Points.ToString();
+
+                        highscoreList.AppendLine($"Unknown User: {valueToDisplay}");
                     }
                 }
 
@@ -79,7 +88,18 @@ namespace Discord_Bot.commands.slash
             foreach (PropertyInfo stats in properties)
             {
                 desc += "------------------------\n";
-                desc += $"**{StatsHandler.AddSpacesBeforeCapitalLetters(stats.Name)}**: {stats.GetValue(userStats)}\n";
+
+                if (stats.Name == "HeaviestFish" && stats.GetValue(userStats) is FishItem fish)
+                {
+                    if (fish.Weight > 0)
+                        desc += $"**{StatsHandler.AddSpacesBeforeCapitalLetters(stats.Name)}**: {fish.Name} - {fish.Weight} kg\n";
+                    else
+                        desc += $"**{StatsHandler.AddSpacesBeforeCapitalLetters(stats.Name)}**: brak danych\n";
+                }
+                else
+                {
+                    desc += $"**{StatsHandler.AddSpacesBeforeCapitalLetters(stats.Name)}**: {stats.GetValue(userStats)}\n";
+                }
             }
 
             var embed = new DiscordEmbedBuilder
