@@ -41,10 +41,10 @@ class CityHandler
     {
         Directory.CreateDirectory(folderPath);
     }
-    public async Task<int> GetCityPoints(ulong userId)
+    public async Task<uint> GetCityPoints(ulong userId)
     {
         var city = await LoadCity(userId);
-        int points = city.StoredPoints;
+        uint points = city.StoredPoints;
         city.StoredPoints = 0;
         await jsonWriter.UpdateCityConfig(userId, "StoredPoints", city.StoredPoints);
         return points;
@@ -80,8 +80,8 @@ class CityHandler
         if (x < 0 || x >= CitySize || y < 0 || y >= CitySize || city.Grid[x][y] != "⬜")
             return false;
 
-        int buildingCost = building.Cost;
-        int userPoints = await _pointsManager.GetUserPoints(userId);
+        uint buildingCost = building.Cost;
+        uint userPoints = await _pointsManager.GetUserPoints(userId);
 
         if (userPoints < buildingCost)
             return false;
@@ -102,7 +102,7 @@ class CityHandler
     {
         x -= 1;
         y -= 1;
-        int userPoints = await _pointsManager.GetUserPoints(userId);
+        uint userPoints = await _pointsManager.GetUserPoints(userId);
         var city = await LoadCity(userId);
         if (x < 0 || x >= CitySize || y < 0 || y >= CitySize || city.Grid[x][y] == "⬜")
             return false;
@@ -113,7 +113,7 @@ class CityHandler
         if (building == null)
             return false; 
 
-        int refund = building.Cost / 2;
+        uint refund = building.Cost / 2;
 
         city.Grid[x][y] = "⬜";
         userPoints += refund;

@@ -44,7 +44,7 @@ public class SlotsCommand : ApplicationCommandModule
     {
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        int currentPoints = int.Parse(userData.Points);
+        uint currentPoints = userData.Points;
 
         if (currentPoints < BetAmount)
         {
@@ -94,24 +94,24 @@ public class SlotsCommand : ApplicationCommandModule
         }
 
         currentPoints -= BetAmount;
-        await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
+        await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints);
 
         var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json");
-        var slotsPool = int.Parse(serverConfig.SlotsPool);
+        var slotsPool = serverConfig.SlotsPool;
         slotsPool += BetAmount - 2;
-        await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", slotsPool.ToString());
+        await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", slotsPool);
 
         var reels = SpinReels();
         bool isWin = CheckWin(reels);
 
         if (isWin)
         {
-            int winAmount = int.Parse(serverConfig.SlotsPool);
+            uint winAmount = serverConfig.SlotsPool;
             currentPoints += winAmount;
             await StatsHandler.IncreaseStats(userId, "SlotsWins");
             await StatsHandler.IncreaseStats(userId, "WonPoints", winAmount);
-            await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool.ToString());
-            await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
+            await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool);
+            await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints);
         }
         else
         {

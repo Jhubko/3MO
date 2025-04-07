@@ -14,7 +14,7 @@ namespace Discord_Bot.commands.slash
         public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            int points = await Program.voicePointsManager.GetUserPoints(userId);
+            uint points = await Program.voicePointsManager.GetUserPoints(userId);
             var member = await ctx.Guild.GetMemberAsync(userId);
 
             var embed = new DiscordEmbedBuilder
@@ -38,7 +38,7 @@ namespace Discord_Bot.commands.slash
                     return;
                 }
 
-                var topUsers = await StatsHandler.GetTopUsersByCategory(10, category);
+                var topUsers = await StatsHandler.GetTopUsersByCategory(ctx.Guild, 10, category);
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -53,7 +53,7 @@ namespace Discord_Bot.commands.slash
                     {
                         var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
 
-                        string valueToDisplay = category == "HeaviestFish"
+                        string? valueToDisplay = category == "HeaviestFish"
                             ? user.ExtraInfo ?? $"{user.Points} kg"
                             : user.Points.ToString();
 
@@ -61,7 +61,7 @@ namespace Discord_Bot.commands.slash
                     }
                     catch (DSharpPlus.Exceptions.NotFoundException)
                     {
-                        string valueToDisplay = category == "HeaviestFish"
+                        string? valueToDisplay = category == "HeaviestFish"
                             ? user.ExtraInfo ?? $"{user.Points} kg"
                             : user.Points.ToString();
 

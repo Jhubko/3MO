@@ -26,13 +26,13 @@ namespace Discord_Bot.Config
             await _jsonHandler.WriteJson(filePath, jsonData);
         }
 
-        public async Task UpdateServerConfig(ulong serverId, string key, string value, string? value2 = null)
+        public async Task UpdateServerConfig(ulong serverId, string key, object value, object? value2 = null)
         {
             string filePath = Path.Combine(_serverConfigDir, $"{serverId}.json");
             await UpdateConfig(filePath, key, value, value2);
         }
 
-        public async Task UpdateUserConfig(ulong userID, string key, object value, string? value2 = null)
+        public async Task UpdateUserConfig(ulong userID, string key, object value, object? value2 = null)
         {
             string filePath = Path.Combine($"{_serverConfigDir}\\user_points", $"{userID}.json");
             await UpdateConfig(filePath, key, value, value2);
@@ -63,7 +63,7 @@ namespace Discord_Bot.Config
             await _jsonHandler.WriteJson(filePath, jsonData);
         }
 
-        public async Task UpdateConfig(string filePath, string key, object value, string? value2 = null)
+        public async Task UpdateConfig(string filePath, string key, object value, object? value2 = null)
         {
             await FileSemaphore.WaitAsync();
 
@@ -86,7 +86,7 @@ namespace Discord_Bot.Config
                 }
                 else if (IsDictionaryDataType(key))
                 {
-                    UpdateDictionary(jsonData, key, value.ToString(), value2);
+                    UpdateDictionary(jsonData, key, value.ToString(), value2.ToString());
                 }
                 else
                 {

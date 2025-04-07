@@ -14,7 +14,7 @@ public class FishingCommand : ApplicationCommandModule
     private static readonly Dictionary<ulong, bool> fishingUsers = new();
     private static IJsonHandler jsonReader = new JSONReader();
 
-    private readonly int fishingPrice = 10;
+    private readonly uint fishingPrice = 10;
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
@@ -38,7 +38,7 @@ public class FishingCommand : ApplicationCommandModule
         }
 
         fishingUsers[ctx.User.Id] = true;
-        int userPoints = await pointsManager.GetUserPoints(ctx.User.Id);
+        uint userPoints = await pointsManager.GetUserPoints(ctx.User.Id);
 
         if (userPoints < fishingPrice)
         {
@@ -210,9 +210,9 @@ public class FishingCommand : ApplicationCommandModule
             userInventory.Fish.Remove(fishToSell);
         }
 
-        int currentPoints = int.Parse(userData.Points);
+        int currentPoints = (int)userData.Points;
         currentPoints += totalPrice;
-        userData.Points = currentPoints.ToString();
+        userData.Points = (uint)currentPoints;
 
         await jsonWriter.UpdateUserConfig(ctx.User.Id, "Points", userData.Points);
         await inventoryManager.UpdateUserItems(ctx.User.Id, userInventory);

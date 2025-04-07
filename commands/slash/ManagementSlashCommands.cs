@@ -261,8 +261,8 @@ namespace Discord_Bot.commands.slash
             {
                 Name = name,
                 Description = description,
-                BaseCost = GambleUtils.ParseInt(baseCost),
-                PassivePointsIncrease = GambleUtils.ParseInt(passivePointsIncrease)
+                BaseCost = (uint)GambleUtils.ParseInt(baseCost),
+                PassivePointsIncrease = (uint)GambleUtils.ParseInt(passivePointsIncrease)
             };
 
             if (shopItem.BaseCost < 0 || shopItem.PassivePointsIncrease < 0)

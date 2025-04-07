@@ -31,8 +31,8 @@ namespace Discord_Bot.commands.slash
             var userCard = new CardSystem();
             bool isPlayerWinner = false;
             ulong userId = ctx.User.Id;
-            int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-            int amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
+            uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+            uint amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
             var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
             if (!checkAmout.isProperValue)

@@ -16,7 +16,7 @@ public class InventoryManager
             var defaultInventory = new UserInventory
             {
                 Fish = new List<FishItem>(),
-                Items = new Dictionary<string, int>()
+                Items = new Dictionary<string, uint>()
             };
             var defaultJson = JObject.FromObject(new
             {
@@ -31,7 +31,7 @@ public class InventoryManager
         return new UserInventory
         {
             Fish = userData["Fish"]?.ToObject<List<FishItem>>() ?? new List<FishItem>(),
-            Items = userData["Items"]?.ToObject<Dictionary<string, int>>() ?? new Dictionary<string, int>()
+            Items = userData["Items"]?.ToObject<Dictionary<string, uint>>() ?? new Dictionary<string, uint>()
         };
     }
     public async Task<List<Fish>> LoadFishDataAsync(ulong serverId)
@@ -65,7 +65,7 @@ public class InventoryManager
         await File.WriteAllTextAsync(userFilePath, jsonString);
     }
 
-    public async Task UpdateUserItem(ulong userId, string item, int amount)
+    public async Task UpdateUserItem(ulong userId, string item, uint amount)
     {
         var inventory = await GetUserItems(userId);
         if (inventory.Items.ContainsKey(item))

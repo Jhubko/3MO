@@ -24,7 +24,7 @@ namespace Discord_Bot.other
                 return;
             }               
 
-            await raffleCommand.ResumeRaffle(ctx, int.Parse(pool));
+            await raffleCommand.ResumeRaffle(ctx, pool);
         }
 
         public static async Task HandleRaffle(DiscordClient client, ulong guild)

@@ -25,10 +25,10 @@ public class ShopCommand : ApplicationCommandModule
         }
 
         itemName = item.Name;
-        int currentPoints = int.Parse(userData.Points);
+        uint currentPoints = userData.Points;
         var inventory = await inventoryManager.GetUserItems(userId);
-        int itemCount = inventory.Items.ContainsKey(itemName) ? inventory.Items[itemName] : 0;
-        int itemCost = item.BaseCost * (itemCount + 1);
+        uint itemCount = inventory.Items.ContainsKey(itemName) ? inventory.Items[itemName] : 0;
+        uint itemCost = item.BaseCost * (itemCount + 1);
 
         if (currentPoints < itemCost)
         {
@@ -37,7 +37,7 @@ public class ShopCommand : ApplicationCommandModule
         }
 
         currentPoints -= itemCost;
-        userData.Points = currentPoints.ToString();
+        userData.Points = currentPoints;
 
         if (inventory.Items.ContainsKey(itemName))
             inventory.Items[itemName]++;
@@ -71,8 +71,8 @@ public class ShopCommand : ApplicationCommandModule
 
         var itemsList = string.Join("\n", serverConfig.ShopItems.Select(i =>
         {
-            int itemCount = inventory.Items.ContainsKey(i.Name) ? inventory.Items[i.Name] : 0;
-            int nextItemCost = i.BaseCost * (itemCount + 1);
+            uint itemCount = inventory.Items.ContainsKey(i.Name) ? inventory.Items[i.Name] : 0;
+            uint nextItemCost = i.BaseCost * (itemCount + 1);
             return $"**{i.Name}** - {nextItemCost} punktów" + (i.Description != null ? $" - {i.Description}" : "");
         }));
 

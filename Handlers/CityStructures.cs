@@ -2,7 +2,7 @@
 {
     public string Name { get; set; } = "Unnamed City";
     public string[][] Grid { get; set; } = new string[CityHandler.CitySize][];
-    public int  StoredPoints { get; set; } = 0;
+    public uint StoredPoints { get; set; } = 0;
 
     public City()
     {
@@ -21,6 +21,6 @@ public class Building
 {
     public string Emote { get; set; }
     public string Name { get; set; }
-    public int Cost { get; set; }
-    public int Income { get; set; }
+    public uint Cost { get; set; }
+    public uint Income { get; set; }
 }

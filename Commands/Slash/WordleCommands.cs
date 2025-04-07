@@ -67,7 +67,7 @@ public class WordleCommands : ApplicationCommandModule
         if (input == game.WordToGuess)
         {
             ulong userId = ctx.User.Id;
-            int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+            uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
             await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.GuessedWords)}** points! \n{GetGameState(ctx.Channel.Id)}");
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.GuessedWords));
             await StatsHandler.IncreaseStats(ctx.User.Id, "WordleWins");
@@ -153,7 +153,7 @@ public class WordleCommands : ApplicationCommandModule
         return checkedWord;
     }
 
-    private int CalculatePoints(List<string> words)
+    private uint CalculatePoints(List<string> words)
     {
         int length = words.Count;
 

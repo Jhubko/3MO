@@ -22,8 +22,8 @@
         public List<string>? ImageChannels { get; set; }
         public Dictionary<string, List<string>>? BotMessages { get; set; }
         public string? GamblingChannelId { get; set; }
-        public string? RafflePool { get; set; }
-        public string SlotsPool { get; set; } = "2000";
+        public uint RafflePool { get; set; }
+        public uint SlotsPool { get; set; } = 2000;
     }
 
     public class ServerConfigShop
@@ -34,42 +34,42 @@
     public class UserInventory
     {
         public List<FishItem> Fish { get; set; } = new List<FishItem>();
-        public Dictionary<string, int> Items { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, uint> Items { get; set; } = new Dictionary<string, uint>();
     }
 
     public class UserConfig
     {
-        public string Messages { get; set; } = "0";
-        public string Points { get; set; } = "500";
-        public string Tickets { get; set; } = "0";
-        public string Wins { get; set; } = "0";
-        public string Losses { get; set; } = "0";
-        public string WonPoints { get; set; } = "0";
-        public string LostPoints { get; set; } = "0";
-        public string GivedPoints { get; set; } = "0";
-        public string ReceivedPoints { get; set; } = "0";
-        public string GambleWins { get; set; } = "0";
-        public string GambleLosses { get; set; } = "0";
-        public string SlotsWins { get; set; } = "0";
-        public string SlotsLosses { get; set; } = "0";
-        public string CardsWins { get; set; } = "0";
-        public string CardsLosses { get; set; } = "0";
-        public string DuelWins { get; set; } = "0";
-        public string DuelLosses { get; set; } = "0";
-        public string RaffleTicketsBought { get; set; } = "0";
-        public string RaffleWins { get; set; } = "0";
-        public string RaffleSpent { get; set; } = "0";
-        public string RaffleWinnings { get; set; } = "0";
-        public string TotalCityIncome { get; set; } = "0";
-        public string BoildingsSpent { get; set; } = "0";
-        public string BuildingsBought { get; set; } = "0";
-        public string BuildingsSold { get; set; } = "0";
-        public string WordleWins { get; set; } = "0";
-        public string WordleLosses { get; set; } = "0";
-        public string HangmanWins { get; set; } = "0";
-        public string HangmanLosses { get; set; } = "0";
-        public string FishCaught { get; set; } = "0";
-        public string FishBreakoffs { get; set; } = "0";
+        public uint Messages { get; set; } = 0;
+        public uint Points { get; set; } = 500;
+        public uint Tickets { get; set; } = 0;
+        public uint Wins { get; set; } = 0;
+        public uint Losses { get; set; } = 0;
+        public uint WonPoints { get; set; } = 0;
+        public uint LostPoints { get; set; } = 0;
+        public uint GivedPoints { get; set; } = 0;
+        public uint ReceivedPoints { get; set; } = 0;
+        public uint GambleWins { get; set; } = 0;
+        public uint GambleLosses { get; set; } = 0;
+        public uint SlotsWins { get; set; } = 0;
+        public uint SlotsLosses { get; set; } = 0;
+        public uint CardsWins { get; set; } = 0;
+        public uint CardsLosses { get; set; } = 0;
+        public uint DuelWins { get; set; } = 0;
+        public uint DuelLosses { get; set; } = 0;
+        public uint RaffleTicketsBought { get; set; } = 0;
+        public uint RaffleWins { get; set; } = 0;
+        public uint RaffleSpent { get; set; } = 0;
+        public uint RaffleWinnings { get; set; } = 0;
+        public uint TotalCityIncome { get; set; } = 0;
+        public uint BoildingsSpent { get; set; } = 0;
+        public uint BuildingsBought { get; set; } = 0;
+        public uint BuildingsSold { get; set; } = 0;
+        public uint WordleWins { get; set; } = 0;
+        public uint WordleLosses { get; set; } = 0;
+        public uint HangmanWins { get; set; } = 0;
+        public uint HangmanLosses { get; set; } = 0;
+        public uint FishCaught { get; set; } = 0;
+        public uint FishBreakoffs { get; set; } = 0;
         public FishItem? HeaviestFish { get; set; } = new FishItem();
     }
 }
@@ -78,8 +78,8 @@ public class ShopItem
 {
     public string? Name { get; set; }
     public string? Description { get; set; }
-    public int BaseCost { get; set; }
-    public int PassivePointsIncrease { get; set; }
+    public uint BaseCost { get; set; }
+    public uint PassivePointsIncrease { get; set; }
 }
 public class Fish
 {

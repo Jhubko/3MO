@@ -31,7 +31,7 @@ class CitySlashCommands : ApplicationCommandModule
             buildingList.AppendLine($"{building.Emote} {name} 💰 {cost} | 📈 {income}");
         }
 
-        embed.Description = $"```\n{buildingList.ToString()}\n```";
+        embed.Description = $"```\n{buildingList}\n```";
 
         await ctx.CreateResponseAsync(embed, true);
     }
@@ -70,7 +70,7 @@ class CitySlashCommands : ApplicationCommandModule
     [Option("y", "y coordinate")] string y)
     {
         {
-            int userPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
+            uint userPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
 
             var building = _cityHandler.Buildings.FirstOrDefault(b => b.Name.ToLower() == buildingName.ToLower());
 
@@ -87,7 +87,7 @@ class CitySlashCommands : ApplicationCommandModule
                 return;
             }
 
-            int buildingCost = building.Cost;
+            uint buildingCost = building.Cost;
 
             if (userPoints < buildingCost)
             {
@@ -176,8 +176,8 @@ class CitySlashCommands : ApplicationCommandModule
     public async Task CollectPointsCommand(InteractionContext ctx)
     {
         var points = await _cityHandler.GetCityPoints(ctx.User.Id);
-        int currentPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
-        int newPoints = currentPoints + points;
+        uint currentPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
+        uint newPoints = currentPoints + points;
         await StatsHandler.IncreaseStats(ctx.User.Id, "TotalCityIncome", points);
         _pointsManager.SaveUserPoints(ctx.User.Id, newPoints);
 

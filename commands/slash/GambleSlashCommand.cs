@@ -8,8 +8,8 @@ public class GambleCommand : ApplicationCommandModule
     public async Task Gamble(InteractionContext ctx, [Option("amount", "Amount of points to gamble (number, %, or 'all')")] string amountInput)
     {
         ulong userId = ctx.User.Id;
-        int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-        int amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
+        uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+        uint amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
         var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
         if (!checkAmout.isProperValue)
@@ -23,7 +23,7 @@ public class GambleCommand : ApplicationCommandModule
 
         if (win)
         {
-            currentPoints += amountToGamble;
+            currentPoints += (uint)amountToGamble;
             await ctx.CreateResponseAsync(new DiscordEmbedBuilder
             {
                 Title = $"🎉  Pogchamp!  🎉",
@@ -35,7 +35,7 @@ public class GambleCommand : ApplicationCommandModule
         }
         else
         {
-            currentPoints -= amountToGamble;
+            currentPoints -= (uint)amountToGamble;
             await ctx.CreateResponseAsync(new DiscordEmbedBuilder
             {
                 Title = $":joy:  Yikes  :joy: ",

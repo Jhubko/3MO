@@ -25,9 +25,9 @@ public class GivePointsCommand : ApplicationCommandModule
             return;
         }
 
-        int senderPoints = await Program.voicePointsManager.GetUserPoints(senderId);
-        int recipientPoints = await Program.voicePointsManager.GetUserPoints(recipientId);
-        int amountToGive = GambleUtils.ParseGambleAmount(amount, senderPoints);
+        uint senderPoints = await Program.voicePointsManager.GetUserPoints(senderId);
+        uint recipientPoints = await Program.voicePointsManager.GetUserPoints(recipientId);
+        uint amountToGive = GambleUtils.ParseGambleAmount(amount, senderPoints);
         var checkAmout = GambleUtils.CheckGambleAmout(amountToGive, senderPoints);
 
         if (!checkAmout.isProperValue)

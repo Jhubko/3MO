@@ -2,7 +2,6 @@
 using Discord_Bot.Config;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using System.Reflection;
 
 class VoicePointsManager
 {
@@ -33,8 +32,8 @@ class VoicePointsManager
                         {
                             activeUsers.Add(user.Id);
 
-                            int currentPoints = await LoadUserPoints(user.Id);
-                            int passivePoints = await CalculatePassivePoints(user.Id);
+                            uint currentPoints = await LoadUserPoints(user.Id);
+                            uint passivePoints = await CalculatePassivePoints(user.Id);
                             currentPoints += passivePoints;
                             SaveUserPoints(user.Id, currentPoints);
                         }
@@ -46,15 +45,15 @@ class VoicePointsManager
         Console.WriteLine("Active users have been collected and their points updated.");
     }
 
-    private async Task<int> LoadUserPoints(ulong userId)
+    private async Task<uint> LoadUserPoints(ulong userId)
     {
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        return int.Parse(userConfig.Points);
+        return userConfig.Points;
     }
 
-    public async void SaveUserPoints(ulong userId, int points)
+    public async void SaveUserPoints(ulong userId, uint points)
     {
-       await jsonWriter.UpdateUserConfig(userId, "Points", points.ToString());
+       await jsonWriter.UpdateUserConfig(userId, "Points", points);
     }
 
     public async Task OnVoiceStateUpdated(DiscordClient client, VoiceStateUpdateEventArgs e)
@@ -78,20 +77,20 @@ class VoicePointsManager
             await Task.Delay(TimeSpan.FromMinutes(1));
             foreach (ulong userId in activeUsers)
             {
-                int currentPoints = await LoadUserPoints(userId);
-                int passivePoints = await CalculatePassivePoints(userId);
+                uint currentPoints = await LoadUserPoints(userId);
+                uint passivePoints = await CalculatePassivePoints(userId);
                 currentPoints += passivePoints;
                 SaveUserPoints(userId, currentPoints);
             }
         }
     }
 
-    public async Task<int> GetUserPoints(ulong userId)
+    public async Task<uint> GetUserPoints(ulong userId)
     {
         return await LoadUserPoints(userId);
     }
 
-    private async Task<int> CalculatePassivePoints(ulong userId)
+    private async Task<uint> CalculatePassivePoints(ulong userId)
     {
         var guild = Program.Client.Guilds.Values
             .FirstOrDefault(g => g.VoiceStates.TryGetValue(userId, out var voiceState) && voiceState.Channel != null);
@@ -99,7 +98,7 @@ class VoicePointsManager
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guild.Id}_shop.json");
 
-        int passivePoints = 10;
+        uint passivePoints = 10;
         var userItems = await inventoryManager.GetUserItems(userId);
         foreach (var item in userItems.Items)
         {
@@ -117,7 +116,7 @@ class VoicePointsManager
 public class UserPoints
 {
     public ulong UserId { get; set; }
-    public int Points { get; set; }
+    public object Points { get; set; }
     public string? ExtraInfo { get; internal set; }
 }
 

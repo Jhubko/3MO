@@ -14,7 +14,6 @@ using Lavalink4NET;
 using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Text;
 using System.Text.RegularExpressions;
 
 
@@ -289,7 +288,6 @@ namespace Discord_Bot
                         .AddComponents(selectMenu));
             }
         }
-
 
         private static async Task CommandEventHandler(CommandsNextExtension sender, CommandErrorEventArgs e)
         {

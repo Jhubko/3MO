@@ -1,16 +1,12 @@
 using Discord_Bot;
-using System.IO;
-using System.Text.Json;
-using DSharpPlus.SlashCommands;
-using DSharpPlus.Entities;
 using Discord_Bot.Config;
-using System.Threading.Tasks;
+using DSharpPlus.SlashCommands;
 
 public class RaffleCommand : ApplicationCommandModule
 {
-    private static int rafflePool;
-    private static int raffleTicketStartCost = 100;
-    private static int raffleTicketCostIncrease = 50;
+    private static uint rafflePool;
+    private static uint raffleTicketStartCost = 100;
+    private static uint raffleTicketCostIncrease = 50;
     private static bool raffleActive = false;
     private static IJsonHandler jsonReader = new JSONReader();
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
@@ -24,7 +20,7 @@ public class RaffleCommand : ApplicationCommandModule
             return;
         }
 
-        rafflePool = new Random().Next(100, 5001);
+        rafflePool = (uint)new Random().Next(100, 5001);
         await ResetAllRaffleTickets();
         raffleActive = true;
         await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "RafflePool", rafflePool.ToString());
@@ -42,21 +38,21 @@ public class RaffleCommand : ApplicationCommandModule
 
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        int currentPoints = int.Parse(userData.Points);
-        int currentTickets = int.Parse(userData.Tickets);
-        int ticketsToBuy = 1;
+        uint currentPoints = userData.Points;
+        uint currentTickets = userData.Tickets;
+        uint ticketsToBuy = 1;
 
         if (amountInput.ToLower() == "max")
         {
             ticketsToBuy = CalculateMaxTickets(currentPoints, currentTickets);
         }
-        else if (!int.TryParse(amountInput, out ticketsToBuy) || ticketsToBuy <= 0)
+        else if (!uint.TryParse(amountInput, out ticketsToBuy) || ticketsToBuy <= 0)
         {
             await ctx.CreateResponseAsync("Nieprawidłowa liczba losów.", true);
             return;
         }
 
-        int totalCost = CalculateTotalCost(currentTickets, ticketsToBuy);
+        uint totalCost = CalculateTotalCost(currentTickets, ticketsToBuy);
 
         if (currentPoints < totalCost)
         {
@@ -67,9 +63,9 @@ public class RaffleCommand : ApplicationCommandModule
         currentTickets += ticketsToBuy;
         rafflePool += totalCost;
         currentPoints -= totalCost;
-        await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints.ToString());
-        await jsonWriter.UpdateUserConfig(userId, "Tickets", currentTickets.ToString());
-        await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "RafflePool", rafflePool.ToString());
+        await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints);
+        await jsonWriter.UpdateUserConfig(userId, "Tickets", currentTickets);
+        await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "RafflePool", rafflePool);
         await ctx.CreateResponseAsync($"{ctx.User.Mention} kupił {ticketsToBuy} losów za {totalCost} punktów. Łączna liczba losów: {currentTickets}. Aktualna pula: {rafflePool} punktów.");
     }
 
@@ -78,7 +74,7 @@ public class RaffleCommand : ApplicationCommandModule
     {
         ulong userId = ctx.User.Id;
         var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        int currentTickets = int.Parse(userData.Tickets);
+        int currentTickets = (int)userData.Tickets;
         await ctx.CreateResponseAsync($"Masz {currentTickets} losów.", true);
     }
 
@@ -94,7 +90,7 @@ public class RaffleCommand : ApplicationCommandModule
         await ctx.CreateResponseAsync($"Aktualna pula: {rafflePool} punktów. Loteria kończy się codziennie o 18:00", true);
     }
 
-    public async Task ResumeRaffle(CustomInteractionContext ctx, int pool)
+    public async Task ResumeRaffle(CustomInteractionContext ctx, uint pool)
     {
         rafflePool = pool;
         raffleActive = true;
@@ -134,19 +130,18 @@ public class RaffleCommand : ApplicationCommandModule
             ulong userId = ulong.Parse(filename);
             if (userData != null)
             {
-                for (int i = 0; i < int.Parse(userData.Tickets); i++)
+                for (int i = 0; i < userData.Tickets; i++)
                 {
-                    ticketEntries.Add(ulong.Parse(userId.ToString()));
+                    ticketEntries.Add(userId);
                 }
             }
         }
 
         if (ticketEntries.Count == 0)
         {
-            return 0; // No tickets, return 0 to indicate no winner
+            return 0;
         }
 
-        // Shuffle the tickets
         Random rng = new Random();
         int n = ticketEntries.Count;
         while (n > 1)
@@ -158,7 +153,6 @@ public class RaffleCommand : ApplicationCommandModule
             ticketEntries[n] = value;
         }
 
-        // Pick a random winner
         ulong winner = ticketEntries[rng.Next(ticketEntries.Count)];
         return winner;
     }
@@ -173,21 +167,21 @@ public class RaffleCommand : ApplicationCommandModule
 
             if (userData != null)
             {
-                await StatsHandler.IncreaseStats(ulong.Parse(filename), "RaffleTicketsBought", int.Parse(userData.Tickets));
-                await StatsHandler.IncreaseStats(ulong.Parse(filename), "RaffleSpent", CalculateTotalCost(0, int.Parse(userData.Tickets)));
+                await StatsHandler.IncreaseStats(ulong.Parse(filename), "RaffleTicketsBought", userData.Tickets);
+                await StatsHandler.IncreaseStats(ulong.Parse(filename), "RaffleSpent", CalculateTotalCost(0, userData.Tickets));
                 ulong userId = ulong.Parse(filename);
                 await jsonWriter.UpdateUserConfig(userId, "Tickets", "0");
             }
         }
     }
 
-    private async Task SaveWinnerData(ulong winnerId, int points)
+    private async Task SaveWinnerData(ulong winnerId, uint points)
     {
         string filePath = $"{folderPath}\\{winnerId}.json";
         if (File.Exists(filePath))
         {
             var userData = await jsonReader.ReadJson<UserConfig>(filePath);
-            int user_points = int.Parse(userData.Points);
+            uint user_points = userData.Points;
             if (userData != null)
             {
                 user_points += points;
@@ -199,20 +193,20 @@ public class RaffleCommand : ApplicationCommandModule
         }
     }
 
-    private int CalculateTotalCost(int currentTickets, int ticketsToBuy)
+    private uint CalculateTotalCost(uint currentTickets, uint ticketsToBuy)
     {
-        int totalCost = 0;
-        for (int i = 0; i < ticketsToBuy; i++)
+        uint totalCost = 0;
+        for (uint i = 0; i < ticketsToBuy; i++)
         {
             totalCost += raffleTicketStartCost + (currentTickets + i) * raffleTicketCostIncrease;
         }
         return totalCost;
     }
 
-        private int CalculateMaxTickets(int currentPoints, int currentTickets)
+        private uint CalculateMaxTickets(uint currentPoints, uint currentTickets)
     {
-        int ticketsToBuy = 0;
-        int totalCost = 0;
+        uint ticketsToBuy = 0;
+        uint totalCost = 0;
         while (totalCost <= currentPoints)
         {
             totalCost += raffleTicketStartCost + (currentTickets + ticketsToBuy) * raffleTicketCostIncrease;

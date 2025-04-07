@@ -13,9 +13,9 @@ public class DuelCommand : ApplicationCommandModule
     {
         ulong userId = ctx.User.Id;
         ulong opponentId = opponent.Id;
-        int userPoints = await Program.voicePointsManager.GetUserPoints(userId);
-        int opponentPoints = await Program.voicePointsManager.GetUserPoints(opponentId);
-        int betAmount = GambleUtils.ParseGambleAmount(amountInput, userPoints);
+        uint userPoints = await Program.voicePointsManager.GetUserPoints(userId);
+        uint opponentPoints = await Program.voicePointsManager.GetUserPoints(opponentId);
+        uint betAmount = GambleUtils.ParseGambleAmount(amountInput, userPoints);
         var checkAmout = GambleUtils.CheckGambleAmout(betAmount, userPoints);
 
         if (!checkAmout.isProperValue)

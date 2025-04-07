@@ -1,5 +1,6 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
+using DSharpPlus.Entities;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -14,30 +15,22 @@ class StatsHandler
         return await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
     }
 
-    public async static Task IncreaseStats(ulong userId, string statToChange, int points = -1)
+    public async static Task IncreaseStats(ulong userId, string statToChange, uint points = 0)
     {
         var userconfig = await LoadUserStats(userId);
         Type type = typeof(UserConfig);
         PropertyInfo? stat = type.GetProperty(statToChange);
 
-        if (stat != null && stat.PropertyType == typeof(string))
+        if (stat != null && stat.PropertyType == typeof(uint))
         {
-            string? currentValue = (string?)stat.GetValue(userconfig);
+            uint currentValue = (uint)(stat.GetValue(userconfig) ?? 0);
+            if (statToChange.Contains("Wins") && statToChange != "Wins")
+                await IncreaseStats(userId, "Wins");
+            if (statToChange.Contains("Losses") && statToChange != "Losses")
+                await IncreaseStats(userId, "Losses");
 
-            if (int.TryParse(currentValue, out int numericValue))
-            {
-                if (statToChange.Contains("Wins") && statToChange != "Wins")
-                    await IncreaseStats(userId, "Wins");
-                if (statToChange.Contains("Losses") && statToChange != "Losses")
-                    await IncreaseStats(userId, "Losses");
-                if (points != -1)
-                {
-                    await jsonWriter.UpdateUserConfig(userId, statToChange, (numericValue + points).ToString());
-                    return;
-                }
-
-                await jsonWriter.UpdateUserConfig(userId, statToChange, (numericValue+1).ToString());
-            }
+            uint newValue = currentValue + (points != 0 ? points : 1);
+            await jsonWriter.UpdateUserConfig(userId, statToChange, newValue);
         }
     }
     public static string AddSpacesBeforeCapitalLetters(string input)
@@ -45,51 +38,51 @@ class StatsHandler
         return Regex.Replace(input, "(?<!^)([A-Z])", " $1");
     }
 
-    public static async Task<List<UserPoints>> GetTopUsersByCategory(int count, string category)
+    public static async Task<List<UserPoints>> GetTopUsersByCategory(DiscordGuild guild, int count, string category)
     {
-        var allUsers = await GetAllUsersByCategory(category);
+        var allUsers = await GetAllUsersByCategory(category, guild);
         return allUsers.OrderByDescending(u => u.Points).Take(count).ToList();
     }
-
-
-    private static async Task<List<UserPoints>> GetAllUsersByCategory(string category)
+    private static async Task<List<UserPoints>> GetAllUsersByCategory(string category, DiscordGuild guild)
     {
         var users = new List<UserPoints>();
+        var validUserIds = guild.Members.Keys;
 
         foreach (var file in Directory.GetFiles(folderPath, "*.json"))
         {
             var filename = Path.GetFileNameWithoutExtension(file);
             if (filename.Contains('_')) continue;
 
+            if (!ulong.TryParse(filename, out var userId)) continue;
+            if (!validUserIds.Contains(userId)) continue;
+
             var userData = await jsonReader.ReadJson<UserConfig>(file);
-            if (userData != null)
+            if (userData == null) continue;
+
+            if (category == "HeaviestFish")
             {
-                ulong userId = ulong.Parse(filename);
-
-                if (category == "HeaviestFish")
+                FishItem heaviestFish = userData.HeaviestFish;
+                if (heaviestFish != null && heaviestFish.Weight > 0)
                 {
-                    FishItem heaviestFish = userData.HeaviestFish;
-                    if (heaviestFish != null && heaviestFish.Weight > 0)
+                    users.Add(new UserPoints
                     {
-                        users.Add(new UserPoints
-                        {
-                            UserId = userId,
-                            Points = (int)heaviestFish.Weight,
-                            ExtraInfo = $"{heaviestFish.Name} - {heaviestFish.Weight} kg"
-                        });
-                    }
+                        UserId = userId,
+                        Points = heaviestFish.Weight,
+                        ExtraInfo = $"{heaviestFish.Name} - {heaviestFish.Weight} kg"
+                    });
                 }
-                else
-                {
-                    PropertyInfo property = typeof(UserConfig).GetProperty(category);
-                    int statValue = property != null ? int.Parse(property.GetValue(userData)?.ToString() ?? "0") : 0;
+            }
+            else
+            {
+                PropertyInfo property = typeof(UserConfig).GetProperty(category);
+                uint statValue = property != null ? (uint)(property.GetValue(userData) ?? 0) : 0;
 
-                    users.Add(new UserPoints { UserId = userId, Points = statValue });
-                }
+                users.Add(new UserPoints { UserId = userId, Points = statValue });
             }
         }
         return users;
     }
+
 
     public async static Task calculateHeaviestFish(ulong userId, string fishName, double weight, int basePrice)
     {
