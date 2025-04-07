@@ -1,9 +1,9 @@
-﻿using DSharpPlus.Entities;
+﻿using Discord_Bot.other;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Google.Apis.CustomSearchAPI.v1;
 using Google.Apis.Services;
 using OpenAI_API;
-using Discord_Bot.other;
 
 namespace Discord_Bot.commands.slash
 {

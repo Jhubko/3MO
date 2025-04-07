@@ -14,8 +14,8 @@ namespace Discord_Bot.Config
             _jsonHandler = jsonHandler;
             _configPath = configPath;
             _serverConfigDir = serverConfigDir;
-        }      
-        
+        }
+
         public async Task UpdateGlobalConfig(string key, string value)
         {
             string filePath = Path.Combine(_configPath, "config.json");

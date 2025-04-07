@@ -111,7 +111,7 @@ class CityHandler
         var building = Buildings.FirstOrDefault(b => b.Emote == buildingEmote);
 
         if (building == null)
-            return false; 
+            return false;
 
         uint refund = building.Cost / 2;
 
@@ -173,7 +173,7 @@ class CityHandler
             }
 
             await jsonWriter.UpdateCityConfig(userId, "StoredPoints", city.StoredPoints);
-            
+
         }
     }
 

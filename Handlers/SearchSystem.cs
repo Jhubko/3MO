@@ -125,7 +125,7 @@ namespace Discord_Bot.other
                 var weatherEmbed = new DiscordEmbedBuilder()
                 {
                     Color = DiscordColor.CornflowerBlue,
-                    Title = $"{WeatherTitle}, {WeatherCountry}" ,
+                    Title = $"{WeatherTitle}, {WeatherCountry}",
                     ImageUrl = $"https:{WeatherImage}",
                     Description =
                         $"Weather: {WeatherText} \n" +
@@ -133,7 +133,7 @@ namespace Discord_Bot.other
                         $"Feels Like: {WeatherTempFeels} °C \n" +
                         $"Wind: {WeatherWind} Km/H \n" +
                         $"Preasure: {WeatherPreasure} hPa \n" +
-                        $"Clouds: {WeatherCloud}% \n" + 
+                        $"Clouds: {WeatherCloud}% \n" +
                         $"Time: {WeatherTime}",
                 };
 

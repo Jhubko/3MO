@@ -1,11 +1,9 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
 using Discord_Bot.other;
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
-using System.ComponentModel;
 using System.Text;
 
 public class FishingCommand : ApplicationCommandModule
@@ -90,7 +88,7 @@ public class FishingCommand : ApplicationCommandModule
             {
                 var oldMessage = message;
                 message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"🐟 {ctx.User.Mention} 🐟 Ryba się wyrywa! Kliknij 🎣 jeszcze raz!"));
-                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":fishing_pole_and_fish:"));               
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":fishing_pole_and_fish:"));
                 await oldMessage.DeleteAsync();
             }
         }

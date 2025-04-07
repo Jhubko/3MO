@@ -203,7 +203,7 @@ public class RaffleCommand : ApplicationCommandModule
         return totalCost;
     }
 
-        private uint CalculateMaxTickets(uint currentPoints, uint currentTickets)
+    private uint CalculateMaxTickets(uint currentPoints, uint currentTickets)
     {
         uint ticketsToBuy = 0;
         uint totalCost = 0;

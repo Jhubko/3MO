@@ -22,7 +22,7 @@ namespace Discord_Bot.other
                 }
                 await raffleCommand.StartRaffle(ctx);
                 return;
-            }               
+            }
 
             await raffleCommand.ResumeRaffle(ctx, pool);
         }

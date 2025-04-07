@@ -2,7 +2,6 @@
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
-using System.Text.RegularExpressions;
 
 public class DuelCommand : ApplicationCommandModule
 {

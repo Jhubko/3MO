@@ -12,7 +12,7 @@ class VoicePointsManager
     private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
     {
-        
+
         activeUsers = new HashSet<ulong>();
         Directory.CreateDirectory(folderPath);
     }
@@ -53,7 +53,7 @@ class VoicePointsManager
 
     public async void SaveUserPoints(ulong userId, uint points)
     {
-       await jsonWriter.UpdateUserConfig(userId, "Points", points);
+        await jsonWriter.UpdateUserConfig(userId, "Points", points);
     }
 
     public async Task OnVoiceStateUpdated(DiscordClient client, VoiceStateUpdateEventArgs e)

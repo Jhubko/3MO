@@ -140,7 +140,7 @@ public class HangmanCommands : ApplicationCommandModule
         {
             await ctx.CreateResponseAsync(GetGameState(ctx.Channel.Id));
         }
-    }  
+    }
 
     private string GetGameState(ulong channelId)
     {
@@ -162,9 +162,9 @@ public class HangmanCommands : ApplicationCommandModule
         if (length <= 4)
             return 300;
         else if (length == 5)
-            return 400; 
+            return 400;
         else if (length <= 7)
-            return 500; 
+            return 500;
         else if (length <= 9)
             return 600;
         else

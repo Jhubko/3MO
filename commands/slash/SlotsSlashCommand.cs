@@ -122,7 +122,7 @@ public class SlotsCommand : ApplicationCommandModule
         var embed = new DiscordEmbedBuilder
         {
             Title = "🎰 Slots 🎰",
-            Description = 
+            Description =
                   $"{reels[0, 0]} | {reels[0, 1]} | {reels[0, 2]}\n" +
                   $"{reels[1, 0]} | {reels[1, 1]} | {reels[1, 2]}\n" +
                   $"{reels[2, 0]} | {reels[2, 1]} | {reels[2, 2]}\n\n" +

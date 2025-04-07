@@ -90,7 +90,7 @@ class StatsHandler
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
         double currentHeaviestFish = userConfig.HeaviestFish.Weight;
         int price = (int)(basePrice * (weight / 2));
-        
+
         var newFish = new FishItem
         {
             Name = fishName,

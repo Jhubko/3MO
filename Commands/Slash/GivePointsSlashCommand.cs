@@ -12,7 +12,7 @@ public class GivePointsCommand : ApplicationCommandModule
         ulong senderId = ctx.User.Id;
         ulong recipientId = recipient.Id;
 
-        if (senderId == recipientId) 
+        if (senderId == recipientId)
         {
             var errorEmbed = new DiscordEmbedBuilder
             {
