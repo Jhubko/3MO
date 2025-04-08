@@ -2,17 +2,17 @@
 {
     public class GlobalConfig
     {
-        public string? Token { get; set; }
-        public string? Prefix { get; set; }
-        public string? ApiGoogle { get; set; }
-        public string? CseId { get; set; }
-        public string? ApiGPT { get; set; }
-        public string? WeatherApi { get; set; }
-        public string? LlHostname { get; set; }
-        public int LlPort { get; set; }
-        public string? LlPass { get; set; }
-        public bool Secured { get; set; }
-        public string? ConfigPath { get; set; }
+        public required string Token { get; set; }
+        public required string Prefix { get; set; }
+        public required string ApiGoogle { get; set; }
+        public required string CseId { get; set; }
+        public required string ApiGPT { get; set; }
+        public required string WeatherApi { get; set; }
+        public required string LlHostname { get; set; }
+        public required int LlPort { get; set; }
+        public required string LlPass { get; set; }
+        public required bool Secured { get; set; }
+        public required string ConfigPath { get; set; }
     }
 
     public class ServerConfig
@@ -72,26 +72,26 @@
         public uint FishBreakoffs { get; set; } = 0;
         public FishItem? HeaviestFish { get; set; } = new FishItem();
     }
-}
 
-public class ShopItem
-{
-    public string? Name { get; set; }
-    public string? Description { get; set; }
-    public uint BaseCost { get; set; }
-    public uint PassivePointsIncrease { get; set; }
-}
-public class Fish
-{
-    public string? Name { get; set; }
-    public double MinWeight { get; set; }
-    public double MaxWeight { get; set; }
-    public int BasePrice { get; set; }
-}
+    public class ShopItem
+    {
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public required uint BaseCost { get; set; }
+        public required uint PassivePointsIncrease { get; set; }
+    }
+    public class Fish
+    {
+        public required string Name { get; set; }
+        public required double MinWeight { get; set; }
+        public required double MaxWeight { get; set; }
+        public required int BasePrice { get; set; }
+    }
 
-public class FishItem
-{
-    public string? Name { get; set; }
-    public double Weight { get; set; }
-    public int Price { get; set; }
+    public class FishItem
+    {
+        public string? Name { get; set; }
+        public double Weight { get; set; }
+        public int Price { get; set; }
+    }
 }

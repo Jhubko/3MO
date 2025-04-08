@@ -19,8 +19,8 @@
 
 public class Building
 {
-    public string Emote { get; set; }
-    public string Name { get; set; }
-    public uint Cost { get; set; }
-    public uint Income { get; set; }
+    public required string Emote { get; set; }
+    public required string Name { get; set; }
+    public required uint Cost { get; set; }
+    public required uint Income { get; set; }
 }

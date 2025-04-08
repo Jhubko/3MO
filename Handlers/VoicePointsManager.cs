@@ -47,7 +47,7 @@ class VoicePointsManager
 
     private async Task<uint> LoadUserPoints(ulong userId)
     {
-        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
+        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
         return userConfig.Points;
     }
 
@@ -68,6 +68,8 @@ class VoicePointsManager
         {
             activeUsers.Remove(userId);
         }
+
+        await Task.CompletedTask;
     }
 
     public async Task AddPointsLoop()
@@ -95,8 +97,11 @@ class VoicePointsManager
         var guild = Program.Client.Guilds.Values
             .FirstOrDefault(g => g.VoiceStates.TryGetValue(userId, out var voiceState) && voiceState.Channel != null);
 
+        if (guild == null)
+            return 0;
+
         var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guild.Id}_shop.json");
+        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
 
         uint passivePoints = 10;
         var userItems = await inventoryManager.GetUserItems(userId);
@@ -116,7 +121,7 @@ class VoicePointsManager
 public class UserPoints
 {
     public ulong UserId { get; set; }
-    public object Points { get; set; }
+    public object? Points { get; set; }
     public string? ExtraInfo { get; internal set; }
 }
 

@@ -5,7 +5,7 @@ using Google.Apis.CustomSearchAPI.v1;
 using Google.Apis.Services;
 using OpenAI_API;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class SearchCommands : ApplicationCommandModule
     {

@@ -2,7 +2,7 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class GamesSlashCommands : ApplicationCommandModule
     {

@@ -13,7 +13,7 @@ namespace Discord_Bot.other
         private static List<string> WeatherTempList = new();
         private static List<string> WeatherDateList = new();
         private static List<string> WeatherWindList = new();
-        public static async Task<DiscordEmbedBuilder> GetRandomMemeAsync(InteractionContext ctx)
+        public static async Task<DiscordEmbedBuilder?> GetRandomMemeAsync(InteractionContext ctx)
         {
             try
             {
@@ -26,6 +26,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var memeData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (memeData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych w memie."));
+                    return null;
+                }
 
                 string memeUrl = memeData.url;
                 string memeTitle = memeData.title;
@@ -41,6 +47,7 @@ namespace Discord_Bot.other
                 };
 
                 return memeEmbed;
+
             }
             catch (HttpRequestException ex)
             {
@@ -54,7 +61,7 @@ namespace Discord_Bot.other
             }
         }
 
-        public static async Task<DiscordEmbedBuilder> GetRandomWikiAsync(InteractionContext ctx)
+        public static async Task<DiscordEmbedBuilder?> GetRandomWikiAsync(InteractionContext ctx)
         {
             try
             {
@@ -67,6 +74,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var wikiData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (wikiData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych wiki."));
+                    return null;
+                }
 
                 string wikiTitle = wikiData.title;
                 string wikiUrl = wikiData.content_urls.desktop.page;
@@ -97,7 +110,7 @@ namespace Discord_Bot.other
             }
         }
 
-        public static async Task<DiscordEmbedBuilder> GetWeather(InteractionContext ctx, string city)
+        public static async Task<DiscordEmbedBuilder?> GetWeather(InteractionContext ctx, string city)
         {
             try
             {
@@ -110,6 +123,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var WeatherData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (WeatherData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych pogodowych."));
+                    return null;
+                }
 
                 string WeatherTitle = WeatherData.location.name;
                 string WeatherCountry = WeatherData.location.country;
@@ -151,7 +170,7 @@ namespace Discord_Bot.other
             }
         }
 
-        public static async Task<DiscordEmbedBuilder> GetForecast(InteractionContext ctx, string city)
+        public static async Task<DiscordEmbedBuilder?> GetForecast(InteractionContext ctx, string city)
         {
             string desc = string.Empty;
             string frame = "════════════════════════════════\n";
@@ -167,6 +186,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var WeatherData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (WeatherData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych pogodowych."));
+                    return null;
+                }
 
                 string WeatherTitle = WeatherData.location.name;
                 string WeatherCountry = WeatherData.location.country;

@@ -6,7 +6,7 @@ using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class ManagementSlashCommands : ApplicationCommandModule
     {
@@ -46,9 +46,9 @@ namespace Discord_Bot.commands.slash
         public async Task EditFish(InteractionContext ctx,
             [Option("action", "The action to perform (add, edit, remove)")] string action,
             [Option("name", "The name of the fish")] string name,
-            [Option("minweight", "The minimum weight of the fish", true)] string minWeightStr = null,
-            [Option("maxweight", "The maximum weight of the fish", true)] string maxWeightStr = null,
-            [Option("baseprice", "The base price of the fish", true)] string basePriceStr = null)
+            [Option("minweight", "The minimum weight of the fish", true)] string? minWeightStr = null,
+            [Option("maxweight", "The maximum weight of the fish", true)] string? maxWeightStr = null,
+            [Option("baseprice", "The base price of the fish", true)] string? basePriceStr = null)
         {
 
             var fishList = await inventoryManager.LoadFishDataAsync(ctx.Guild.Id);

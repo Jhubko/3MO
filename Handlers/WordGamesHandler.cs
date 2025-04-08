@@ -42,7 +42,7 @@ class WordGamesHandler
             wordCache.Remove(randomWord);
             return randomWord;
         }
-        catch (Exception ex)
+        catch
         {
             return string.Empty;
         }

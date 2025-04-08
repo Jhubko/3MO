@@ -50,7 +50,7 @@ namespace Discord_Bot.other
 
             if (userInventory?.Fish == null || userInventory.Fish.Count == 0)
             {
-                return new List<DiscordAutoCompleteChoice>(); // Brak podpowiedzi, jeśli nie ma ryb
+                return new List<DiscordAutoCompleteChoice>();
             }
 
             var fishNames = userInventory.Fish
@@ -61,7 +61,7 @@ namespace Discord_Bot.other
 
             string userInput = ctx.OptionValue?.ToString() ?? "";
             var filteredFish = fishNames
-                .Where(name => name.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+                .Where(name => name?.StartsWith(userInput, StringComparison.OrdinalIgnoreCase) == true)
                 .Take(25)
                 .Select(name => new DiscordAutoCompleteChoice(name, name));
 

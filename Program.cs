@@ -1,4 +1,4 @@
-﻿using Discord_Bot.commands.slash;
+﻿using Discord_Bot.Commands.Slash;
 using Discord_Bot.Config;
 using Discord_Bot.other;
 using DSharpPlus;
@@ -21,29 +21,29 @@ namespace Discord_Bot
 {
     internal class Program
     {
-        public static IAudioService? AudioService { get; set; }
-        public static DiscordClient? Client { get; set; }
+        public static IAudioService AudioService { get; set; } = null!;
+        public static DiscordClient Client { get; set; } = null!;
 
         public static IJsonHandler jsonHandler = new JSONReader();
 
         public static string serverConfigPath = string.Empty;
 
-        private static JSONWriter GlobalJsonWriter;
+        private static JSONWriter globalJsonWriter = null!;
 
         public static string configPath = string.Empty;
 
-        public static VoicePointsManager voicePointsManager;
+        public static GlobalConfig globalConfig = null!;
 
-        public static GlobalConfig globalConfig;
+        public static VoicePointsManager voicePointsManager = new();
 
-        private static InventoryManager inventoryManager;
+        private static readonly InventoryManager inventoryManager = new();
 
 
         static async Task Main(string[] args)
         {
-            globalConfig = await jsonHandler.ReadJson<GlobalConfig>("config.json");
-            serverConfigPath = globalConfig?.ConfigPath;
-            GlobalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
+            globalConfig = await jsonHandler.ReadJson<GlobalConfig>("config.json") ?? throw new InvalidOperationException("GlobalConfig cannot be null");
+            serverConfigPath = globalConfig.ConfigPath;
+            globalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
             configPath = globalConfig.ConfigPath;
             var taskManager = new ScheduledTaskManager();
 
@@ -68,10 +68,7 @@ namespace Discord_Bot
             Client.GuildMemberAdded += Client_GuildMemberAdded;
             Client.MessageCreated += Client_MessageCreated;
             Client.VoiceStateUpdated += Client_VoiceStateUpdated;
-
-            inventoryManager = new InventoryManager();
-            voicePointsManager = new VoicePointsManager();
-            Task.Run(() => voicePointsManager.AddPointsLoop());
+            await Task.Run(() => voicePointsManager.AddPointsLoop());
 
             UriBuilder builder = new UriBuilder
             {
@@ -139,12 +136,13 @@ namespace Discord_Bot
                 var cityHandler = new CityHandler();
                 foreach (var guild in GetGuilds())
                 {
-                    var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json");
+                    var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{guild}.json") ?? throw new InvalidOperationException("ServerConfig cannot be null");
                     if (serverConfig.GamblingChannelId == null)
                         continue;
                     var channel = await Client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
-                    CustomInteractionContext ctx = CreateInteractionContext(Client, channel);
-                    await ctx.CreateResponseAsync($"💸 City revenues have been generated! 💸", false);
+                    CustomInteractionContext? ctx = CreateInteractionContext(Client, channel);
+                    if (ctx != null)
+                        await ctx.CreateResponseAsync($"💸 City revenues have been generated! 💸", false);
                 }
                 await cityHandler.GenerateDailyIncome();
             });
@@ -152,7 +150,7 @@ namespace Discord_Bot
             await Task.Delay(-1);
         }
 
-        public static CustomInteractionContext CreateInteractionContext(DiscordClient client, DiscordChannel channel)
+        public static CustomInteractionContext? CreateInteractionContext(DiscordClient client, DiscordChannel channel)
         {
             if (channel.GuildId.HasValue)
             {
@@ -164,7 +162,7 @@ namespace Discord_Bot
 
         private static async Task Client_VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs args)
         {
-            await voicePointsManager.OnVoiceStateUpdated(sender, args); // Obsługuje zmiany stanu głosowego
+            await voicePointsManager.OnVoiceStateUpdated(sender, args);
         }
 
         private static async Task Client_MessageReactionAdded(DiscordClient sender, MessageReactionAddEventArgs args)
@@ -181,7 +179,7 @@ namespace Discord_Bot
         private static async Task Client_MessageCreated(DiscordClient sender, MessageCreateEventArgs args)
         {
             var channel = args.Channel;
-            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{args.Guild.Id}.json");
+            var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{args.Guild.Id}.json") ?? throw new InvalidOperationException("ServerConfig cannot be null");
 
             if (serverConfig.ImageChannels != null && serverConfig.ImageChannels.ToList().Contains(channel.Id.ToString()))
             {
@@ -191,7 +189,7 @@ namespace Discord_Bot
 
             if (args.Message.Author.IsBot)
             {
-                await GlobalJsonWriter.UpdateServerConfig(args.Guild.Id, "BotMessages", args.Message.ChannelId.ToString(), args.Message.Id.ToString());
+                await globalJsonWriter.UpdateServerConfig(args.Guild.Id, "BotMessages", args.Message.ChannelId.ToString(), args.Message.Id.ToString());
             }
             else
             {
@@ -322,7 +320,7 @@ namespace Discord_Bot
 
         public static List<ulong> GetGuilds()
         {
-            var guilds = Client?.Guilds;
+            var guilds = Client.Guilds;
             return guilds.Keys.ToList();
         }
     }

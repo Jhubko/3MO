@@ -179,7 +179,7 @@ class CityHandler
 
     private async Task<City> LoadCity(ulong userId)
     {
-        return await jsonReader.ReadJson<City>(Path.Combine($"{Program.serverConfigPath}\\cities", $"{userId}_city.json"));
+        return await jsonReader.ReadJson<City>(Path.Combine($"{Program.serverConfigPath}\\cities", $"{userId}_city.json")) ?? throw new InvalidOperationException("City cannot be null at this point");
     }
 
     public string RenderCity(string[][] grid)

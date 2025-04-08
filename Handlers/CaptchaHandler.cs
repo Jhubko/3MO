@@ -3,6 +3,7 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.Versioning;
 
 public static class CaptchaHandler
 {
@@ -54,7 +55,7 @@ public static class CaptchaHandler
         await response.Result.DeleteAsync();
         return true;
     }
-
+    [SupportedOSPlatform("windows")]
     public static string GenerateCaptchaImage(int num1, int num2)
     {
         string path = Path.Combine(Path.GetTempPath(), "captcha.png");
@@ -63,12 +64,12 @@ public static class CaptchaHandler
         {
             g.Clear(Color.White);
 
-            using (Font font = new Font("Arial", 30, FontStyle.Bold))
+            using (Font font = new("Arial", 30, FontStyle.Bold))
             {
                 g.DrawString($"{num1} + {num2} = ?", font, Brushes.Black, new PointF(20, 20));
             }
 
-            Random random = new Random();
+            Random random = new();
             for (int i = 0; i < 10000; i++)
             {
                 int x = random.Next(0, bitmap.Width);

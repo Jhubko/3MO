@@ -54,10 +54,13 @@ namespace Discord_Bot.Config
 
             foreach (var kvp in newConfig)
             {
-                jsonData[kvp.Key] = JToken.FromObject(kvp.Value);
-                if (kvp.Value is int intValue && intValue == 0)
+                if (kvp.Value != null)
                 {
-                    jsonData.Remove(kvp.Key);
+                    jsonData[kvp.Key] = JToken.FromObject(kvp.Value);
+                    if (kvp.Value is int intValue && intValue == 0)
+                    {
+                        jsonData.Remove(kvp.Key);
+                    }
                 }
             }
             await _jsonHandler.WriteJson(filePath, jsonData);
@@ -82,11 +85,11 @@ namespace Discord_Bot.Config
                 }
                 else if (IsArrayDataType(key))
                 {
-                    UpdateArray(jsonData, key, value.ToString());
+                    UpdateArray(jsonData, key, value?.ToString() ?? string.Empty);
                 }
                 else if (IsDictionaryDataType(key))
                 {
-                    UpdateDictionary(jsonData, key, value.ToString(), value2.ToString());
+                    UpdateDictionary(jsonData, key, value?.ToString() ?? string.Empty, value2?.ToString() ?? string.Empty);
                 }
                 else
                 {

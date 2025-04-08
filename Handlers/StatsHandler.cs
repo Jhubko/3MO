@@ -7,12 +7,12 @@ using System.Text.RegularExpressions;
 class StatsHandler
 {
     private readonly static string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-    private static IJsonHandler jsonReader = new JSONReader();
-    private static JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
-    private static readonly InventoryManager inventoryManager = new InventoryManager();
+    private static readonly IJsonHandler jsonReader = new JSONReader();
+    private static readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
+    private static readonly InventoryManager inventoryManager = new();
     public async static Task<UserConfig> LoadUserStats(ulong userId)
     {
-        return await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
+        return await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
     }
 
     public async static Task IncreaseStats(ulong userId, string statToChange, uint points = 0)
@@ -57,11 +57,12 @@ class StatsHandler
             if (!validUserIds.Contains(userId)) continue;
 
             var userData = await jsonReader.ReadJson<UserConfig>(file);
-            if (userData == null) continue;
+            if (userData == null) 
+                continue;
 
             if (category == "HeaviestFish")
             {
-                FishItem heaviestFish = userData.HeaviestFish;
+                FishItem? heaviestFish = userData.HeaviestFish;
                 if (heaviestFish != null && heaviestFish.Weight > 0)
                 {
                     users.Add(new UserPoints
@@ -74,7 +75,7 @@ class StatsHandler
             }
             else
             {
-                PropertyInfo property = typeof(UserConfig).GetProperty(category);
+                PropertyInfo? property = typeof(UserConfig).GetProperty(category);
                 uint statValue = property != null ? (uint)(property.GetValue(userData) ?? 0) : 0;
 
                 users.Add(new UserPoints { UserId = userId, Points = statValue });
@@ -84,11 +85,10 @@ class StatsHandler
     }
 
 
-    public async static Task calculateHeaviestFish(ulong userId, string fishName, double weight, int basePrice)
+    public async static Task CalculateHeaviestFish(ulong userId, string fishName, double weight, int basePrice)
     {
-        UserInventory userInventory = await inventoryManager.GetUserItems(userId);
-        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        double currentHeaviestFish = userConfig.HeaviestFish.Weight;
+        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
+        double currentHeaviestFish = userConfig.HeaviestFish?.Weight ?? 0;
         int price = (int)(basePrice * (weight / 2));
 
         var newFish = new FishItem

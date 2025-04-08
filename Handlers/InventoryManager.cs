@@ -45,7 +45,7 @@ public class InventoryManager
         }
         else
         {
-            var fishData = await jsonReader.ReadJson<List<Fish>>("Config\\fish_data.json");
+            var fishData = await jsonReader.ReadJson<List<Fish>>("Config\\fish_data.json") ?? throw new InvalidOperationException("fish_data cannot be null");
             File.WriteAllText(serverFishFilePath, JsonConvert.SerializeObject(fishData, Formatting.Indented));
             return fishData;
         }

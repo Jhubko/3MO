@@ -8,11 +8,11 @@ using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class MusicCommands : ApplicationCommandModule
     {
-        private readonly IAudioService? _audioService = Program.AudioService;
+        private readonly IAudioService _audioService = Program.AudioService;
         private async ValueTask<QueuedLavalinkPlayer?> GetPlayerAsync(InteractionContext ctx, bool connectToVoiceChannel = true)
         {
             var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true };
@@ -369,6 +369,7 @@ namespace Discord_Bot.commands.slash
 
             foreach (var i in queue)
             {
+                if (i.Track is null) continue;
                 num++;
                 songs += $"{num}.**{i.Track.Author} - {i.Track.Title}** \n";
             }

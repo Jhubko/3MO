@@ -6,12 +6,12 @@ using DSharpPlus.SlashCommands;
 using System.Reflection;
 using System.Text;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     public class StatsSlashCommands : ApplicationCommandModule
     {
         [SlashCommand("points", "Display your voice points or the points of a specified user.")]
-        public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
+        public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
             uint points = await Program.voicePointsManager.GetUserPoints(userId);
@@ -76,7 +76,7 @@ namespace Discord_Bot.commands.slash
 
         }
         [SlashCommand("stats", "Display your Statistics.")]
-        public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
+        public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
             UserConfig userStats = await StatsHandler.LoadUserStats(userId);
