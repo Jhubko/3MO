@@ -34,7 +34,7 @@ class CityHandler
         new Building { Emote = "🎢", Name = "Amusement park", Cost = 450000, Income = 22500 },
     ];
 
-    private static readonly IJsonHandler jsonReader = new JSONReader();
+    private static readonly JSONReader jsonReader = new();
     private static readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
 
 
@@ -51,11 +51,10 @@ class CityHandler
         return points;
     }
 
-    public async Task<DiscordEmbed> ViewCity(InteractionContext ctx, ulong userId)
+    public async Task<DiscordEmbed> ViewCity(ulong userId)
     {
         var city = await LoadCity(userId);
         string cityView = RenderCity(city.Grid);
-        var member = await ctx.Guild.GetMemberAsync(userId);
         return new DiscordEmbedBuilder()
         {
             Title = $"{city.Name}\n{cityView} ",

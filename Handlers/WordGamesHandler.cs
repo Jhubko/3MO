@@ -49,10 +49,10 @@ class WordGamesHandler
     }
     public async Task StartTimer(ulong channelId, InteractionContext ctx, Dictionary<ulong, CancellationTokenSource> activeTimers, dynamic activeGames)
     {
-        if (activeTimers.ContainsKey(channelId))
+        if (activeTimers.TryGetValue(channelId, out CancellationTokenSource? value))
         {
-            activeTimers[channelId].Cancel();
-            activeTimers[channelId].Dispose();
+            value.Cancel();
+            value.Dispose();
         }
 
         var cts = new CancellationTokenSource();

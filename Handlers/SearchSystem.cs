@@ -219,7 +219,7 @@ namespace Discord_Bot.other
 
                 desc += $"{frame}";
 
-                for (int i = 0; i < WeatherTextList.Count(); i++)
+                for (int i = 0; i < WeatherTextList.Count; i++)
                 {
                     desc += $"**Date:{WeatherDateList[i]}**\n **Weather:** {WeatherTextList[i]}, **Temperature:** {WeatherTempList[i]}°C\n **Wind**: {WeatherWindList[i]} k/h, **Chance of rain/snow:** {WeatherRainChanceList[i]}% / {WeatherSnowChanceList[i]}%\n";
                     desc += $"{frame}";

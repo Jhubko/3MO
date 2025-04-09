@@ -1,5 +1,6 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 
@@ -7,7 +8,7 @@ class VoicePointsManager
 {
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
     private readonly HashSet<ulong> activeUsers;
-    private static readonly IJsonHandler jsonReader = new JSONReader();
+    private static readonly JSONReader jsonReader = new();
     private readonly InventoryManager inventoryManager = new();
     private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
@@ -116,12 +117,5 @@ class VoicePointsManager
 
         return passivePoints;
     }
-}
-
-public class UserPoints
-{
-    public ulong UserId { get; set; }
-    public object? Points { get; set; }
-    public string? ExtraInfo { get; internal set; }
 }
 

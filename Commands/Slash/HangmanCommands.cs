@@ -4,7 +4,7 @@ namespace Discord_Bot.Commands.Slash
     public class HangmanCommands : ApplicationCommandModule
     {
         private static readonly string[] hangmanPics =
-        {
+        [
         "```\n      \n      \n      \n      \n      \n      \n```",
         "```\n      \n      \n      \n      \n      \n=========" + "\n```",
         "```\n      |\n      |\n      |\n      |\n      |\n=========" + "\n```",
@@ -16,7 +16,7 @@ namespace Discord_Bot.Commands.Slash
         "```\n  +---+\n  |   |\n  O   |\n /|\\  |\n      |\n      |\n=========" + "\n```",
         "```\n  +---+\n  |   |\n  O   |\n /|\\  |\n /    |\n      |\n=========" + "\n```",
         "```\n  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n      |\n=========" + "\n```"
-    };
+        ];
 
         private readonly WordGamesHandler _wordGamesHandler = new();
         private static readonly Dictionary<ulong, HangmanGameState> activeGames = [];
@@ -41,10 +41,10 @@ namespace Discord_Bot.Commands.Slash
             var game = new HangmanGameState(word);
             activeGames[ctx.Channel.Id] = game;
 
-            if (activeTimers.ContainsKey(ctx.Channel.Id))
+            if (activeTimers.TryGetValue(ctx.Channel.Id, out CancellationTokenSource? value))
             {
-                activeTimers[ctx.Channel.Id].Cancel();
-                activeTimers[ctx.Channel.Id].Dispose();
+                value.Cancel();
+                value.Dispose();
                 activeTimers.Remove(ctx.Channel.Id);
             }
 
@@ -55,13 +55,13 @@ namespace Discord_Bot.Commands.Slash
         [SlashCommand("hguess", "Guess a letter or the whole word in Hangman.")]
         public async Task HangmanGuess(InteractionContext ctx, [Option("input", "Give a letter or a word to guess.")] string input)
         {
-            if (!activeGames.ContainsKey(ctx.Channel.Id))
+            if (!activeGames.TryGetValue(ctx.Channel.Id, out HangmanGameState? value))
             {
                 await ctx.CreateResponseAsync("⚠ There is no active game in this channel. Use `/hangman` to start.", true);
                 return;
             }
 
-            var game = activeGames[ctx.Channel.Id];
+            var game = value;
             input = input.ToLower();
 
             if (input.Length == 1 && char.IsLetter(input[0]))
@@ -144,10 +144,10 @@ namespace Discord_Bot.Commands.Slash
 
         private string GetGameState(ulong channelId)
         {
-            if (!activeGames.ContainsKey(channelId))
+            if (!activeGames.TryGetValue(channelId, out HangmanGameState? value))
                 return "❌ No active game in this channel.";
 
-            var game = activeGames[channelId];
+            var game = value;
             return $"{hangmanPics[game.WrongAttempts]}\n" +
                    $"Word: `{new string(game.GuessedWord)}`\n" +
                    $"Wrong letters: `{(game.WrongGuesses.Count > 0 ? string.Join(", ", game.WrongGuesses) : "None")}`\n" +

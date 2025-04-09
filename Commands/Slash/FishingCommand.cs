@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using Discord_Bot.other;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
@@ -10,7 +11,7 @@ namespace Discord_Bot.Commands.Slash
     {
         private static readonly Random random = new();
         private static readonly Dictionary<ulong, bool> fishingUsers = [];
-        private static readonly IJsonHandler jsonReader = new JSONReader();
+        private static readonly JSONReader jsonReader = new();
 
         private readonly uint fishingPrice = 10;
         private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
@@ -151,14 +152,14 @@ namespace Discord_Bot.Commands.Slash
 
             List<FishItem> fishList;
 
-            if (fishName.ToLower() == "all")
+            if (fishName.Equals("all", StringComparison.CurrentCultureIgnoreCase))
             {
                 fishList = new List<FishItem>(userInventory.Fish);
             }
             else
             {
                 fishList = userInventory.Fish.Where(f => f.Name?.Equals(fishName, StringComparison.OrdinalIgnoreCase) == true).ToList();
-                if (!fishList.Any())
+                if (fishList.Count == 0)
                 {
                     await ctx.CreateResponseAsync($"❌ Nie masz ryby o nazwie {fishName}.", true);
                     return;
@@ -168,7 +169,7 @@ namespace Discord_Bot.Commands.Slash
             int totalPrice = 0;
             int fishSoldCount = 0;
 
-            if (fishName.ToLower() == "all" || amount == "all")
+            if (fishName.Equals("all", StringComparison.CurrentCultureIgnoreCase) || amount == "all")
             {
                 totalPrice = fishList.Sum(f => f.Price);
                 fishSoldCount = fishList.Count;

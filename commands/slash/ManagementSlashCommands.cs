@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using Discord_Bot.other;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -10,7 +11,7 @@ namespace Discord_Bot.Commands.Slash
 {
     internal class ManagementSlashCommands : ApplicationCommandModule
     {
-        private static readonly IJsonHandler jsonReader = new JSONReader();
+        private static readonly JSONReader jsonReader = new();
         private readonly JSONWriter GlobalJsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
         private static readonly string? configPath = Program.globalConfig.ConfigPath;
         private readonly InventoryManager inventoryManager = new();
@@ -86,7 +87,7 @@ namespace Discord_Bot.Commands.Slash
                 return;
             }
 
-            if (action.ToLower() == "add")
+            if (action.Equals("add", StringComparison.CurrentCultureIgnoreCase))
             {
                 if (string.IsNullOrEmpty(name) || minWeight == null || maxWeight == null || basePrice == null)
                 {
@@ -112,7 +113,7 @@ namespace Discord_Bot.Commands.Slash
                 File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
                 await ctx.CreateResponseAsync($"✅ Ryba {name} została dodana do bazy danych.");
             }
-            else if (action.ToLower() == "edit")
+            else if (action.Equals("edit", StringComparison.CurrentCultureIgnoreCase))
             {
                 var fishToEdit = fishList.FirstOrDefault(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 if (fishToEdit == null)
@@ -133,7 +134,7 @@ namespace Discord_Bot.Commands.Slash
                 File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
                 await ctx.CreateResponseAsync($"✅ Ryba {name} została zaktualizowana.");
             }
-            else if (action.ToLower() == "remove")
+            else if (action.Equals("remove", StringComparison.CurrentCultureIgnoreCase))
             {
                 var fishToRemove = fishList.FirstOrDefault(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 if (fishToRemove == null)

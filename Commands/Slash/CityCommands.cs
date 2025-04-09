@@ -60,7 +60,7 @@ namespace Discord_Bot.Commands.Slash
         public async Task ViewCityCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            var embed = await _cityHandler.ViewCity(ctx, userId);
+            var embed = await _cityHandler.ViewCity(userId);
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
         }
 

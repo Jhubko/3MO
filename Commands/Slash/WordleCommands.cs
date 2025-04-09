@@ -28,10 +28,10 @@ namespace Discord_Bot.Commands.Slash
             var game = new WordleGameState(word);
             activeGames[ctx.Channel.Id] = game;
 
-            if (activeTimers.ContainsKey(ctx.Channel.Id))
+            if (activeTimers.TryGetValue(ctx.Channel.Id, out CancellationTokenSource? value))
             {
-                activeTimers[ctx.Channel.Id].Cancel();
-                activeTimers[ctx.Channel.Id].Dispose();
+                value.Cancel();
+                value.Dispose();
                 activeTimers.Remove(ctx.Channel.Id);
             }
 
@@ -43,13 +43,13 @@ namespace Discord_Bot.Commands.Slash
         public async Task WordleGuess(InteractionContext ctx, [Option("input", "Give a word to guess.")] string input)
         {
             input = input.ToLower();
-            if (!activeGames.ContainsKey(ctx.Channel.Id))
+            if (!activeGames.TryGetValue(ctx.Channel.Id, out WordleGameState? value))
             {
                 await ctx.CreateResponseAsync("⚠ There is no active game in this channel. Use `/wordle` to start.", true);
                 return;
             }
 
-            var game = activeGames[ctx.Channel.Id];
+            var game = value;
             if (await _wordGamesHandler.CheckIfWordExist(input) == false && input != game.WordToGuess)
             {
                 await ctx.CreateResponseAsync($"⚠ Word do not exist!", true);
@@ -173,17 +173,12 @@ namespace Discord_Bot.Commands.Slash
         }
     }
 
-    public class WordleGameState
+    public class WordleGameState(string word)
     {
-        public string WordToGuess { get; set; }
+        public string WordToGuess { get; set; } = word;
         public List<string> GuessedWords { get; set; } = [];
         public List<string> WordleStrucutreToShow { get; set; } = [];
         public HashSet<char> WrongLetters { get; set; } = [];
         public HashSet<char> GoodLetters { get; set; } = [];
-
-        public WordleGameState(string word)
-        {
-            WordToGuess = word;
-        }
     }
 }

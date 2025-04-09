@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 

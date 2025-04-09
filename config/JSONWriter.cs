@@ -2,19 +2,13 @@
 
 namespace Discord_Bot.Config
 {
-    public class JSONWriter
+    public class JSONWriter(IJsonHandler jsonHandler, string configPath, string serverConfigDir)
     {
-        private readonly IJsonHandler _jsonHandler;
-        private readonly string _configPath;
-        private readonly string _serverConfigDir;
+        private readonly IJsonHandler _jsonHandler = jsonHandler;
+        private readonly string _configPath = configPath;
+        private readonly string _serverConfigDir = serverConfigDir;
 
         private static readonly SemaphoreSlim FileSemaphore = new(1, 1);
-        public JSONWriter(IJsonHandler jsonHandler, string configPath, string serverConfigDir)
-        {
-            _jsonHandler = jsonHandler;
-            _configPath = configPath;
-            _serverConfigDir = serverConfigDir;
-        }
 
         public async Task UpdateGlobalConfig(string key, string value)
         {

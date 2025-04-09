@@ -105,3 +105,9 @@ class StatsHandler
     }
 
 }
+public class UserPoints
+{
+    public ulong UserId { get; set; }
+    public object? Points { get; set; }
+    public string? ExtraInfo { get; internal set; }
+}

@@ -52,10 +52,7 @@ namespace Discord_Bot.other
                 {
                     foreach (var messageId in serverConfig.BotMessages[channelId])
                     {
-                        ulong parsedChannelId;
-                        ulong parsedMessageId;
-
-                        if (ulong.TryParse(channelId, out parsedChannelId) && ulong.TryParse(messageId, out parsedMessageId))
+                        if (ulong.TryParse(channelId, out ulong parsedChannelId) && ulong.TryParse(messageId, out ulong parsedMessageId))
                         {
                             var channel = await Program.Client.GetChannelAsync(parsedChannelId);
                             if (channel != null)
