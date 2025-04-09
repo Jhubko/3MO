@@ -10,11 +10,11 @@ namespace Discord_Bot.Commands.Slash
             ulong userId = ctx.User.Id;
             uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
             uint amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
-            var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
+            var (isProperValue, errorMessage) = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
-            if (!checkAmout.isProperValue)
+            if (!isProperValue)
             {
-                await ctx.CreateResponseAsync(checkAmout.errorMessage, true);
+                await ctx.CreateResponseAsync(errorMessage, true);
                 return;
             }
 
@@ -23,7 +23,7 @@ namespace Discord_Bot.Commands.Slash
 
             if (win)
             {
-                currentPoints += (uint)amountToGamble;
+                currentPoints += amountToGamble;
                 await ctx.CreateResponseAsync(new DiscordEmbedBuilder
                 {
                     Title = $"🎉  Pogchamp!  🎉",
@@ -35,7 +35,7 @@ namespace Discord_Bot.Commands.Slash
             }
             else
             {
-                currentPoints -= (uint)amountToGamble;
+                currentPoints -= amountToGamble;
                 await ctx.CreateResponseAsync(new DiscordEmbedBuilder
                 {
                     Title = $":joy:  Yikes  :joy: ",

@@ -95,7 +95,9 @@ namespace Discord_Bot.Commands.Slash
                     ulong userId = ctx.User.Id;
                     uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
                     await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.WordToGuess)}** points!");
-                    Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
+                    await StatsHandler.IncreaseStats(ctx.User.Id, "HangmanWins");
+                    currentPoints += CalculatePoints(game.WordToGuess);
+                    Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
                     activeTimers[ctx.Channel.Id].Cancel();
                     activeTimers[ctx.Channel.Id].Dispose();
                     activeTimers.Remove(ctx.Channel.Id);
@@ -120,7 +122,8 @@ namespace Discord_Bot.Commands.Slash
                 uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
                 await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**  and won **{CalculatePoints(game.WordToGuess)}** points!");
                 await StatsHandler.IncreaseStats(ctx.User.Id, "HangmanWins");
-                Program.voicePointsManager.SaveUserPoints(userId, currentPoints + CalculatePoints(game.WordToGuess));
+                currentPoints += CalculatePoints(game.WordToGuess);
+                Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
                 activeTimers[ctx.Channel.Id].Cancel();
                 activeTimers[ctx.Channel.Id].Dispose();
                 activeTimers.Remove(ctx.Channel.Id);
@@ -172,18 +175,12 @@ namespace Discord_Bot.Commands.Slash
         }
     }
 
-    public class HangmanGameState
+    public class HangmanGameState(string word)
     {
-        public string WordToGuess { get; set; }
-        public char[] GuessedWord { get; set; }
+        public string WordToGuess { get; set; } = word;
+        public char[] GuessedWord { get; set; } = new string('_', word.Length).ToCharArray();
         public HashSet<char> WrongGuesses { get; set; } = [];
         public HashSet<string> WrongWords { get; set; } = [];
         public int WrongAttempts { get; set; } = 0;
-
-        public HangmanGameState(string word)
-        {
-            WordToGuess = word;
-            GuessedWord = new string('_', word.Length).ToCharArray();
-        }
     }
 }

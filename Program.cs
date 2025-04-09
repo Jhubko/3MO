@@ -35,9 +35,9 @@ namespace Discord_Bot
 
         public static GlobalConfig globalConfig = null!;
 
-        public static VoicePointsManager voicePointsManager = new();
+        public static VoicePointsManager voicePointsManager = null!;
 
-        private static readonly InventoryManager inventoryManager = new();
+        private static InventoryManager inventoryManager = null!;
 
 
         static async Task Main(string[] args)
@@ -69,7 +69,10 @@ namespace Discord_Bot
             Client.GuildMemberAdded += Client_GuildMemberAdded;
             Client.MessageCreated += Client_MessageCreated;
             Client.VoiceStateUpdated += Client_VoiceStateUpdated;
-            await Task.Run(() => voicePointsManager.AddPointsLoop());
+
+            inventoryManager = new InventoryManager();
+            voicePointsManager = new VoicePointsManager();
+            _ = Task.Run(() => voicePointsManager.AddPointsLoop());
 
             UriBuilder builder = new()
             {
