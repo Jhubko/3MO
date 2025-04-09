@@ -1,5 +1,4 @@
-﻿using Discord_Bot;
-using Discord_Bot.Config;
+﻿using Discord_Bot.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

@@ -115,7 +115,7 @@ namespace Discord_Bot.other
             try
             {
                 string? apiKey = Program.globalConfig.WeatherApi;
-                if(apiKey == null) 
+                if (apiKey == null)
                 {
                     await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak klucza Api."));
                     return null;

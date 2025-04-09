@@ -38,7 +38,7 @@ namespace Discord_Bot.Commands.Slash
             }
 
             ulong userId = ctx.User.Id;
-            var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null") ;
+            var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
             uint currentPoints = userData.Points;
             uint currentTickets = userData.Tickets;
             uint ticketsToBuy;

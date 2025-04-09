@@ -14,7 +14,7 @@ namespace Discord_Bot.other
                 return;
             var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
             CustomInteractionContext? ctx = Program.CreateInteractionContext(client, channel);
-            if (ctx == null) 
+            if (ctx == null)
                 return;
             var raffleCommand = new RaffleCommand();
             var pool = serverConfig.RafflePool;
@@ -40,7 +40,7 @@ namespace Discord_Bot.other
 
             var channel = await client.GetChannelAsync(Convert.ToUInt64(serverConfig.GamblingChannelId));
             CustomInteractionContext? ctx = Program.CreateInteractionContext(client, channel);
-            if (ctx == null) 
+            if (ctx == null)
                 return;
 
             if (raffleCommand.IsRaffleActive())

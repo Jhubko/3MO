@@ -49,7 +49,7 @@ namespace Discord_Bot.Commands.Slash
                 var highscoreList = new StringBuilder();
                 foreach (var user in topUsers)
                 {
-                    if(user.Points == null)
+                    if (user.Points == null)
                         continue;
                     try
                     {

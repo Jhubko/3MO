@@ -56,7 +56,7 @@ class StatsHandler
             if (!validUserIds.Contains(userId)) continue;
 
             var userData = await jsonReader.ReadJson<UserConfig>(file);
-            if (userData == null) 
+            if (userData == null)
                 continue;
 
             if (category == "HeaviestFish")
