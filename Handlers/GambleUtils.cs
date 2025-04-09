@@ -36,9 +36,9 @@ class GambleUtils
         if (Regex.IsMatch(input, @"^\d+[kmb]?$"))
         {
             int multiplier = 1;
-            if (input.EndsWith("k")) multiplier = 1000;
-            else if (input.EndsWith("m")) multiplier = 1000000;
-            else if (input.EndsWith("b")) multiplier = 1000000000;
+            if (input.EndsWith('k')) multiplier = 1000;
+            else if (input.EndsWith('m')) multiplier = 1000000;
+            else if (input.EndsWith('b')) multiplier = 1000000000;
 
             input = Regex.Replace(input, "[kmb]", "");
             if (int.TryParse(input, out int amount))

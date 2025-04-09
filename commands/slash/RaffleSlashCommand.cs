@@ -1,15 +1,16 @@
 using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus.SlashCommands;
 namespace Discord_Bot.Commands.Slash
 {
     public class RaffleCommand : ApplicationCommandModule
     {
         private static uint rafflePool;
-        private static uint raffleTicketStartCost = 100;
-        private static uint raffleTicketCostIncrease = 50;
+        private static readonly uint raffleTicketStartCost = 100;
+        private static readonly uint raffleTicketCostIncrease = 50;
         private static bool raffleActive = false;
-        private static IJsonHandler jsonReader = new JSONReader();
-        private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+        private static readonly JSONReader jsonReader = new();
+        private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
         private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
         public async Task StartRaffle(CustomInteractionContext ctx)
@@ -40,9 +41,8 @@ namespace Discord_Bot.Commands.Slash
             var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null") ;
             uint currentPoints = userData.Points;
             uint currentTickets = userData.Tickets;
-            uint ticketsToBuy = 1;
-
-            if (amountInput.ToLower() == "max")
+            uint ticketsToBuy;
+            if (amountInput.Equals("max", StringComparison.CurrentCultureIgnoreCase))
             {
                 ticketsToBuy = CalculateMaxTickets(currentPoints, currentTickets);
             }
@@ -120,7 +120,7 @@ namespace Discord_Bot.Commands.Slash
 
         private async Task<ulong> DrawRaffleWinner()
         {
-            List<ulong> ticketEntries = new List<ulong>();
+            List<ulong> ticketEntries = [];
 
             foreach (var file in Directory.GetFiles(folderPath, "*.json"))
             {
@@ -142,15 +142,13 @@ namespace Discord_Bot.Commands.Slash
                 return 0;
             }
 
-            Random rng = new Random();
+            Random rng = new();
             int n = ticketEntries.Count;
             while (n > 1)
             {
                 n--;
                 int k = rng.Next(n + 1);
-                ulong value = ticketEntries[k];
-                ticketEntries[k] = ticketEntries[n];
-                ticketEntries[n] = value;
+                (ticketEntries[n], ticketEntries[k]) = (ticketEntries[k], ticketEntries[n]);
             }
 
             ulong winner = ticketEntries[rng.Next(ticketEntries.Count)];

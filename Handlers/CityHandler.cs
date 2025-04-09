@@ -1,5 +1,6 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
@@ -9,8 +10,8 @@ class CityHandler
     private readonly VoicePointsManager _pointsManager = Program.voicePointsManager;
     public const int CitySize = 8;
 
-    public readonly List<Building> Buildings = new()
-    {
+    public readonly List<Building> Buildings =
+    [
         new Building { Emote = "🌲", Name = "Tree", Cost = 1000, Income = 50 },
         new Building { Emote = "🅿️", Name = "Parking", Cost = 5000, Income = 250 },
         new Building { Emote = "🛣️", Name = "Road", Cost = 7000, Income = 350 },
@@ -31,10 +32,10 @@ class CityHandler
         new Building { Emote = "🏨", Name = "Hotel", Cost = 260000, Income = 13000 },
         new Building { Emote = "🛬", Name = "Airport", Cost = 320000, Income = 16000 },
         new Building { Emote = "🎢", Name = "Amusement park", Cost = 450000, Income = 22500 },
-    };
+    ];
 
-    private static IJsonHandler jsonReader = new JSONReader();
-    private static JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+    private static readonly IJsonHandler jsonReader = new JSONReader();
+    private static readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
 
 
     public CityHandler()

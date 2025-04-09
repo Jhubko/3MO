@@ -2,17 +2,17 @@
 {
     public class GlobalConfig
     {
-        public required string Token { get; set; }
-        public required string Prefix { get; set; }
-        public required string ApiGoogle { get; set; }
-        public required string CseId { get; set; }
-        public required string ApiGPT { get; set; }
-        public required string WeatherApi { get; set; }
-        public required string LlHostname { get; set; }
-        public required int LlPort { get; set; }
-        public required string LlPass { get; set; }
-        public required bool Secured { get; set; }
-        public required string ConfigPath { get; set; }
+        public string? Token { get; set; }
+        public string? Prefix { get; set; }
+        public string? ApiGoogle { get; set; }
+        public string? CseId { get; set; }
+        public string? ApiGPT { get; set; }
+        public string? WeatherApi { get; set; }
+        public string? LlHostname { get; set; }
+        public int LlPort { get; set; }
+        public string? LlPass { get; set; }
+        public bool Secured { get; set; }
+        public string? ConfigPath { get; set; }
     }
 
     public class ServerConfig
@@ -28,13 +28,13 @@
 
     public class ServerConfigShop
     {
-        public List<ShopItem> ShopItems { get; set; } = new List<ShopItem>();
+        public List<ShopItem> ShopItems { get; set; } = [];
     }
 
     public class UserInventory
     {
-        public List<FishItem> Fish { get; set; } = new List<FishItem>();
-        public Dictionary<string, uint> Items { get; set; } = new Dictionary<string, uint>();
+        public List<FishItem> Fish { get; set; } = [];
+        public Dictionary<string, uint> Items { get; set; } = [];
     }
 
     public class UserConfig

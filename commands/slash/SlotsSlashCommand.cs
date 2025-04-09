@@ -6,13 +6,13 @@ namespace Discord_Bot.Commands.Slash
 {
     public class SlotsCommand : ApplicationCommandModule
     {
-        private static readonly string[] Symbols = {"🍎", "🍏", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🫐",
+        private static readonly string[] Symbols = ["🍎", "🍏", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🫐",
     "🍒", "🍑", "🥭", "🍍", "🥝", "🍈", "🥥", "🌰", "🥑", "🍆",
-    "🌽", "🥕", "🧄", "🧅", "🥔", "🥒", "🌶️", "🫑", "🍠", "🥜"};
+    "🌽", "🥕", "🧄", "🧅", "🥔", "🥒", "🌶️", "🫑", "🍠", "🥜"];
         private const int BetAmount = 10;
         private const int DefaultPool = 2000;
-        private static IJsonHandler jsonReader = new JSONReader();
-        private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+        private static readonly JSONReader jsonReader = new();
+        private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
         private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
         [SlashCommand("checkSlotsChances", "Check the chances of winning the slots game!")]
@@ -65,7 +65,7 @@ namespace Discord_Bot.Commands.Slash
                 return;
             }
 
-            Random random = new Random();
+            Random random = new();
             bool requiresCaptcha = random.Next(1, 101) <= 5;
 
             if (requiresCaptcha)
@@ -73,7 +73,16 @@ namespace Discord_Bot.Commands.Slash
                 int num1 = random.Next(1, 10);
                 int num2 = random.Next(1, 10);
                 int correctAnswer = num1 + num2;
-                string filePath = CaptchaHandler.GenerateCaptchaImage(num1, num2);
+                string filePath;
+                if (OperatingSystem.IsWindows())
+                {
+                    filePath = CaptchaHandler.GenerateCaptchaImage(num1, num2);
+                }
+                else
+                {
+                    await ctx.CreateResponseAsync("❌ Funkcjonalność CAPTCHA działa tylko na systemie Windows.", true);
+                    return;
+                }
 
                 using (var fileStream = new FileStream(filePath, FileMode.Open))
                 {

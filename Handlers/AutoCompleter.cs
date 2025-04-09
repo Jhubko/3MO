@@ -6,7 +6,7 @@ namespace Discord_Bot.other
 {
     public class BuildingAutocomplete : IAutocompleteProvider
     {
-        readonly CityHandler _cityHandler = new CityHandler();
+        readonly CityHandler _cityHandler = new();
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
             var buildings = _cityHandler.Buildings
@@ -42,7 +42,7 @@ namespace Discord_Bot.other
 
     public class FishAutocomplete : IAutocompleteProvider
     {
-        private readonly InventoryManager _inventoryManager = new InventoryManager();
+        private readonly InventoryManager _inventoryManager = new();
 
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
@@ -50,7 +50,7 @@ namespace Discord_Bot.other
 
             if (userInventory?.Fish == null || userInventory.Fish.Count == 0)
             {
-                return new List<DiscordAutoCompleteChoice>();
+                return [];
             }
 
             var fishNames = userInventory.Fish

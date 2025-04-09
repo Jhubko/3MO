@@ -6,14 +6,14 @@ using DSharpPlus.EventArgs;
 class VoicePointsManager
 {
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-    private HashSet<ulong> activeUsers;
-    private static IJsonHandler jsonReader = new JSONReader();
-    private readonly InventoryManager inventoryManager = new InventoryManager();
-    private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+    private readonly HashSet<ulong> activeUsers;
+    private static readonly IJsonHandler jsonReader = new JSONReader();
+    private readonly InventoryManager inventoryManager = new();
+    private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
     {
 
-        activeUsers = new HashSet<ulong>();
+        activeUsers = [];
         Directory.CreateDirectory(folderPath);
     }
 

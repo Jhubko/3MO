@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 public class InventoryManager
 {
-    private static IJsonHandler jsonReader = new JSONReader();
+    private static readonly IJsonHandler jsonReader = new JSONReader();
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
     public async Task<UserInventory> GetUserItems(ulong userId)
@@ -15,8 +15,8 @@ public class InventoryManager
         {
             var defaultInventory = new UserInventory
             {
-                Fish = new List<FishItem>(),
-                Items = new Dictionary<string, uint>()
+                Fish = [],
+                Items = []
             };
             var defaultJson = JObject.FromObject(new
             {
@@ -26,12 +26,12 @@ public class InventoryManager
 
             await File.WriteAllTextAsync(userFilePath, defaultJson.ToString());
         }
-        var userData = await jsonReader.ReadJson<JObject>(userFilePath) ?? new JObject();
+        var userData = await jsonReader.ReadJson<JObject>(userFilePath) ?? [];
 
         return new UserInventory
         {
-            Fish = userData["Fish"]?.ToObject<List<FishItem>>() ?? new List<FishItem>(),
-            Items = userData["Items"]?.ToObject<Dictionary<string, uint>>() ?? new Dictionary<string, uint>()
+            Fish = userData["Fish"]?.ToObject<List<FishItem>>() ?? [],
+            Items = userData["Items"]?.ToObject<Dictionary<string, uint>>() ?? []
         };
     }
     public async Task<List<Fish>> LoadFishDataAsync(ulong serverId)
@@ -41,7 +41,7 @@ public class InventoryManager
         if (File.Exists(serverFishFilePath))
         {
             string json = File.ReadAllText(serverFishFilePath);
-            return JsonConvert.DeserializeObject<List<Fish>>(json) ?? new List<Fish>();
+            return JsonConvert.DeserializeObject<List<Fish>>(json) ?? [];
         }
         else
         {
@@ -85,7 +85,7 @@ public class InventoryManager
         };
 
         var userInventory = await GetUserItems(userId);
-        var fishList = userInventory.Fish ?? new List<FishItem>();
+        var fishList = userInventory.Fish ?? [];
         fishList.Add(newFish);
         userInventory.Fish = fishList;
         await UpdateUserItems(userId, userInventory);

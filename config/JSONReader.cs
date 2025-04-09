@@ -4,9 +4,9 @@ namespace Discord_Bot.Config
 {
     public class JSONReader : IJsonHandler
     {
-        public async Task<T?> ReadJson<T>(string filePath) where T : class
+        public async Task<T?> ReadJson<T>(string filePath) where T : class, new()
         {
-            if (!File.Exists(filePath)) return null;
+            if (!File.Exists(filePath)) return new T();
 
             using StreamReader sr = new(filePath);
             string json = await sr.ReadToEndAsync();

@@ -5,9 +5,9 @@ namespace Discord_Bot.Commands.Slash
     {
         private readonly int totalGuesses = 6;
         private readonly int wordLenght = 5;
-        private static Dictionary<ulong, WordleGameState> activeGames = new();
-        private static Dictionary<ulong, CancellationTokenSource> activeTimers = new();
-        private readonly WordGamesHandler _wordGamesHandler = new WordGamesHandler();
+        private static readonly Dictionary<ulong, WordleGameState> activeGames = [];
+        private static readonly Dictionary<ulong, CancellationTokenSource> activeTimers = [];
+        private readonly WordGamesHandler _wordGamesHandler = new();
 
         [SlashCommand("wordle", "Start wordle game.")]
         public async Task StartWordleGame(InteractionContext ctx)
@@ -176,10 +176,10 @@ namespace Discord_Bot.Commands.Slash
     public class WordleGameState
     {
         public string WordToGuess { get; set; }
-        public List<string> GuessedWords { get; set; } = new List<string>();
-        public List<string> WordleStrucutreToShow { get; set; } = new List<string>();
-        public HashSet<char> WrongLetters { get; set; } = new();
-        public HashSet<char> GoodLetters { get; set; } = new();
+        public List<string> GuessedWords { get; set; } = [];
+        public List<string> WordleStrucutreToShow { get; set; } = [];
+        public HashSet<char> WrongLetters { get; set; } = [];
+        public HashSet<char> GoodLetters { get; set; } = [];
 
         public WordleGameState(string word)
         {

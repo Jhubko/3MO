@@ -4,7 +4,7 @@ namespace Discord_Bot.other
 {
     internal class HelpContent
     {
-        public static DiscordEmbedBuilder casinoCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder casinoCommandEmbed = new()
         {
             Color = DiscordColor.DarkRed,
             Title = "Casino Commands",
@@ -19,7 +19,7 @@ namespace Discord_Bot.other
                 "**/freepoints** - 1000 darmowych punktów"
         };
 
-        public static DiscordEmbedBuilder gamesCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder gamesCommandEmbed = new()
         {
             Color = DiscordColor.Green,
             Title = "Games Commands",
@@ -27,7 +27,7 @@ namespace Discord_Bot.other
                 "**/wordle** - Zaczyna gre w wordle"
         };
 
-        public static DiscordEmbedBuilder fishingCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder fishingCommandEmbed = new()
         {
             Color = DiscordColor.Aquamarine,
             Title = "Fishing Commands",
@@ -36,7 +36,7 @@ namespace Discord_Bot.other
                 "**/sellfish** - Sprzedaj wybraną rybe\n"
         };
 
-        public static DiscordEmbedBuilder shopCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder shopCommandEmbed = new()
         {
             Color = DiscordColor.Gold,
             Title = "Shop Commands",
@@ -45,7 +45,7 @@ namespace Discord_Bot.other
                   "**/items** - Sprawdź swoje przedmioty"
         };
 
-        public static DiscordEmbedBuilder cityCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder cityCommandEmbed = new()
         {
             Color = DiscordColor.Cyan,
             Title = "City Commands",
@@ -58,7 +58,7 @@ namespace Discord_Bot.other
                 "**/collectpoints** - Zbierz dochód z budynków w swoim mieście"
         };
 
-        public static DiscordEmbedBuilder managementCommandsEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder managementCommandsEmbed = new()
         {
             Color = DiscordColor.Blurple,
             Title = "Management Commands",
@@ -72,7 +72,7 @@ namespace Discord_Bot.other
                 "**/deleteMessageEmoji**   -> Ustawia emoji, które będzie usuwało wiadomości"
         };
 
-        public static DiscordEmbedBuilder helpCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder helpCommandEmbed = new()
         {
             Color = DiscordColor.Gray,
             Title = "Help Section",
@@ -92,7 +92,7 @@ namespace Discord_Bot.other
                 "Wybierz kategorię z rozwijanego menu, aby uzyskać szczegóły."
         };
 
-        public static DiscordEmbedBuilder statsCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder statsCommandEmbed = new()
         {
             Color = DiscordColor.Purple,
             Title = "Stats Commands",
@@ -101,7 +101,7 @@ namespace Discord_Bot.other
                 "**/stats** - Zobacz swoje statystyki"
         };
 
-        public static DiscordEmbedBuilder searchCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder searchCommandEmbed = new()
         {
             Color = DiscordColor.Teal,
             Title = "Search Commands",
@@ -113,7 +113,7 @@ namespace Discord_Bot.other
                 "**/forecast**  -> Wysyła 3 dniową prognoze pogody w danym mieście"
         };
 
-        public static DiscordEmbedBuilder musicCommandEmbed = new DiscordEmbedBuilder()
+        public static DiscordEmbedBuilder musicCommandEmbed = new()
         {
             Color = DiscordColor.Blue,
             Title = "Music Commands",

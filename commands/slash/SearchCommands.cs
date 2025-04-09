@@ -15,8 +15,14 @@ namespace Discord_Bot.Commands.Slash
         {
             await ctx.DeferAsync();
 
-            string apiKey = Program.globalConfig.ApiGoogle;
-            string cseId = Program.globalConfig.CseId;
+            string? apiKey = Program.globalConfig.ApiGoogle;
+            string? cseId = Program.globalConfig.CseId;
+            if (apiKey == null || cseId == null)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("No Api key found"));
+                return;
+            }
+
 
             var customSearchService = new CustomSearchAPIService(new BaseClientService.Initializer()
             {

@@ -8,7 +8,7 @@ namespace Discord_Bot.Config
         private readonly string _configPath;
         private readonly string _serverConfigDir;
 
-        private static readonly SemaphoreSlim FileSemaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim FileSemaphore = new(1, 1);
         public JSONWriter(IJsonHandler jsonHandler, string configPath, string serverConfigDir)
         {
             _jsonHandler = jsonHandler;
@@ -20,7 +20,7 @@ namespace Discord_Bot.Config
         {
             string filePath = Path.Combine(_configPath, "config.json");
 
-            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
+            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? [];
             jsonData[key] = value;
 
             await _jsonHandler.WriteJson(filePath, jsonData);
@@ -50,7 +50,7 @@ namespace Discord_Bot.Config
                 _jsonHandler.CreateJson(filePath);
             }
 
-            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
+            var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? [];
 
             foreach (var kvp in newConfig)
             {
@@ -77,7 +77,7 @@ namespace Discord_Bot.Config
                     _jsonHandler.CreateJson(filePath);
                 }
 
-                var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? new JObject();
+                var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? [];
 
                 if (key == "Grid")
                 {
@@ -112,11 +112,11 @@ namespace Discord_Bot.Config
         {
             if (value is string[][] grid)
             {
-                JArray gridArray = new JArray();
+                JArray gridArray = [];
 
                 foreach (var row in grid)
                 {
-                    JArray rowArray = new JArray(row);
+                    JArray rowArray = new(row);
                     gridArray.Add(rowArray);
                 }
 
@@ -126,7 +126,7 @@ namespace Discord_Bot.Config
 
         private static void UpdateArray(JObject jsonData, string key, string value)
         {
-            var array = jsonData[key] as JArray ?? new JArray();
+            var array = jsonData[key] as JArray ?? [];
             if (!array.Contains(value)) array.Add(value);
             jsonData[key] = array;
         }
@@ -135,8 +135,8 @@ namespace Discord_Bot.Config
         {
             if (string.IsNullOrEmpty(value)) return;
 
-            if (jsonData[key] is not JObject obj) obj = new JObject();
-            if (obj[subKey] is not JArray array) array = new JArray();
+            if (jsonData[key] is not JObject obj) obj = [];
+            if (obj[subKey] is not JArray array) array = [];
 
             array.Add(value);
             obj[subKey] = array;

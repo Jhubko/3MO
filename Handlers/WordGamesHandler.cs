@@ -3,15 +3,15 @@ using Newtonsoft.Json;
 
 class WordGamesHandler
 {
-    private static readonly HttpClient httpClient = new HttpClient
+    private static readonly HttpClient httpClient = new()
     {
         Timeout = TimeSpan.FromSeconds(1)
     };
-    private static List<string> allWordsCache = new List<string>();
-    private static List<string> wordleWordsCache = new List<string>();
-    private static string baseLink = "https://random-word-api.herokuapp.com/word?number=";
-    private static string wordleLink = "https://random-word-api.herokuapp.com/word?length=5&number=";
-    private static int cacheSize = 100;
+    private static List<string> allWordsCache = [];
+    private static List<string> wordleWordsCache = [];
+    private static readonly string baseLink = "https://random-word-api.herokuapp.com/word?number=";
+    private static readonly string wordleLink = "https://random-word-api.herokuapp.com/word?length=5&number=";
+    private static readonly int cacheSize = 100;
 
     public async Task<string> GetRandomWord(bool isWordle = false)
     {

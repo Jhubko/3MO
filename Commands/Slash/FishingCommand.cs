@@ -9,15 +9,15 @@ namespace Discord_Bot.Commands.Slash
     public class FishingCommand : ApplicationCommandModule
     {
         private static readonly Random random = new();
-        private static readonly Dictionary<ulong, bool> fishingUsers = new();
-        private static IJsonHandler jsonReader = new JSONReader();
+        private static readonly Dictionary<ulong, bool> fishingUsers = [];
+        private static readonly IJsonHandler jsonReader = new JSONReader();
 
         private readonly uint fishingPrice = 10;
         private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
-        private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+        private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
         private readonly VoicePointsManager pointsManager = Program.voicePointsManager;
-        private readonly InventoryManager inventoryManager = new InventoryManager();
+        private readonly InventoryManager inventoryManager = new();
 
         [SlashCommand("fishing", "Cast your rod and try to catch a fish!")]
         public async Task Fish(InteractionContext ctx)

@@ -7,7 +7,7 @@ using System.Runtime.Versioning;
 
 public static class CaptchaHandler
 {
-    private static Dictionary<ulong, (DateTime CooldownEnd, bool RequiresCaptcha, bool MustCompleteCaptcha)> captchaCooldowns = new();
+    private static readonly Dictionary<ulong, (DateTime CooldownEnd, bool RequiresCaptcha, bool MustCompleteCaptcha)> captchaCooldowns = [];
 
     public static bool CheckCaptchaCooldown(ulong userId)
     {
@@ -59,7 +59,7 @@ public static class CaptchaHandler
     public static string GenerateCaptchaImage(int num1, int num2)
     {
         string path = Path.Combine(Path.GetTempPath(), "captcha.png");
-        using (Bitmap bitmap = new Bitmap(200, 80))
+        using (Bitmap bitmap = new(200, 80))
         using (Graphics g = Graphics.FromImage(bitmap))
         {
             g.Clear(Color.White);

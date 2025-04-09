@@ -49,6 +49,8 @@ namespace Discord_Bot.Commands.Slash
                 var highscoreList = new StringBuilder();
                 foreach (var user in topUsers)
                 {
+                    if(user.Points == null)
+                        continue;
                     try
                     {
                         var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);

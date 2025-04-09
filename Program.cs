@@ -1,5 +1,6 @@
 ﻿using Discord_Bot.Commands.Slash;
 using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using Discord_Bot.other;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -42,7 +43,7 @@ namespace Discord_Bot
         static async Task Main(string[] args)
         {
             globalConfig = await jsonHandler.ReadJson<GlobalConfig>("config.json") ?? throw new InvalidOperationException("GlobalConfig cannot be null");
-            serverConfigPath = globalConfig.ConfigPath;
+            serverConfigPath = globalConfig.ConfigPath ?? throw new InvalidOperationException("ConfigPath cannot be null");
             globalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
             configPath = globalConfig.ConfigPath;
             var taskManager = new ScheduledTaskManager();
@@ -70,7 +71,7 @@ namespace Discord_Bot
             Client.VoiceStateUpdated += Client_VoiceStateUpdated;
             await Task.Run(() => voicePointsManager.AddPointsLoop());
 
-            UriBuilder builder = new UriBuilder
+            UriBuilder builder = new()
             {
                 Scheme = globalConfig.Secured ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
                 Host = globalConfig.LlHostname,
@@ -84,7 +85,7 @@ namespace Discord_Bot
                     {
                         x.Label = "Lavalink";
                         x.BaseAddress = builder.Uri;
-                        x.Passphrase = globalConfig.LlPass;
+                        x.Passphrase = globalConfig.LlPass ?? throw new InvalidOperationException("LlPass cannot be null");
                         x.ResumptionOptions = new LavalinkSessionResumptionOptions(TimeSpan.FromSeconds(60));
                         x.ReadyTimeout = TimeSpan.FromSeconds(15);
                     })
@@ -167,7 +168,6 @@ namespace Discord_Bot
 
         private static async Task Client_MessageReactionAdded(DiscordClient sender, MessageReactionAddEventArgs args)
         {
-            var reaction = args.Emoji;
             var serverConfig = await jsonHandler.ReadJson<ServerConfig>($"{configPath}\\{args.Guild.Id}.json");
 
             if (serverConfig?.DeleteMessageEmoji == null)
@@ -267,18 +267,18 @@ namespace Discord_Bot
 
             if (args.Interaction.Data.CustomId == "backButton")
             {
-                var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię", new List<DiscordSelectComponentOption>
-                {
-                    new DiscordSelectComponentOption("Casino", "casino"),
-                    new DiscordSelectComponentOption("Shop", "shop"),
-                    new DiscordSelectComponentOption("City", "city"),
-                    new DiscordSelectComponentOption("Stats", "stats"),
-                    new DiscordSelectComponentOption("Games", "games"),
-                    new DiscordSelectComponentOption("Fishing", "fish"),
-                    new DiscordSelectComponentOption("Music", "music"),
-                    new DiscordSelectComponentOption("Search", "search"),
-                    new DiscordSelectComponentOption("Management", "mngmt"),
-                });
+                var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię",
+                [
+                    new("Casino", "casino"),
+                    new("Shop", "shop"),
+                    new("City", "city"),
+                    new("Stats", "stats"),
+                    new("Games", "games"),
+                    new("Fishing", "fish"),
+                    new("Music", "music"),
+                    new("Search", "search"),
+                    new("Management", "mngmt"),
+                ]);
 
                 await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
                     new DiscordInteractionResponseBuilder()

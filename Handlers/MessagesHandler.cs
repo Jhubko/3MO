@@ -7,8 +7,8 @@ namespace Discord_Bot.other
 {
     internal class MessagesHandler
     {
-        private static IJsonHandler jsonReader = new JSONReader();
-        private static JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+        private static readonly IJsonHandler jsonReader = new JSONReader();
+        private static readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
 
         public static async Task DeleteUnwantedMessage(MessageReactionAddEventArgs args, DiscordEmoji emoji)
         {

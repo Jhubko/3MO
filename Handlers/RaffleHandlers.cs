@@ -1,5 +1,6 @@
 ﻿using Discord_Bot.Commands.Slash;
 using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus;
 
 namespace Discord_Bot.other

@@ -5,10 +5,10 @@ namespace Discord_Bot.Commands.Slash
 {
     public class ShopCommand : ApplicationCommandModule
     {
-        private static IJsonHandler jsonReader = new JSONReader();
-        private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+        private static readonly JSONReader jsonReader = new();
+        private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
         private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-        private readonly InventoryManager inventoryManager = new InventoryManager();
+        private readonly InventoryManager inventoryManager = new();
 
         [SlashCommand("buy", "Buy an item from the shop.")]
         public async Task BuyItem(InteractionContext ctx, [Option("item", "The name of the item to buy")] string itemName)
@@ -27,7 +27,7 @@ namespace Discord_Bot.Commands.Slash
             itemName = item.Name;
             uint currentPoints = userData.Points;
             var inventory = await inventoryManager.GetUserItems(userId);
-            uint itemCount = inventory.Items.ContainsKey(itemName) ? inventory.Items[itemName] : 0;
+            uint itemCount = inventory.Items.TryGetValue(itemName, out uint value) ? value : 0;
             uint itemCost = item.BaseCost * (itemCount + 1);
 
             if (currentPoints < itemCost)
@@ -39,8 +39,8 @@ namespace Discord_Bot.Commands.Slash
             currentPoints -= itemCost;
             userData.Points = currentPoints;
 
-            if (inventory.Items.ContainsKey(itemName))
-                inventory.Items[itemName]++;
+            if (inventory.Items.TryGetValue(itemName, out uint itemValue))
+                inventory.Items[itemName] = ++itemValue;
             else
                 inventory.Items[itemName] = 1;
 
@@ -63,7 +63,7 @@ namespace Discord_Bot.Commands.Slash
             var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
             var inventory = await inventoryManager.GetUserItems(ctx.User.Id);
 
-            if (serverConfig.ShopItems == null || !serverConfig.ShopItems.Any())
+            if (serverConfig.ShopItems == null || serverConfig.ShopItems.Count == 0)
             {
                 await ctx.CreateResponseAsync("The shop is currently empty.", true);
                 return;
@@ -71,7 +71,7 @@ namespace Discord_Bot.Commands.Slash
 
             var itemsList = string.Join("\n", serverConfig.ShopItems.Select(i =>
             {
-                uint itemCount = inventory.Items.ContainsKey(i.Name) ? inventory.Items[i.Name] : 0;
+                uint itemCount = inventory.Items.TryGetValue(i.Name, out uint value) ? value : 0;
                 uint nextItemCost = i.BaseCost * (itemCount + 1);
                 return $"**{i.Name}** - {nextItemCost} punktów" + (i.Description != null ? $" - {i.Description}" : "");
             }));
@@ -93,7 +93,7 @@ namespace Discord_Bot.Commands.Slash
             ulong userId = user?.Id ?? ctx.User.Id;
             var inventory = await inventoryManager.GetUserItems(userId);
 
-            if (!inventory.Items.Any() && !inventory.Fish.Any())
+            if (inventory.Items.Count == 0 && inventory.Fish.Count == 0)
             {
                 await ctx.CreateResponseAsync("You don't have any items.", true);
                 return;

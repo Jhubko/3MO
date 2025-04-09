@@ -6,13 +6,13 @@ namespace Discord_Bot.other
 {
     internal class SearchSystem
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
-        private static List<string> WeatherTextList = new();
-        private static List<string> WeatherRainChanceList = new();
-        private static List<string> WeatherSnowChanceList = new();
-        private static List<string> WeatherTempList = new();
-        private static List<string> WeatherDateList = new();
-        private static List<string> WeatherWindList = new();
+        private static readonly HttpClient _httpClient = new();
+        private static readonly List<string> WeatherTextList = [];
+        private static readonly List<string> WeatherRainChanceList = [];
+        private static readonly List<string> WeatherSnowChanceList = [];
+        private static readonly List<string> WeatherTempList = [];
+        private static readonly List<string> WeatherDateList = [];
+        private static readonly List<string> WeatherWindList = [];
         public static async Task<DiscordEmbedBuilder?> GetRandomMemeAsync(InteractionContext ctx)
         {
             try
@@ -114,7 +114,13 @@ namespace Discord_Bot.other
         {
             try
             {
-                string apiKey = Program.globalConfig.WeatherApi;
+                string? apiKey = Program.globalConfig.WeatherApi;
+                if(apiKey == null) 
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak klucza Api."));
+                    return null;
+                }
+
                 string apiUrl = $"http://api.weatherapi.com/v1/current.json?key={apiKey}&q={city}&aqi=no";
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
                 var response = await _httpClient.SendAsync(request);
@@ -177,7 +183,12 @@ namespace Discord_Bot.other
 
             try
             {
-                string apiKey = Program.globalConfig.WeatherApi;
+                string? apiKey = Program.globalConfig.WeatherApi;
+                if (apiKey == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak klucza Api."));
+                    return null;
+                }
                 string apiUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={city}&days=4";
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
                 var response = await _httpClient.SendAsync(request);

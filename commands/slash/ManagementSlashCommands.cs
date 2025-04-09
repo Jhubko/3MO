@@ -10,10 +10,10 @@ namespace Discord_Bot.Commands.Slash
 {
     internal class ManagementSlashCommands : ApplicationCommandModule
     {
-        private static IJsonHandler jsonReader = new JSONReader();
-        private JSONWriter GlobalJsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
-        private static string? configPath = Program.globalConfig.ConfigPath;
-        private readonly InventoryManager inventoryManager = new InventoryManager();
+        private static readonly IJsonHandler jsonReader = new JSONReader();
+        private readonly JSONWriter GlobalJsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
+        private static readonly string? configPath = Program.globalConfig.ConfigPath;
+        private readonly InventoryManager inventoryManager = new();
 
         [SlashCommand("help", "Show information about all commands.")]
         public async Task HelpCommand(InteractionContext ctx)
@@ -22,8 +22,8 @@ namespace Discord_Bot.Commands.Slash
 
             var helpEmbed = HelpContent.helpCommandEmbed;
 
-            var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię", new List<DiscordSelectComponentOption>
-            {
+            var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię",
+            [
                 new DiscordSelectComponentOption("Casino", "casino"),
                 new DiscordSelectComponentOption("Shop", "shop"),
                 new DiscordSelectComponentOption("City", "city"),
@@ -32,7 +32,7 @@ namespace Discord_Bot.Commands.Slash
                 new DiscordSelectComponentOption("Music", "music"),
                 new DiscordSelectComponentOption("Search", "search"),
                 new DiscordSelectComponentOption("Management", "mngmt")
-            });
+            ]);
 
             var message = new DiscordWebhookBuilder()
                 .AddEmbed(helpEmbed)

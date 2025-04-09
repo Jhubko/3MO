@@ -1,23 +1,18 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 
-public class CustomInteractionContext
+namespace Discord_Bot.Handlers
 {
-    public DiscordClient Client { get; set; }
-    public DiscordGuild Guild { get; set; }
-    public DiscordChannel Channel { get; set; }
-    public DiscordUser User { get; set; }
-
-    public CustomInteractionContext(DiscordClient client, DiscordGuild guild, DiscordChannel channel, DiscordUser user)
+    public class CustomInteractionContext(DiscordClient client, DiscordGuild guild, DiscordChannel channel, DiscordUser user)
     {
-        Client = client;
-        Guild = guild;
-        Channel = channel;
-        User = user;
-    }
+        public DiscordClient Client { get; set; } = client;
+        public DiscordGuild Guild { get; set; } = guild;
+        public DiscordChannel Channel { get; set; } = channel;
+        public DiscordUser User { get; set; } = user;
 
-    public async Task CreateResponseAsync(string content, bool isEphemeral)
-    {
-        await Channel.SendMessageAsync(content);
+        public async Task CreateResponseAsync(string content, bool isEphemeral)
+        {
+            await Channel.SendMessageAsync(content);
+        }
     }
 }

@@ -18,9 +18,9 @@ namespace Discord_Bot.Commands.Slash
         "```\n  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n      |\n=========" + "\n```"
     };
 
-        private readonly WordGamesHandler _wordGamesHandler = new WordGamesHandler();
-        private static Dictionary<ulong, HangmanGameState> activeGames = new();
-        private static Dictionary<ulong, CancellationTokenSource> activeTimers = new();
+        private readonly WordGamesHandler _wordGamesHandler = new();
+        private static readonly Dictionary<ulong, HangmanGameState> activeGames = [];
+        private static readonly Dictionary<ulong, CancellationTokenSource> activeTimers = [];
 
         [SlashCommand("hangman", "Start a game of hangman.")]
         public async Task StartHangmanGame(InteractionContext ctx)
@@ -176,8 +176,8 @@ namespace Discord_Bot.Commands.Slash
     {
         public string WordToGuess { get; set; }
         public char[] GuessedWord { get; set; }
-        public HashSet<char> WrongGuesses { get; set; } = new();
-        public HashSet<string> WrongWords { get; set; } = new();
+        public HashSet<char> WrongGuesses { get; set; } = [];
+        public HashSet<string> WrongWords { get; set; } = [];
         public int WrongAttempts { get; set; } = 0;
 
         public HangmanGameState(string word)

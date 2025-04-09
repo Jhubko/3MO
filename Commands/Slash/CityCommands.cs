@@ -73,7 +73,7 @@ namespace Discord_Bot.Commands.Slash
             {
                 uint userPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
 
-                var building = _cityHandler.Buildings.FirstOrDefault(b => b.Name.ToLower() == buildingName.ToLower());
+                var building = _cityHandler.Buildings.FirstOrDefault(b => b.Name.Equals(buildingName, StringComparison.CurrentCultureIgnoreCase));
 
                 if (building == null)
                 {

@@ -18,7 +18,7 @@ namespace Discord_Bot.Commands.Slash
                 return;
             }
 
-            Random random = new Random();
+            Random random = new();
             bool win = random.Next(2) == 0;
 
             if (win)

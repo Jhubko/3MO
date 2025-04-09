@@ -15,11 +15,11 @@ namespace Discord_Bot.Commands.Slash
             uint userPoints = await Program.voicePointsManager.GetUserPoints(userId);
             uint opponentPoints = await Program.voicePointsManager.GetUserPoints(opponentId);
             uint betAmount = GambleUtils.ParseGambleAmount(amountInput, userPoints);
-            var checkAmout = GambleUtils.CheckGambleAmout(betAmount, userPoints);
+            var (isProperValue, errorMessage) = GambleUtils.CheckGambleAmout(betAmount, userPoints);
 
-            if (!checkAmout.isProperValue)
+            if (!isProperValue)
             {
-                await ctx.CreateResponseAsync(checkAmout.errorMessage, true);
+                await ctx.CreateResponseAsync(errorMessage, true);
                 return;
             }
 

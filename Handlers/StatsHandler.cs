@@ -7,9 +7,8 @@ using System.Text.RegularExpressions;
 class StatsHandler
 {
     private readonly static string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-    private static readonly IJsonHandler jsonReader = new JSONReader();
+    private static readonly JSONReader jsonReader = new();
     private static readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
-    private static readonly InventoryManager inventoryManager = new();
     public async static Task<UserConfig> LoadUserStats(ulong userId)
     {
         return await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
