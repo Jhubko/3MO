@@ -1,51 +1,52 @@
-﻿using Discord_Bot;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-
-public class GambleCommand : ApplicationCommandModule
+namespace Discord_Bot.Commands.Slash
 {
-    [SlashCommand("gamble", "Let's go gambling!")]
-    public async Task Gamble(InteractionContext ctx, [Option("amount", "Amount of points to gamble (number, %, or 'all')")] string amountInput)
+    public class GambleCommand : ApplicationCommandModule
     {
-        ulong userId = ctx.User.Id;
-        int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-        int amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
-        var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
-
-        if (!checkAmout.isProperValue)
+        [SlashCommand("gamble", "Let's go gambling!")]
+        public async Task Gamble(InteractionContext ctx, [Option("amount", "Amount of points to gamble (number, %, or 'all')")] string amountInput)
         {
-            await ctx.CreateResponseAsync(checkAmout.errorMessage, true);
-            return;
-        }
+            ulong userId = ctx.User.Id;
+            uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+            uint amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
+            var (isProperValue, errorMessage) = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
-        Random random = new Random();
-        bool win = random.Next(2) == 0;
-
-        if (win)
-        {
-            currentPoints += amountToGamble;
-            await ctx.CreateResponseAsync(new DiscordEmbedBuilder
+            if (!isProperValue)
             {
-                Title = $"🎉  Pogchamp!  🎉",
-                Description = $"{ctx.User.Mention} postawiłeś: {amountInput}  i  Wygrałeś: **{2 * amountToGamble}** punktów.\nMasz teraz: **{currentPoints}** punktów.",
-                Color = DiscordColor.Green
-            });
-            await StatsHandler.IncreaseStats(userId, "GambleWins");
-            await StatsHandler.IncreaseStats(userId, "WonPoints", amountToGamble);
-        }
-        else
-        {
-            currentPoints -= amountToGamble;
-            await ctx.CreateResponseAsync(new DiscordEmbedBuilder
-            {
-                Title = $":joy:  Yikes  :joy: ",
-                Description = $"{ctx.User.Mention} przegrałeś: **{amountToGamble}** punktów XD.\nZostało Ci: **{currentPoints}** punktów.",
-                Color = DiscordColor.Red
-            });
-            await StatsHandler.IncreaseStats(userId, "GambleLosses");
-            await StatsHandler.IncreaseStats(userId, "LostPoints", amountToGamble);
-        }
+                await ctx.CreateResponseAsync(errorMessage, true);
+                return;
+            }
 
-        Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
+            Random random = new();
+            bool win = random.Next(2) == 0;
+
+            if (win)
+            {
+                currentPoints += amountToGamble;
+                await ctx.CreateResponseAsync(new DiscordEmbedBuilder
+                {
+                    Title = $"🎉  Pogchamp!  🎉",
+                    Description = $"{ctx.User.Mention} postawiłeś: {amountInput}  i  Wygrałeś: **{2 * amountToGamble}** punktów.\nMasz teraz: **{currentPoints}** punktów.",
+                    Color = DiscordColor.Green
+                });
+                await StatsHandler.IncreaseStats(userId, "GambleWins");
+                await StatsHandler.IncreaseStats(userId, "WonPoints", amountToGamble);
+            }
+            else
+            {
+                currentPoints -= amountToGamble;
+                await ctx.CreateResponseAsync(new DiscordEmbedBuilder
+                {
+                    Title = $":joy:  Yikes  :joy: ",
+                    Description = $"{ctx.User.Mention} przegrałeś: **{amountToGamble}** punktów XD.\nZostało Ci: **{currentPoints}** punktów.",
+                    Color = DiscordColor.Red
+                });
+                await StatsHandler.IncreaseStats(userId, "GambleLosses");
+                await StatsHandler.IncreaseStats(userId, "LostPoints", amountToGamble);
+            }
+
+            Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
+        }
     }
 }

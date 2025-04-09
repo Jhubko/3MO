@@ -10,7 +10,7 @@ class GambleUtils
         return name;
     }
 
-    public static (bool isProperValue, string errorMessage) CheckGambleAmout(int amountToGamble, int currentPoints)
+    public static (bool isProperValue, string errorMessage) CheckGambleAmout(uint amountToGamble, uint currentPoints)
     {
         if (amountToGamble <= 0)
             return (false, "Invalid amount. Enter a number, percentage, or 'all'.");
@@ -20,7 +20,7 @@ class GambleUtils
 
         return (true, "");
     }
-    public static int ParseGambleAmount(string input, int currentPoints)
+    public static uint ParseGambleAmount(string input, uint currentPoints)
     {
         input = input.Trim().ToLower();
 
@@ -30,22 +30,22 @@ class GambleUtils
         if (Regex.IsMatch(input, @"^\d+%$"))
         {
             int percentage = int.Parse(input.Replace("%", ""));
-            return (currentPoints * percentage) / 100;
+            return (uint)((currentPoints * percentage) / 100);
         }
 
         if (Regex.IsMatch(input, @"^\d+[kmb]?$"))
         {
             int multiplier = 1;
-            if (input.EndsWith("k")) multiplier = 1000;
-            else if (input.EndsWith("m")) multiplier = 1000000;
-            else if (input.EndsWith("b")) multiplier = 1000000000;
+            if (input.EndsWith('k')) multiplier = 1000;
+            else if (input.EndsWith('m')) multiplier = 1000000;
+            else if (input.EndsWith('b')) multiplier = 1000000000;
 
             input = Regex.Replace(input, "[kmb]", "");
             if (int.TryParse(input, out int amount))
-                return amount * multiplier;
+                return (uint)(amount * multiplier);
         }
 
-        return -1;
+        return 0;
     }
 
     public static int ParseInt(string input)

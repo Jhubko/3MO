@@ -2,7 +2,7 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class GamesSlashCommands : ApplicationCommandModule
     {
@@ -31,13 +31,13 @@ namespace Discord_Bot.commands.slash
             var userCard = new CardSystem();
             bool isPlayerWinner = false;
             ulong userId = ctx.User.Id;
-            int currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
-            int amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
-            var checkAmout = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
+            uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+            uint amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
+            var (isProperValue, errorMessage) = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
-            if (!checkAmout.isProperValue)
+            if (!isProperValue)
             {
-                await ctx.CreateResponseAsync(checkAmout.errorMessage, true);
+                await ctx.CreateResponseAsync(errorMessage, true);
                 return;
             }
 
@@ -53,22 +53,22 @@ namespace Discord_Bot.commands.slash
             var userCardEmbed = new DiscordEmbedBuilder
             {
                 Title = $"Twoja karta to {userCard.SelectedCard}",
-                Color = userCard.suitIndex == 0 || userCard.suitIndex == 1 ? DiscordColor.Black : DiscordColor.Red
+                Color = userCard.SuitIndex == 0 || userCard.SuitIndex == 1 ? DiscordColor.Black : DiscordColor.Red
             };
 
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds(new List<DiscordEmbed> { startEmbed, userCardEmbed }));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds([startEmbed, userCardEmbed]));
 
             var botCard = new CardSystem();
 
             var botCardEmbed = new DiscordEmbedBuilder
             {
                 Title = $"Karta bota to {botCard.SelectedCard}",
-                Color = botCard.suitIndex == 0 || botCard.suitIndex == 1 ? DiscordColor.Black : DiscordColor.Red
+                Color = botCard.SuitIndex == 0 || botCard.SuitIndex == 1 ? DiscordColor.Black : DiscordColor.Red
             };
 
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds(new List<DiscordEmbed> { startEmbed, userCardEmbed, botCardEmbed }));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds([startEmbed, userCardEmbed, botCardEmbed]));
 
-            if (userCard.numberIndex > botCard.numberIndex)
+            if (userCard.NumberIndex > botCard.NumberIndex)
             {
                 isPlayerWinner = true;
                 currentPoints += amountToGamble;
@@ -91,7 +91,7 @@ namespace Discord_Bot.commands.slash
             };
 
             Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds(new List<DiscordEmbed> { startEmbed, userCardEmbed, botCardEmbed, resultEmbed }));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds([startEmbed, userCardEmbed, botCardEmbed, resultEmbed]));
         }
 
         [SlashCommand("freepoints", "Give You 1000 free points!")]

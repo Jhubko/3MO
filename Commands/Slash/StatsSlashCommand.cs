@@ -6,15 +6,15 @@ using DSharpPlus.SlashCommands;
 using System.Reflection;
 using System.Text;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     public class StatsSlashCommands : ApplicationCommandModule
     {
         [SlashCommand("points", "Display your voice points or the points of a specified user.")]
-        public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
+        public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            int points = await Program.voicePointsManager.GetUserPoints(userId);
+            uint points = await Program.voicePointsManager.GetUserPoints(userId);
             var member = await ctx.Guild.GetMemberAsync(userId);
 
             var embed = new DiscordEmbedBuilder
@@ -38,7 +38,7 @@ namespace Discord_Bot.commands.slash
                     return;
                 }
 
-                var topUsers = await StatsHandler.GetTopUsersByCategory(10, category);
+                var topUsers = await StatsHandler.GetTopUsersByCategory(ctx.Guild, 10, category);
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -49,11 +49,13 @@ namespace Discord_Bot.commands.slash
                 var highscoreList = new StringBuilder();
                 foreach (var user in topUsers)
                 {
+                    if (user.Points == null)
+                        continue;
                     try
                     {
                         var discordMember = await ctx.Guild.GetMemberAsync(user.UserId);
 
-                        string valueToDisplay = category == "HeaviestFish"
+                        string? valueToDisplay = category == "HeaviestFish"
                             ? user.ExtraInfo ?? $"{user.Points} kg"
                             : user.Points.ToString();
 
@@ -61,7 +63,7 @@ namespace Discord_Bot.commands.slash
                     }
                     catch (DSharpPlus.Exceptions.NotFoundException)
                     {
-                        string valueToDisplay = category == "HeaviestFish"
+                        string? valueToDisplay = category == "HeaviestFish"
                             ? user.ExtraInfo ?? $"{user.Points} kg"
                             : user.Points.ToString();
 
@@ -76,7 +78,7 @@ namespace Discord_Bot.commands.slash
 
         }
         [SlashCommand("stats", "Display your Statistics.")]
-        public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser user = null)
+        public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
             UserConfig userStats = await StatsHandler.LoadUserStats(userId);

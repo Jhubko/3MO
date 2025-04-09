@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
@@ -6,7 +7,7 @@ namespace Discord_Bot.other
 {
     public class BuildingAutocomplete : IAutocompleteProvider
     {
-        readonly CityHandler _cityHandler = new CityHandler();
+        readonly CityHandler _cityHandler = new();
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
             var buildings = _cityHandler.Buildings
@@ -42,7 +43,7 @@ namespace Discord_Bot.other
 
     public class FishAutocomplete : IAutocompleteProvider
     {
-        private readonly InventoryManager _inventoryManager = new InventoryManager();
+        private readonly InventoryManager _inventoryManager = new();
 
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
@@ -50,7 +51,7 @@ namespace Discord_Bot.other
 
             if (userInventory?.Fish == null || userInventory.Fish.Count == 0)
             {
-                return new List<DiscordAutoCompleteChoice>(); // Brak podpowiedzi, jeśli nie ma ryb
+                return [];
             }
 
             var fishNames = userInventory.Fish
@@ -61,7 +62,7 @@ namespace Discord_Bot.other
 
             string userInput = ctx.OptionValue?.ToString() ?? "";
             var filteredFish = fishNames
-                .Where(name => name.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+                .Where(name => name?.StartsWith(userInput, StringComparison.OrdinalIgnoreCase) == true)
                 .Take(25)
                 .Select(name => new DiscordAutoCompleteChoice(name, name));
 

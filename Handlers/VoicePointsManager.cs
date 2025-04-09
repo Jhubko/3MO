@@ -1,20 +1,20 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using System.Reflection;
 
 class VoicePointsManager
 {
     private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-    private HashSet<ulong> activeUsers;
-    private static IJsonHandler jsonReader = new JSONReader();
-    private readonly InventoryManager inventoryManager = new InventoryManager();
-    private JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+    private readonly HashSet<ulong> activeUsers;
+    private static readonly JSONReader jsonReader = new();
+    private readonly InventoryManager inventoryManager = new();
+    private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
     {
-        
-        activeUsers = new HashSet<ulong>();
+
+        activeUsers = [];
         Directory.CreateDirectory(folderPath);
     }
 
@@ -33,8 +33,8 @@ class VoicePointsManager
                         {
                             activeUsers.Add(user.Id);
 
-                            int currentPoints = await LoadUserPoints(user.Id);
-                            int passivePoints = await CalculatePassivePoints(user.Id);
+                            uint currentPoints = await LoadUserPoints(user.Id);
+                            uint passivePoints = await CalculatePassivePoints(user.Id);
                             currentPoints += passivePoints;
                             SaveUserPoints(user.Id, currentPoints);
                         }
@@ -46,15 +46,15 @@ class VoicePointsManager
         Console.WriteLine("Active users have been collected and their points updated.");
     }
 
-    private async Task<int> LoadUserPoints(ulong userId)
+    private async Task<uint> LoadUserPoints(ulong userId)
     {
-        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        return int.Parse(userConfig.Points);
+        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
+        return userConfig.Points;
     }
 
-    public async void SaveUserPoints(ulong userId, int points)
+    public async void SaveUserPoints(ulong userId, uint points)
     {
-       await jsonWriter.UpdateUserConfig(userId, "Points", points.ToString());
+        await jsonWriter.UpdateUserConfig(userId, "Points", points);
     }
 
     public async Task OnVoiceStateUpdated(DiscordClient client, VoiceStateUpdateEventArgs e)
@@ -69,6 +69,8 @@ class VoicePointsManager
         {
             activeUsers.Remove(userId);
         }
+
+        await Task.CompletedTask;
     }
 
     public async Task AddPointsLoop()
@@ -78,28 +80,31 @@ class VoicePointsManager
             await Task.Delay(TimeSpan.FromMinutes(1));
             foreach (ulong userId in activeUsers)
             {
-                int currentPoints = await LoadUserPoints(userId);
-                int passivePoints = await CalculatePassivePoints(userId);
+                uint currentPoints = await LoadUserPoints(userId);
+                uint passivePoints = await CalculatePassivePoints(userId);
                 currentPoints += passivePoints;
                 SaveUserPoints(userId, currentPoints);
             }
         }
     }
 
-    public async Task<int> GetUserPoints(ulong userId)
+    public async Task<uint> GetUserPoints(ulong userId)
     {
         return await LoadUserPoints(userId);
     }
 
-    private async Task<int> CalculatePassivePoints(ulong userId)
+    private async Task<uint> CalculatePassivePoints(ulong userId)
     {
         var guild = Program.Client.Guilds.Values
             .FirstOrDefault(g => g.VoiceStates.TryGetValue(userId, out var voiceState) && voiceState.Channel != null);
 
-        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guild.Id}_shop.json");
+        if (guild == null)
+            return 0;
 
-        int passivePoints = 10;
+        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
+        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
+
+        uint passivePoints = 10;
         var userItems = await inventoryManager.GetUserItems(userId);
         foreach (var item in userItems.Items)
         {
@@ -112,12 +117,5 @@ class VoicePointsManager
 
         return passivePoints;
     }
-}
-
-public class UserPoints
-{
-    public ulong UserId { get; set; }
-    public int Points { get; set; }
-    public string? ExtraInfo { get; internal set; }
 }
 

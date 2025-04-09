@@ -8,11 +8,11 @@ using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class MusicCommands : ApplicationCommandModule
     {
-        private readonly IAudioService? _audioService = Program.AudioService;
+        private readonly IAudioService _audioService = Program.AudioService;
         private async ValueTask<QueuedLavalinkPlayer?> GetPlayerAsync(InteractionContext ctx, bool connectToVoiceChannel = true)
         {
             var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true };
@@ -45,8 +45,8 @@ namespace Discord_Bot.commands.slash
         [SlashCommand("play", "Play music")]
         public async Task PlayMusic(InteractionContext ctx, [Option("songname", "Song or playlist You want to play")][RemainingText] string songname)
         {
-            var player = await GetPlayerAsync(ctx, connectToVoiceChannel: true);          
-            await ctx.DeferAsync();           
+            var player = await GetPlayerAsync(ctx, connectToVoiceChannel: true);
+            await ctx.DeferAsync();
 
             if (player is null)
                 return;
@@ -56,7 +56,7 @@ namespace Discord_Bot.commands.slash
                 await AddPlaylist(ctx, player, songname);
                 return;
             }
-                
+
             var track = await _audioService.Tracks
                         .LoadTrackAsync(songname, TrackSearchMode.YouTube)
                         .ConfigureAwait(false);
@@ -96,7 +96,7 @@ namespace Discord_Bot.commands.slash
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("😖 No results."));
                 return;
             }
-                
+
             await player.Queue
                         .AddRangeAsync(result.Tracks.Select(x => new TrackQueueItem(new TrackReference(x))).ToArray())
                         .ConfigureAwait(false);
@@ -293,7 +293,7 @@ namespace Discord_Bot.commands.slash
 
         [SlashCommand("skip", description: "Skips the current track")]
         public async Task SkipMusic(InteractionContext ctx)
-        {           
+        {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
             await ctx.DeferAsync().ConfigureAwait(false);
 
@@ -327,7 +327,7 @@ namespace Discord_Bot.commands.slash
             }
             else
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(nowPlayingEmbed)).ConfigureAwait(false);
-            
+
         }
 
         [SlashCommand("position", description: "Shows the track position")]
@@ -353,7 +353,7 @@ namespace Discord_Bot.commands.slash
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
             await ctx.DeferAsync().ConfigureAwait(false);
-            
+
             if (player is null)
                 return;
 
@@ -369,6 +369,7 @@ namespace Discord_Bot.commands.slash
 
             foreach (var i in queue)
             {
+                if (i.Track is null) continue;
                 num++;
                 songs += $"{num}.**{i.Track.Author} - {i.Track.Title}** \n";
             }
@@ -394,7 +395,7 @@ namespace Discord_Bot.commands.slash
 
             player.Shuffle = isShuffled;
 
-            if (player.Shuffle) 
+            if (player.Shuffle)
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Player shuffled")).ConfigureAwait(false);
             else
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Player is not shuffled")).ConfigureAwait(false);

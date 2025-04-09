@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using Discord_Bot.other;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -6,14 +7,14 @@ using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class ManagementSlashCommands : ApplicationCommandModule
     {
-        private static IJsonHandler jsonReader = new JSONReader();
-        private JSONWriter GlobalJsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
-        private static string? configPath = Program.globalConfig.ConfigPath;
-        private readonly InventoryManager inventoryManager = new InventoryManager();
+        private static readonly JSONReader jsonReader = new();
+        private readonly JSONWriter GlobalJsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
+        private static readonly string? configPath = Program.globalConfig.ConfigPath;
+        private readonly InventoryManager inventoryManager = new();
 
         [SlashCommand("help", "Show information about all commands.")]
         public async Task HelpCommand(InteractionContext ctx)
@@ -22,8 +23,8 @@ namespace Discord_Bot.commands.slash
 
             var helpEmbed = HelpContent.helpCommandEmbed;
 
-            var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię", new List<DiscordSelectComponentOption>
-            {
+            var selectMenu = new DiscordSelectComponent("help_menu", "Wybierz kategorię",
+            [
                 new DiscordSelectComponentOption("Casino", "casino"),
                 new DiscordSelectComponentOption("Shop", "shop"),
                 new DiscordSelectComponentOption("City", "city"),
@@ -32,7 +33,7 @@ namespace Discord_Bot.commands.slash
                 new DiscordSelectComponentOption("Music", "music"),
                 new DiscordSelectComponentOption("Search", "search"),
                 new DiscordSelectComponentOption("Management", "mngmt")
-            });
+            ]);
 
             var message = new DiscordWebhookBuilder()
                 .AddEmbed(helpEmbed)
@@ -46,9 +47,9 @@ namespace Discord_Bot.commands.slash
         public async Task EditFish(InteractionContext ctx,
             [Option("action", "The action to perform (add, edit, remove)")] string action,
             [Option("name", "The name of the fish")] string name,
-            [Option("minweight", "The minimum weight of the fish", true)] string minWeightStr = null,
-            [Option("maxweight", "The maximum weight of the fish", true)] string maxWeightStr = null,
-            [Option("baseprice", "The base price of the fish", true)] string basePriceStr = null)
+            [Option("minweight", "The minimum weight of the fish", true)] string? minWeightStr = null,
+            [Option("maxweight", "The maximum weight of the fish", true)] string? maxWeightStr = null,
+            [Option("baseprice", "The base price of the fish", true)] string? basePriceStr = null)
         {
 
             var fishList = await inventoryManager.LoadFishDataAsync(ctx.Guild.Id);
@@ -86,7 +87,7 @@ namespace Discord_Bot.commands.slash
                 return;
             }
 
-            if (action.ToLower() == "add")
+            if (action.Equals("add", StringComparison.CurrentCultureIgnoreCase))
             {
                 if (string.IsNullOrEmpty(name) || minWeight == null || maxWeight == null || basePrice == null)
                 {
@@ -112,7 +113,7 @@ namespace Discord_Bot.commands.slash
                 File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
                 await ctx.CreateResponseAsync($"✅ Ryba {name} została dodana do bazy danych.");
             }
-            else if (action.ToLower() == "edit")
+            else if (action.Equals("edit", StringComparison.CurrentCultureIgnoreCase))
             {
                 var fishToEdit = fishList.FirstOrDefault(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 if (fishToEdit == null)
@@ -133,7 +134,7 @@ namespace Discord_Bot.commands.slash
                 File.WriteAllText($"{configPath}\\{ctx.Guild.Id}_fish_data.json", JsonConvert.SerializeObject(fishList, Formatting.Indented));
                 await ctx.CreateResponseAsync($"✅ Ryba {name} została zaktualizowana.");
             }
-            else if (action.ToLower() == "remove")
+            else if (action.Equals("remove", StringComparison.CurrentCultureIgnoreCase))
             {
                 var fishToRemove = fishList.FirstOrDefault(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 if (fishToRemove == null)
@@ -261,8 +262,8 @@ namespace Discord_Bot.commands.slash
             {
                 Name = name,
                 Description = description,
-                BaseCost = GambleUtils.ParseInt(baseCost),
-                PassivePointsIncrease = GambleUtils.ParseInt(passivePointsIncrease)
+                BaseCost = (uint)GambleUtils.ParseInt(baseCost),
+                PassivePointsIncrease = (uint)GambleUtils.ParseInt(passivePointsIncrease)
             };
 
             if (shopItem.BaseCost < 0 || shopItem.PassivePointsIncrease < 0)

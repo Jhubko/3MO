@@ -1,94 +1,96 @@
-﻿using Discord_Bot;
-using Discord_Bot.Config;
+﻿using Discord_Bot.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-public class InventoryManager
+namespace Discord_Bot.Handlers
 {
-    private static IJsonHandler jsonReader = new JSONReader();
-    private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-
-    public async Task<UserInventory> GetUserItems(ulong userId)
+    public class InventoryManager
     {
-        string userFilePath = $"{folderPath}\\{userId}_Items.json";
-        if (!File.Exists(userFilePath))
+        private static readonly JSONReader jsonReader = new();
+        private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
+
+        public async Task<UserInventory> GetUserItems(ulong userId)
         {
-            var defaultInventory = new UserInventory
+            string userFilePath = $"{folderPath}\\{userId}_Items.json";
+            if (!File.Exists(userFilePath))
             {
-                Fish = new List<FishItem>(),
-                Items = new Dictionary<string, int>()
+                var defaultInventory = new UserInventory
+                {
+                    Fish = [],
+                    Items = []
+                };
+                var defaultJson = JObject.FromObject(new
+                {
+                    defaultInventory.Fish,
+                    defaultInventory.Items
+                });
+
+                await File.WriteAllTextAsync(userFilePath, defaultJson.ToString());
+            }
+            var userData = await jsonReader.ReadJson<JObject>(userFilePath) ?? [];
+
+            return new UserInventory
+            {
+                Fish = userData["Fish"]?.ToObject<List<FishItem>>() ?? [],
+                Items = userData["Items"]?.ToObject<Dictionary<string, uint>>() ?? []
             };
-            var defaultJson = JObject.FromObject(new
+        }
+        public async Task<List<Fish>> LoadFishDataAsync(ulong serverId)
+        {
+            string serverFishFilePath = $"{Program.globalConfig.ConfigPath}\\{serverId}_fish_data.json";
+
+            if (File.Exists(serverFishFilePath))
             {
-                Fish = defaultInventory.Fish,
-                Items = defaultInventory.Items
-            });
-
-            await File.WriteAllTextAsync(userFilePath, defaultJson.ToString());
+                string json = File.ReadAllText(serverFishFilePath);
+                return JsonConvert.DeserializeObject<List<Fish>>(json) ?? [];
+            }
+            else
+            {
+                var fishData = await jsonReader.ReadJson<List<Fish>>("Config\\fish_data.json") ?? throw new InvalidOperationException("fish_data cannot be null");
+                File.WriteAllText(serverFishFilePath, JsonConvert.SerializeObject(fishData, Formatting.Indented));
+                return fishData;
+            }
         }
-        var userData = await jsonReader.ReadJson<JObject>(userFilePath) ?? new JObject();
 
-        return new UserInventory
+        public async Task UpdateUserItems(ulong userId, UserInventory inventory)
         {
-            Fish = userData["Fish"]?.ToObject<List<FishItem>>() ?? new List<FishItem>(),
-            Items = userData["Items"]?.ToObject<Dictionary<string, int>>() ?? new Dictionary<string, int>()
-        };
-    }
-    public async Task<List<Fish>> LoadFishDataAsync(ulong serverId)
-    {
-        string serverFishFilePath = $"{Program.globalConfig.ConfigPath}\\{serverId}_fish_data.json";
+            string userFilePath = $"{folderPath}\\{userId}_Items.json";
 
-        if (File.Exists(serverFishFilePath))
-        {
-            string json = File.ReadAllText(serverFishFilePath);
-            return JsonConvert.DeserializeObject<List<Fish>>(json) ?? new List<Fish>();
+            var newData = new JObject
+            {
+                ["Fish"] = JToken.FromObject(inventory.Fish),
+                ["Items"] = JToken.FromObject(inventory.Items)
+            };
+
+            string jsonString = newData.ToString();
+            await File.WriteAllTextAsync(userFilePath, jsonString);
         }
-        else
+
+        public async Task UpdateUserItem(ulong userId, string item, uint amount)
         {
-            var fishData = await jsonReader.ReadJson<List<Fish>>("Config\\fish_data.json");
-            File.WriteAllText(serverFishFilePath, JsonConvert.SerializeObject(fishData, Formatting.Indented));
-            return fishData;
+            var inventory = await GetUserItems(userId);
+            if (inventory.Items.ContainsKey(item))
+                inventory.Items[item] += amount;
+            else
+                inventory.Items[item] = amount;
+            await UpdateUserItems(userId, inventory);
         }
-    }
-
-    public async Task UpdateUserItems(ulong userId, UserInventory inventory)
-    {
-        string userFilePath = $"{folderPath}\\{userId}_Items.json";
-
-        var newData = new JObject
+        public async Task SaveFishToInventory(ulong userId, string fishName, double weight, int basePrice)
         {
-            ["Fish"] = JToken.FromObject(inventory.Fish),
-            ["Items"] = JToken.FromObject(inventory.Items)
-        };
+            int price = (int)(basePrice * (weight / 2));
+            var newFish = new FishItem
+            {
+                Name = fishName,
+                Weight = weight,
+                Price = price
+            };
 
-        string jsonString = newData.ToString();
-        await File.WriteAllTextAsync(userFilePath, jsonString);
+            var userInventory = await GetUserItems(userId);
+            var fishList = userInventory.Fish ?? [];
+            fishList.Add(newFish);
+            userInventory.Fish = fishList;
+            await UpdateUserItems(userId, userInventory);
+        }
+
     }
-
-    public async Task UpdateUserItem(ulong userId, string item, int amount)
-    {
-        var inventory = await GetUserItems(userId);
-        if (inventory.Items.ContainsKey(item))
-            inventory.Items[item] += amount;
-        else
-            inventory.Items[item] = amount;
-        await UpdateUserItems(userId, inventory);
-    }
-    public async Task SaveFishToInventory(ulong userId, string fishName, double weight, int basePrice)
-    {
-        int price = (int)(basePrice * (weight / 2));
-        var newFish = new FishItem
-        {
-            Name = fishName,
-            Weight = weight,
-            Price = price
-        };
-
-        var userInventory = await GetUserItems(userId);
-        var fishList = userInventory.Fish ?? new List<FishItem>();
-        fishList.Add(newFish);
-        userInventory.Fish = fishList;
-        await UpdateUserItems(userId, userInventory);
-    }
-
 }

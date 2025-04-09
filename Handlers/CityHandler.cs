@@ -1,7 +1,7 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
+using Discord_Bot.Handlers;
 using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
 
 class CityHandler
 {
@@ -9,8 +9,8 @@ class CityHandler
     private readonly VoicePointsManager _pointsManager = Program.voicePointsManager;
     public const int CitySize = 8;
 
-    public readonly List<Building> Buildings = new()
-    {
+    public readonly List<Building> Buildings =
+    [
         new Building { Emote = "🌲", Name = "Tree", Cost = 1000, Income = 50 },
         new Building { Emote = "🅿️", Name = "Parking", Cost = 5000, Income = 250 },
         new Building { Emote = "🛣️", Name = "Road", Cost = 7000, Income = 350 },
@@ -31,30 +31,29 @@ class CityHandler
         new Building { Emote = "🏨", Name = "Hotel", Cost = 260000, Income = 13000 },
         new Building { Emote = "🛬", Name = "Airport", Cost = 320000, Income = 16000 },
         new Building { Emote = "🎢", Name = "Amusement park", Cost = 450000, Income = 22500 },
-    };
+    ];
 
-    private static IJsonHandler jsonReader = new JSONReader();
-    private static JSONWriter jsonWriter = new JSONWriter(jsonReader, "config.json", Program.serverConfigPath);
+    private static readonly JSONReader jsonReader = new();
+    private static readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
 
 
     public CityHandler()
     {
         Directory.CreateDirectory(folderPath);
     }
-    public async Task<int> GetCityPoints(ulong userId)
+    public async Task<uint> GetCityPoints(ulong userId)
     {
         var city = await LoadCity(userId);
-        int points = city.StoredPoints;
+        uint points = city.StoredPoints;
         city.StoredPoints = 0;
         await jsonWriter.UpdateCityConfig(userId, "StoredPoints", city.StoredPoints);
         return points;
     }
 
-    public async Task<DiscordEmbed> ViewCity(InteractionContext ctx, ulong userId)
+    public async Task<DiscordEmbed> ViewCity(ulong userId)
     {
         var city = await LoadCity(userId);
         string cityView = RenderCity(city.Grid);
-        var member = await ctx.Guild.GetMemberAsync(userId);
         return new DiscordEmbedBuilder()
         {
             Title = $"{city.Name}\n{cityView} ",
@@ -80,8 +79,8 @@ class CityHandler
         if (x < 0 || x >= CitySize || y < 0 || y >= CitySize || city.Grid[x][y] != "⬜")
             return false;
 
-        int buildingCost = building.Cost;
-        int userPoints = await _pointsManager.GetUserPoints(userId);
+        uint buildingCost = building.Cost;
+        uint userPoints = await _pointsManager.GetUserPoints(userId);
 
         if (userPoints < buildingCost)
             return false;
@@ -102,7 +101,7 @@ class CityHandler
     {
         x -= 1;
         y -= 1;
-        int userPoints = await _pointsManager.GetUserPoints(userId);
+        uint userPoints = await _pointsManager.GetUserPoints(userId);
         var city = await LoadCity(userId);
         if (x < 0 || x >= CitySize || y < 0 || y >= CitySize || city.Grid[x][y] == "⬜")
             return false;
@@ -111,9 +110,9 @@ class CityHandler
         var building = Buildings.FirstOrDefault(b => b.Emote == buildingEmote);
 
         if (building == null)
-            return false; 
+            return false;
 
-        int refund = building.Cost / 2;
+        uint refund = building.Cost / 2;
 
         city.Grid[x][y] = "⬜";
         userPoints += refund;
@@ -173,13 +172,13 @@ class CityHandler
             }
 
             await jsonWriter.UpdateCityConfig(userId, "StoredPoints", city.StoredPoints);
-            
+
         }
     }
 
     private async Task<City> LoadCity(ulong userId)
     {
-        return await jsonReader.ReadJson<City>(Path.Combine($"{Program.serverConfigPath}\\cities", $"{userId}_city.json"));
+        return await jsonReader.ReadJson<City>(Path.Combine($"{Program.serverConfigPath}\\cities", $"{userId}_city.json")) ?? throw new InvalidOperationException("City cannot be null at this point");
     }
 
     public string RenderCity(string[][] grid)

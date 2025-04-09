@@ -6,14 +6,14 @@ namespace Discord_Bot.other
 {
     internal class SearchSystem
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
-        private static List<string> WeatherTextList = new();
-        private static List<string> WeatherRainChanceList = new();
-        private static List<string> WeatherSnowChanceList = new();
-        private static List<string> WeatherTempList = new();
-        private static List<string> WeatherDateList = new();
-        private static List<string> WeatherWindList = new();
-        public static async Task<DiscordEmbedBuilder> GetRandomMemeAsync(InteractionContext ctx)
+        private static readonly HttpClient _httpClient = new();
+        private static readonly List<string> WeatherTextList = [];
+        private static readonly List<string> WeatherRainChanceList = [];
+        private static readonly List<string> WeatherSnowChanceList = [];
+        private static readonly List<string> WeatherTempList = [];
+        private static readonly List<string> WeatherDateList = [];
+        private static readonly List<string> WeatherWindList = [];
+        public static async Task<DiscordEmbedBuilder?> GetRandomMemeAsync(InteractionContext ctx)
         {
             try
             {
@@ -26,6 +26,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var memeData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (memeData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych w memie."));
+                    return null;
+                }
 
                 string memeUrl = memeData.url;
                 string memeTitle = memeData.title;
@@ -41,6 +47,7 @@ namespace Discord_Bot.other
                 };
 
                 return memeEmbed;
+
             }
             catch (HttpRequestException ex)
             {
@@ -54,7 +61,7 @@ namespace Discord_Bot.other
             }
         }
 
-        public static async Task<DiscordEmbedBuilder> GetRandomWikiAsync(InteractionContext ctx)
+        public static async Task<DiscordEmbedBuilder?> GetRandomWikiAsync(InteractionContext ctx)
         {
             try
             {
@@ -67,6 +74,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var wikiData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (wikiData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych wiki."));
+                    return null;
+                }
 
                 string wikiTitle = wikiData.title;
                 string wikiUrl = wikiData.content_urls.desktop.page;
@@ -97,11 +110,17 @@ namespace Discord_Bot.other
             }
         }
 
-        public static async Task<DiscordEmbedBuilder> GetWeather(InteractionContext ctx, string city)
+        public static async Task<DiscordEmbedBuilder?> GetWeather(InteractionContext ctx, string city)
         {
             try
             {
-                string apiKey = Program.globalConfig.WeatherApi;
+                string? apiKey = Program.globalConfig.WeatherApi;
+                if (apiKey == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak klucza Api."));
+                    return null;
+                }
+
                 string apiUrl = $"http://api.weatherapi.com/v1/current.json?key={apiKey}&q={city}&aqi=no";
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
                 var response = await _httpClient.SendAsync(request);
@@ -110,6 +129,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var WeatherData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (WeatherData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych pogodowych."));
+                    return null;
+                }
 
                 string WeatherTitle = WeatherData.location.name;
                 string WeatherCountry = WeatherData.location.country;
@@ -125,7 +150,7 @@ namespace Discord_Bot.other
                 var weatherEmbed = new DiscordEmbedBuilder()
                 {
                     Color = DiscordColor.CornflowerBlue,
-                    Title = $"{WeatherTitle}, {WeatherCountry}" ,
+                    Title = $"{WeatherTitle}, {WeatherCountry}",
                     ImageUrl = $"https:{WeatherImage}",
                     Description =
                         $"Weather: {WeatherText} \n" +
@@ -133,7 +158,7 @@ namespace Discord_Bot.other
                         $"Feels Like: {WeatherTempFeels} °C \n" +
                         $"Wind: {WeatherWind} Km/H \n" +
                         $"Preasure: {WeatherPreasure} hPa \n" +
-                        $"Clouds: {WeatherCloud}% \n" + 
+                        $"Clouds: {WeatherCloud}% \n" +
                         $"Time: {WeatherTime}",
                 };
 
@@ -151,14 +176,19 @@ namespace Discord_Bot.other
             }
         }
 
-        public static async Task<DiscordEmbedBuilder> GetForecast(InteractionContext ctx, string city)
+        public static async Task<DiscordEmbedBuilder?> GetForecast(InteractionContext ctx, string city)
         {
             string desc = string.Empty;
             string frame = "════════════════════════════════\n";
 
             try
             {
-                string apiKey = Program.globalConfig.WeatherApi;
+                string? apiKey = Program.globalConfig.WeatherApi;
+                if (apiKey == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak klucza Api."));
+                    return null;
+                }
                 string apiUrl = $"http://api.weatherapi.com/v1/forecast.json?key={apiKey}&q={city}&days=4";
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
                 var response = await _httpClient.SendAsync(request);
@@ -167,6 +197,12 @@ namespace Discord_Bot.other
 
                 var json = await response.Content.ReadAsStringAsync();
                 var WeatherData = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (WeatherData == null)
+                {
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Brak danych pogodowych."));
+                    return null;
+                }
 
                 string WeatherTitle = WeatherData.location.name;
                 string WeatherCountry = WeatherData.location.country;
@@ -183,7 +219,7 @@ namespace Discord_Bot.other
 
                 desc += $"{frame}";
 
-                for (int i = 0; i < WeatherTextList.Count(); i++)
+                for (int i = 0; i < WeatherTextList.Count; i++)
                 {
                     desc += $"**Date:{WeatherDateList[i]}**\n **Weather:** {WeatherTextList[i]}, **Temperature:** {WeatherTempList[i]}°C\n **Wind**: {WeatherWindList[i]} k/h, **Chance of rain/snow:** {WeatherRainChanceList[i]}% / {WeatherSnowChanceList[i]}%\n";
                     desc += $"{frame}";

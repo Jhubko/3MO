@@ -1,11 +1,11 @@
-﻿using DSharpPlus.Entities;
+﻿using Discord_Bot.other;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Google.Apis.CustomSearchAPI.v1;
 using Google.Apis.Services;
 using OpenAI_API;
-using Discord_Bot.other;
 
-namespace Discord_Bot.commands.slash
+namespace Discord_Bot.Commands.Slash
 {
     internal class SearchCommands : ApplicationCommandModule
     {
@@ -15,8 +15,14 @@ namespace Discord_Bot.commands.slash
         {
             await ctx.DeferAsync();
 
-            string apiKey = Program.globalConfig.ApiGoogle;
-            string cseId = Program.globalConfig.CseId;
+            string? apiKey = Program.globalConfig.ApiGoogle;
+            string? cseId = Program.globalConfig.CseId;
+            if (apiKey == null || cseId == null)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("No Api key found"));
+                return;
+            }
+
 
             var customSearchService = new CustomSearchAPIService(new BaseClientService.Initializer()
             {
