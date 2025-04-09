@@ -1,4 +1,0 @@
-﻿[*.cs]
-
-# CA1822: Oznaczaj elementy członkowskie jako statyczne
-dotnet_diagnostic.CA1822.severity = none
