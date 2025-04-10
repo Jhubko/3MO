@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using System.Threading.Channels;
 
 namespace Discord_Bot.other
 {
@@ -40,7 +41,6 @@ namespace Discord_Bot.other
         {
             var guilds = Program.GetGuilds();
 
-
             foreach (var guild in guilds)
             {
                 var serverConfig = await Program.jsonHandler.ReadJson<ServerConfig>($"{Program.globalConfig.ConfigPath}\\{guild}.json");
@@ -65,8 +65,8 @@ namespace Discord_Bot.other
                             }
                         }
                     }
+                    await jsonWriter.UpdateServerConfig(guild, "BotMessages", null, channelId.ToString());
                 }
-                await jsonWriter.UpdateServerConfig(guild, "BotMessages", "{}");
             }
         }
     }

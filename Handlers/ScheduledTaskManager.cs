@@ -2,25 +2,28 @@
 {
     public class ScheduledTaskManager
     {
-        public void ScheduleDailyTask(string taskName, TimeSpan time, Func<Task> task)
+        public void ScheduleDailyTask(string taskName, List<TimeSpan> times, Func<Task> task)
         {
-            Task.Run(async () =>
+            foreach (var time in times)
             {
-                while (true)
+                Task.Run(async () =>
                 {
-                    DateTime now = DateTime.Now;
-                    DateTime nextRun = now.Date + time;
+                    while (true)
+                    {
+                        DateTime now = DateTime.Now;
+                        DateTime nextRun = now.Date + time;
 
-                    if (nextRun <= now)
-                        nextRun = nextRun.AddDays(1);
+                        if (nextRun <= now)
+                            nextRun = nextRun.AddDays(1);
 
-                    TimeSpan delay = nextRun - now;
-                    Console.WriteLine($"Zadanie {taskName} uruchomi się za {delay}");
+                        TimeSpan delay = nextRun - now;
+                        Console.WriteLine($"Zadanie {taskName} (godzina {time}) uruchomi się za {delay}");
 
-                    await Task.Delay(delay);
-                    await task();
-                }
-            });
+                        await Task.Delay(delay);
+                        await task();
+                    }
+                });
+            }
         }
     }
 }
