@@ -20,7 +20,7 @@ namespace Discord_Bot.Config
             await _jsonHandler.WriteJson(filePath, jsonData);
         }
 
-        public async Task UpdateServerConfig(ulong serverId, string key, object value, object? value2 = null)
+        public async Task UpdateServerConfig(ulong serverId, string key, object? value, object? value2 = null)
         {
             string filePath = Path.Combine(_serverConfigDir, $"{serverId}.json");
             await UpdateConfig(filePath, key, value, value2);
@@ -60,7 +60,7 @@ namespace Discord_Bot.Config
             await _jsonHandler.WriteJson(filePath, jsonData);
         }
 
-        public async Task UpdateConfig(string filePath, string key, object value, object? value2 = null)
+        public async Task UpdateConfig(string filePath, string key, object? value, object? value2 = null)
         {
             await FileSemaphore.WaitAsync();
 
@@ -75,6 +75,7 @@ namespace Discord_Bot.Config
 
                 if (key == "Grid")
                 {
+                    if (value == null) return;
                     UpdateGrid(jsonData, key, value);
                 }
                 else if (IsArrayDataType(key))
@@ -83,10 +84,18 @@ namespace Discord_Bot.Config
                 }
                 else if (IsDictionaryDataType(key))
                 {
-                    UpdateDictionary(jsonData, key, value?.ToString() ?? string.Empty, value2?.ToString() ?? string.Empty);
+                    if (value == null && value2 != null)
+                    {
+                        ClearDictionarySubKey(jsonData, key, value2.ToString()!);
+                    }
+                    else
+                    {
+                        UpdateDictionary(jsonData, key, value?.ToString() ?? string.Empty, value2?.ToString() ?? string.Empty);
+                    }
                 }
                 else
                 {
+                    if (value == null) return;
                     jsonData[key] = JToken.FromObject(value);
                 }
 
@@ -134,6 +143,16 @@ namespace Discord_Bot.Config
 
             array.Add(value);
             obj[subKey] = array;
+            jsonData[key] = obj;
+        }
+        private static void ClearDictionarySubKey(JObject jsonData, string key, string subKey)
+        {
+            if (jsonData[key] is not JObject obj)
+            {
+                obj = [];
+            }
+
+            obj[subKey] = new JArray();
             jsonData[key] = obj;
         }
         private static bool IsArrayDataType(string dataType) => dataType == "ImageOnlyChannels";

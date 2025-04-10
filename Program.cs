@@ -127,15 +127,15 @@ namespace Discord_Bot
                 .ConfigureAwait(false);
             }
 
-            taskManager.ScheduleDailyTask("DeleteMessagesTask", new TimeSpan(22, 00, 0), async () => await MessagesHandler.DeleteBotMessages());
-            taskManager.ScheduleDailyTask("ScheduleRaffle", new TimeSpan(18, 00, 0), async () =>
+            taskManager.ScheduleDailyTask("DeleteMessagesTask", [new TimeSpan(7, 00, 0), new TimeSpan(14, 00, 0), new TimeSpan(21, 00, 0)], MessagesHandler.DeleteBotMessages);
+            taskManager.ScheduleDailyTask("ScheduleRaffle", [new TimeSpan(18, 00, 0)], async () =>
             {
                 foreach (var guild in GetGuilds())
                 {
                     await RaffleHandlers.HandleRaffle(Client, guild);
                 }
             });
-            taskManager.ScheduleDailyTask("DailyIncome", new TimeSpan(11, 00, 0), async () =>
+            taskManager.ScheduleDailyTask("DailyIncome", [new TimeSpan(11, 00, 0)], async () =>
             {
                 var cityHandler = new CityHandler();
                 foreach (var guild in GetGuilds())
