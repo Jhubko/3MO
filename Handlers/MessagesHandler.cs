@@ -50,24 +50,33 @@ namespace Discord_Bot.other
 
                 foreach (var channelId in serverConfig.BotMessages.Keys.ToList())
                 {
-                    foreach (var messageId in serverConfig.BotMessages[channelId])
+                    foreach (var messageId in serverConfig.BotMessages[channelId].ToList())
                     {
-                        if (ulong.TryParse(channelId, out ulong parsedChannelId) && ulong.TryParse(messageId, out ulong parsedMessageId))
+                        try
                         {
-                            var channel = await Program.Client.GetChannelAsync(parsedChannelId);
-                            if (channel != null)
+                            if (ulong.TryParse(channelId, out ulong parsedChannelId) &&
+                                ulong.TryParse(messageId, out ulong parsedMessageId))
                             {
-                                var message = await channel.GetMessageAsync(parsedMessageId);
-                                if (message != null)
+                                var channel = await Program.Client.GetChannelAsync(parsedChannelId);
+                                if (channel != null)
                                 {
-                                    await message.DeleteAsync();
+                                    var message = await channel.GetMessageAsync(parsedMessageId);
+                                    if (message != null)
+                                    {
+                                        await message.DeleteAsync();
+                                    }
                                 }
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Błąd przy usuwaniu wiadomości {messageId} w kanale {channelId}: {ex.Message}");
                         }
                     }
                     await jsonWriter.UpdateServerConfig(guild, "BotMessages", null, channelId.ToString());
                 }
             }
         }
+
     }
 }
