@@ -1,10 +1,12 @@
 ﻿using Discord_Bot.Config;
 using Discord_Bot.Handlers;
 using Discord_Bot.other;
+using DSharpPlus;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Discord_Bot.Commands.Slash
@@ -321,6 +323,61 @@ namespace Discord_Bot.Commands.Slash
             };
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
         }
+
+        [SlashCommand("clearBotMessages", "Usuwa wszystkie wiadomości bota z tego kanału.")]
+        [RequirePermissions(Permissions.Administrator)]
+        public async Task ClearBotMessages(InteractionContext ctx)
+        {
+            await ctx.DeferAsync();
+            var followUpMessage = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("🔨 Czyszczenie wiadomości bota... Proszę czekać."));
+            var stopwatch = Stopwatch.StartNew();
+            var channel = ctx.Channel;
+            int deletedCount = 0;
+            ulong? lastMessageId = null;
+
+            while (true)
+            {
+                var messages = lastMessageId.HasValue
+                    ? await channel.GetMessagesBeforeAsync(lastMessageId.Value, 100)
+                    : await channel.GetMessagesAsync(100);
+
+                if (messages.Count == 0)
+                    break;
+
+                foreach (var message in messages)
+                {
+                    if (message.Id == followUpMessage.Id)
+                        continue;
+
+                    if (message.Author.IsBot)
+                    {
+                        try
+                        {
+                            await message.DeleteAsync();
+                            deletedCount++;
+                            await Task.Delay(1000);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Błąd usuwania wiadomości {message.Id}: {ex.Message}");
+                        }
+                    }
+                }
+
+                lastMessageId = messages.Last().Id;
+            }
+
+            stopwatch.Stop();
+            var elapsed = stopwatch.Elapsed;
+
+            string elapsedFormatted = elapsed.TotalMinutes >= 1
+                ? $"{elapsed.TotalMinutes:F1} minut"
+                : $"{elapsed.TotalSeconds:F1} sekund";
+
+            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
+                .WithContent($"✅ Usunięto {deletedCount} wiadomości bota z kanału <#{channel.Id}> w {elapsedFormatted}."));
+        }
+
 
         private async Task RemoveItemFromAllUsers(string itemName)
         {
