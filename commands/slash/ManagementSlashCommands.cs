@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -313,14 +314,30 @@ namespace Discord_Bot.Commands.Slash
             };
             await GlobalJsonWriter.UpdateShopConfig(shopFilePath, serverConfigDict);
 
-            await RemoveItemFromAllUsers(name);
+            bool removeSuccess = true;
+            string? removeError = null;
+            string? stackTrace = null;
+
+            try
+            {
+                await RemoveItemFromAllUsers(name);
+            }
+            catch (Exception ex)
+            {
+                removeSuccess = false;
+                removeError = ex.Message;
+                stackTrace = ex.ToString(); // pełny opis błędu
+            }
 
             var embed = new DiscordEmbedBuilder
             {
-                Title = "Shop Item Removed",
-                Description = $"Item '{name}' has been removed from the shop and from all users.",
-                Color = DiscordColor.Red
+                Title = removeSuccess ? "Shop Item Removed" : "Shop Item Removed — with errors",
+                Description = removeSuccess
+                    ? $"Item '{name}' has been removed from the shop and from all users."
+                    : $"Item '{name}' has been removed from the shop, **but failed to remove from all users**.\n\n**Error:** `{removeError}`\n\n```{stackTrace}```",
+                Color = removeSuccess ? DiscordColor.Red : DiscordColor.Yellow
             };
+
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
         }
 
@@ -381,17 +398,24 @@ namespace Discord_Bot.Commands.Slash
 
         private async Task RemoveItemFromAllUsers(string itemName)
         {
-            foreach (var file in Directory.GetFiles($"{Program.serverConfigPath}\\user_points", "*_Items.json"))
+            var files = Directory.GetFiles($"{Program.serverConfigPath}\\user_points", "*_Items.json");
+
+            foreach (var file in files)
             {
-                var userItems = await jsonReader.ReadJson<Dictionary<string, int>>(file);
-                if (userItems != null)
+                var fileName = Path.GetFileNameWithoutExtension(file);
+                if (!ulong.TryParse(fileName.Replace("_Items", ""), out var userId))
+                    continue;
+
+                var inventory = await inventoryManager.GetUserItems(userId);
+
+                if (inventory.Items.Remove(itemName))
                 {
-                    var itemKey = userItems.Keys.FirstOrDefault(k => k.Equals(itemName, StringComparison.OrdinalIgnoreCase));
-                    if (itemKey != null)
+                    var json = JObject.FromObject(new
                     {
-                        userItems[itemKey] = 0;
-                        await GlobalJsonWriter.UpdateShopConfig(file, userItems);
-                    }
+                        inventory.Fish,
+                        inventory.Items
+                    });
+                    await File.WriteAllTextAsync(file, json.ToString());
                 }
             }
         }

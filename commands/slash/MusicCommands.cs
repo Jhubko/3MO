@@ -307,6 +307,13 @@ namespace Discord_Bot.Commands.Slash
             }
 
             await player.SkipAsync().ConfigureAwait(false);
+
+            if (player.CurrentTrack is null)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Nothing more to play!")).ConfigureAwait(false);
+                return;
+            }
+
             var track = player.CurrentTrack;
 
             string musicDesc = $"Title: {track.Title} \n" +
