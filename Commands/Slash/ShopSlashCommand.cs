@@ -96,7 +96,7 @@ namespace Discord_Bot.Commands.Slash
 
             if (inventory.Items.Count == 0 && inventory.Fish.Count == 0)
             {
-                await ctx.CreateResponseAsync("You don't have any items.", true);
+                await ctx.CreateResponseAsync($"{user?.Username ?? ctx.User.Username} don't have any items.", true);
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace Discord_Bot.Commands.Slash
 
             var embedUserItems = new DiscordEmbedBuilder
             {
-                Title = $"📦 Ekwipunek {ctx.User.Username} 📦",
+                Title = $"📦 Ekwipunek {user?.Username ?? ctx.User.Username} 📦",
                 Description = $"**🎣 Ryby:**\n{(fishList != "" ? fishList : "Brak")}\n\n**🔹 Przedmioty:**\n{(itemList != "" ? itemList : "Brak")}",
                 Color = DiscordColor.Blurple
             };
