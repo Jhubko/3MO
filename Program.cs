@@ -56,7 +56,7 @@ namespace Discord_Bot
         {
             GlobalConfigFilePath = GetGlobalConfigFilePath();
             globalConfig = await jsonHandler.ReadJson<GlobalConfig>(GlobalConfigFilePath) ?? throw new InvalidOperationException("GlobalConfig cannot be null");
-            //serverConfigPath = globalConfig.ConfigPath ?? throw new InvalidOperationException("ConfigPath cannot be null");
+            serverConfigPath = globalConfig.ConfigPath ?? throw new InvalidOperationException("ConfigPath cannot be null");
             globalJsonWriter = new JSONWriter(jsonHandler, GlobalConfigFilePath, serverConfigPath);
             configPath = globalConfig.ConfigPath;
             var taskManager = new ScheduledTaskManager();
