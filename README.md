@@ -86,7 +86,11 @@ Manage and enhance your inventory:
 
 ## How To Use
 
-To use bot you can simply download this repository fill the config file and run update_repo.bat
+To use bot you can simply download this repository fill the config file set "set CONFIG_PATH=" in  update_repo.bat and run it
+
+You Need:
+.NET9 - https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-9.0.22-windows-x64-installer?cid=getdotnetcore
+Lavalink - https://lavalink.darrennathanael.com/SSL/Lavalink-SSL/#hosted-by-anefaiz
 
 ## Credits
 
