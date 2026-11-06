@@ -15,6 +15,7 @@ namespace Discord_Bot.other
                 "**/duel** - Zmierz się z innymi graczami\n" +
                 "**/checkraffle** - Sprawdź obecną loterię\n" +
                 "**/buyticket** - Kup bilet na loterię\n" +
+                "**/checktickets** - Sprawdź liczbę swoich losów\n" +
                 "**/givepoints** - Podziel się punktami z przyjaciółmi\n" +
                 "**/freepoints** - 1000 darmowych punktów"
         };
@@ -23,8 +24,11 @@ namespace Discord_Bot.other
         {
             Color = DiscordColor.Green,
             Title = "Games Commands",
-            Description = "**/hangman** - Zaczyne gre w wisielca \n" +
-                "**/wordle** - Zaczyna gre w wordle"
+            Description = "**/random** - Losuje liczbę z podanego zakresu\n" +
+                "**/hangman** - Zaczyna grę w wisielca\n" +
+                "**/hguess** - Zgaduje literę lub hasło w wisielcu\n" +
+                "**/wordle** - Zaczyna grę w Wordle\n" +
+                "**/wguess** - Zgaduje słowo w Wordle"
         };
 
         public static DiscordEmbedBuilder fishingCommandEmbed = new()
@@ -63,6 +67,8 @@ namespace Discord_Bot.other
             Color = DiscordColor.Blurple,
             Title = "Management Commands",
             Description = "**/help**  -> Pokazuję komendy z opisami\n" +
+                "**/lavalink**  -> Zmienia hostname i hasło Lavalinka\n" +
+                "**/restart**  -> Restartuje bota\n" +
                 "**/defaultRole**  -> Ustawia domyślną role dla nowych urzytkowników\n" +
                 "**/imageOnly**  -> Ustawia który kanał będzie usuwał wiadomości tekstowe\n" +
                 "**/raffleChannel**  -> Ustawia na którym beda informacje o loteriach\n" +
@@ -117,16 +123,16 @@ namespace Discord_Bot.other
         {
             Color = DiscordColor.Blue,
             Title = "Music Commands",
-            Description = "**/play**  -> Puszcza muzyke na kanale głosowym \n" +
-                "**/playnow **  -> Puszcza od razu utwór na kanale głosowym \n" +
-                "**/next **  -> Dodaje piosenke jako pierwsza w kolejce \n" +
-                "**/pause**  -> Pauzuje muzyke\n" +
-                "**/resume**  -> Wznawia muzyke\n" +
-                "**/stop**  -> Całkowicie zatrzymuje muzyke\n" +
-                "**/skip**  -> Pomija aktualnie grany utwor\n" +
-                "**/queue**  -> Wyświetla kolejke odtwarzania\n" +
+            Description = "**/play**  -> Puszcza muzykę na kanale głosowym\n" +
+                "**/playnow**  -> Puszcza od razu utwór na kanale głosowym\n" +
+                "**/next**  -> Dodaje piosenkę jako pierwszą w kolejce\n" +
+                "**/pause**  -> Pauzuje muzykę\n" +
+                "**/resume**  -> Wznawia muzykę\n" +
+                "**/stop**  -> Całkowicie zatrzymuje muzykę\n" +
+                "**/skip**  -> Pomija aktualnie grany utwór\n" +
+                "**/queue**  -> Wyświetla kolejkę odtwarzania\n" +
                 "**/position**  -> Wyświetla aktualny czas utworu\n" +
-                "**/volume**  -> Ustawia głośność 0 - 1000% \n" +
+                "**/volume**  -> Ustawia głośność 0–1000%\n" +
                 "**/shuffle**  -> Zmienia kolejność playlisty"
         };
     }

@@ -12,7 +12,7 @@ namespace Discord_Bot.Config
 
         public async Task UpdateGlobalConfig(string key, string value)
         {
-            string filePath = Path.Combine(_configPath, "config.json");
+            string filePath = _configPath;
 
             var jsonData = await _jsonHandler.ReadJson<JObject>(filePath) ?? [];
             jsonData[key] = value;

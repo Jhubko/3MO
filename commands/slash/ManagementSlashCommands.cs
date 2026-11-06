@@ -45,6 +45,84 @@ namespace Discord_Bot.Commands.Slash
             await ctx.EditResponseAsync(message);
         }
 
+        [SlashCommand("lavalink", "Change Lavalink hostname and password.")]
+        [RequirePermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task ChangeLavalinkConfig(
+            InteractionContext ctx,
+            [Option("hostname", "Lavalink server hostname")] string hostname,
+            [Option("password", "Lavalink server password")] string password)
+        {
+            await ctx.DeferAsync(true);
+
+            if (string.IsNullOrWhiteSpace(hostname) || string.IsNullOrWhiteSpace(password))
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("❌ Hostname i hasło nie mogą być puste."));
+                return;
+            }
+
+            if (Uri.CheckHostName(hostname.Trim()) == UriHostNameType.Unknown)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("❌ Podany hostname jest nieprawidłowy."));
+                return;
+            }
+
+            try
+            {
+                await GlobalJsonWriter.UpdateGlobalConfig("LlHostname", hostname.Trim());
+                await GlobalJsonWriter.UpdateGlobalConfig("LlPass", password);
+
+                Program.globalConfig.LlHostname = hostname.Trim();
+                Program.globalConfig.LlPass = password;
+
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("✅ Konfiguracja Lavalink została zapisana. Zrestartuj bota, aby zastosować zmianę."));
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Błąd zapisu konfiguracji Lavalink: {exception.Message}");
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("❌ Nie udało się zapisać konfiguracji Lavalink."));
+            }
+        }
+
+        [SlashCommand("restart", "Restart the bot.")]
+        [RequirePermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task RestartBot(InteractionContext ctx)
+        {
+            await ctx.DeferAsync(true);
+
+            try
+            {
+                var processPath = Environment.ProcessPath
+                    ?? throw new InvalidOperationException("Nie można ustalić ścieżki procesu.");
+
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = processPath,
+                    WorkingDirectory = AppContext.BaseDirectory,
+                    UseShellExecute = false
+                };
+
+                foreach (var argument in Environment.GetCommandLineArgs().Skip(1))
+                    startInfo.ArgumentList.Add(argument);
+
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("🔄 Bot zostanie zrestartowany..."));
+
+                Process.Start(startInfo);
+                await Task.Delay(500);
+                Environment.Exit(0);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Błąd restartowania bota: {exception}");
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("❌ Nie udało się zrestartować bota."));
+            }
+        }
+
         [SlashCommand("editfish", "Edit fish data in the fish database.")]
         [RequirePermissions(DSharpPlus.Permissions.Administrator)]
         public async Task EditFish(InteractionContext ctx,

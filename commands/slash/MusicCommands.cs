@@ -15,6 +15,15 @@ namespace Discord_Bot.Commands.Slash
         private readonly IAudioService _audioService = Program.AudioService;
         private async ValueTask<QueuedLavalinkPlayer?> GetPlayerAsync(InteractionContext ctx, bool connectToVoiceChannel = true)
         {
+            await ctx.DeferAsync().ConfigureAwait(false);
+
+            var voiceChannel = ctx.Member.VoiceState?.Channel;
+            if (voiceChannel is null)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Najpierw dołącz do kanału głosowego.")).ConfigureAwait(false);
+                return null;
+            }
+
             var playerOptions = new QueuedLavalinkPlayerOptions { DisconnectOnStop = true, SelfDeaf = true };
             var channelBehavior = connectToVoiceChannel
                 ? PlayerChannelBehavior.Join
@@ -22,31 +31,46 @@ namespace Discord_Bot.Commands.Slash
 
             var retrieveOptions = new PlayerRetrieveOptions(ChannelBehavior: channelBehavior);
 
-            var result = await _audioService.Players
-                        .RetrieveAsync(guildId: ctx.Guild.Id, memberVoiceChannel: ctx.Member.VoiceState.Channel.Id, playerFactory: PlayerFactory.Queued, options: Options.Create(options: playerOptions), retrieveOptions)
-                        .ConfigureAwait(false);
-
-            if (!result.IsSuccess)
+            try
             {
-                var errorMessage = result.Status switch
-                {
-                    PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
-                    PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
-                    _ => "Unknown error.",
-                };
+                var result = await _audioService.Players
+                            .RetrieveAsync(guildId: ctx.Guild.Id, memberVoiceChannel: voiceChannel.Id, playerFactory: PlayerFactory.Queued, options: Options.Create(options: playerOptions), retrieveOptions)
+                            .AsTask()
+                            .WaitAsync(TimeSpan.FromSeconds(15))
+                            .ConfigureAwait(false);
 
-                await ctx.CreateResponseAsync(errorMessage).ConfigureAwait(false);
+                if (!result.IsSuccess)
+                {
+                    var errorMessage = result.Status switch
+                    {
+                        PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
+                        PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
+                        _ => $"Lavalink nie utworzył odtwarzacza: {result.Status}",
+                    };
+
+                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(errorMessage)).ConfigureAwait(false);
+                    return null;
+                }
+
+                return result.Player;
+            }
+            catch (TimeoutException)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Lavalink nie odpowiedział w ciągu 15 sekund. Sprawdź połączenie z serwerem Lavalink.")).ConfigureAwait(false);
                 return null;
             }
-
-            return result.Player;
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Błąd Lavalink podczas pobierania playera: {exception}");
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Nie udało się połączyć z Lavalinkiem. Sprawdź konsolę bota.")).ConfigureAwait(false);
+                return null;
+            }
         }
 
         [SlashCommand("play", "Play music")]
         public async Task PlayMusic(InteractionContext ctx, [Option("songname", "Song or playlist You want to play")][RemainingText] string songname)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: true);
-            await ctx.DeferAsync();
 
             if (player is null)
                 return;
@@ -127,7 +151,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task PlayNow(InteractionContext ctx, [Option("songname", "Song or playlist You want to play")][RemainingText] string songname)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: true);
-            await ctx.DeferAsync();
 
             if (player is null)
                 return;
@@ -169,7 +192,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task AddNext(InteractionContext ctx, [Option("songname", "Song or playlist You want to play")][RemainingText] string songname)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: true);
-            await ctx.DeferAsync();
 
             if (player is null)
                 return;
@@ -199,7 +221,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task PauseMusic(InteractionContext ctx)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync();
 
             if (player is null)
                 return;
@@ -224,7 +245,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task ResumeMusic(InteractionContext ctx)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync();
 
             if (player is null)
                 return;
@@ -248,7 +268,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task StopMusic(InteractionContext ctx)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync().ConfigureAwait(false);
 
             if (player is null)
                 return;
@@ -275,7 +294,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task Volume(InteractionContext ctx, [Option("volume", "What volume do you want?")] long volume = 100)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync().ConfigureAwait(false);
 
             if (player is null)
                 return;
@@ -295,7 +313,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task SkipMusic(InteractionContext ctx)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync().ConfigureAwait(false);
 
             if (player is null)
                 return;
@@ -341,7 +358,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task Position(InteractionContext ctx)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync().ConfigureAwait(false);
 
             if (player is null)
                 return;
@@ -359,7 +375,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task ShowQueue(InteractionContext ctx)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync().ConfigureAwait(false);
 
             if (player is null)
                 return;
@@ -395,7 +410,6 @@ namespace Discord_Bot.Commands.Slash
         public async Task Shuffle(InteractionContext ctx, [Option("isShuffled", "Suffle player")] bool isShuffled)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
-            await ctx.DeferAsync().ConfigureAwait(false);
 
             if (player is null)
                 return;
