@@ -35,18 +35,29 @@ namespace Discord_Bot
 
         public static string configPath = string.Empty;
 
+        public static string GlobalConfigFilePath { get; private set; } = GetGlobalConfigFilePath();
+
         public static GlobalConfig globalConfig = null!;
 
         public static VoicePointsManager voicePointsManager = null!;
 
         private static InventoryManager inventoryManager = null!;
 
+        private static string GetGlobalConfigFilePath()
+        {
+            var configFilePath = Environment.GetEnvironmentVariable("CONFIG_PATH");
+            return string.IsNullOrWhiteSpace(configFilePath)
+                ? Path.Combine(AppContext.BaseDirectory, "config.json")
+                : Path.GetFullPath(configFilePath);
+        }
+
 
         static async Task Main(string[] args)
         {
-            globalConfig = await jsonHandler.ReadJson<GlobalConfig>("config.json") ?? throw new InvalidOperationException("GlobalConfig cannot be null");
+            GlobalConfigFilePath = GetGlobalConfigFilePath();
+            globalConfig = await jsonHandler.ReadJson<GlobalConfig>(GlobalConfigFilePath) ?? throw new InvalidOperationException("GlobalConfig cannot be null");
             //serverConfigPath = globalConfig.ConfigPath ?? throw new InvalidOperationException("ConfigPath cannot be null");
-            globalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
+            globalJsonWriter = new JSONWriter(jsonHandler, GlobalConfigFilePath, serverConfigPath);
             configPath = globalConfig.ConfigPath;
             var taskManager = new ScheduledTaskManager();
 

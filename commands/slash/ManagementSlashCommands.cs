@@ -15,7 +15,7 @@ namespace Discord_Bot.Commands.Slash
     internal class ManagementSlashCommands : ApplicationCommandModule
     {
         private static readonly JSONReader jsonReader = new();
-        private readonly JSONWriter GlobalJsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
+        private readonly JSONWriter GlobalJsonWriter = new(jsonReader, Program.GlobalConfigFilePath, Program.serverConfigPath);
         private static readonly string? configPath = Program.globalConfig.ConfigPath;
         private readonly InventoryManager inventoryManager = new();
 
