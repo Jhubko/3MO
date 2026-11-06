@@ -12,6 +12,8 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Lavalink4NET;
+using Lavalink4NET.Clients;
+using Lavalink4NET.DSharpPlus;
 using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,7 +45,7 @@ namespace Discord_Bot
         static async Task Main(string[] args)
         {
             globalConfig = await jsonHandler.ReadJson<GlobalConfig>("config.json") ?? throw new InvalidOperationException("GlobalConfig cannot be null");
-            serverConfigPath = globalConfig.ConfigPath ?? throw new InvalidOperationException("ConfigPath cannot be null");
+            //serverConfigPath = globalConfig.ConfigPath ?? throw new InvalidOperationException("ConfigPath cannot be null");
             globalJsonWriter = new JSONWriter(jsonHandler, "config.json", serverConfigPath);
             configPath = globalConfig.ConfigPath;
             var taskManager = new ScheduledTaskManager();
@@ -83,6 +85,7 @@ namespace Discord_Bot
 
             using var serviceProvider = new ServiceCollection()
                     .AddSingleton(Client)
+                    .AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>()
                     .AddLavalink()
                     .ConfigureLavalink(x =>
                     {
