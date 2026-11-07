@@ -14,7 +14,7 @@ namespace Discord_Bot.Commands.Slash
         public async Task PointsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            uint points = await Program.voicePointsManager.GetUserPoints(userId);
+            uint points = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, userId);
             var member = await ctx.Guild.GetMemberAsync(userId);
 
             var embed = new DiscordEmbedBuilder
@@ -81,7 +81,7 @@ namespace Discord_Bot.Commands.Slash
         public async Task StatsCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            UserConfig userStats = await StatsHandler.LoadUserStats(userId);
+            UserConfig userStats = await StatsHandler.LoadUserStats(ctx.Guild.Id, userId);
             var member = await ctx.Guild.GetMemberAsync(userId);
             string desc = string.Empty;
 

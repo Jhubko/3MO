@@ -1,21 +1,20 @@
 ﻿using Discord_Bot;
 using Discord_Bot.Config;
 using Discord_Bot.Handlers;
+using System.Collections.Concurrent;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 
 class VoicePointsManager
 {
-    private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
-    private readonly HashSet<ulong> activeUsers;
+    private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), byte> activeUsers;
     private static readonly JSONReader jsonReader = new();
     private readonly InventoryManager inventoryManager = new();
     private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
     public VoicePointsManager()
     {
-
-        activeUsers = [];
-        Directory.CreateDirectory(folderPath);
+        activeUsers = new();
+        Directory.CreateDirectory(Path.Combine(Program.serverConfigPath, "user_points"));
     }
 
     public async Task CollectActiveUsers(DiscordClient client)
@@ -29,14 +28,13 @@ class VoicePointsManager
                     var users = channel.Users;
                     foreach (var user in users)
                     {
-                        if (!activeUsers.Contains(user.Id))
+                        var activeUser = (GuildId: guild.Id, UserId: user.Id);
+                        if (activeUsers.TryAdd(activeUser, 0))
                         {
-                            activeUsers.Add(user.Id);
-
-                            uint currentPoints = await LoadUserPoints(user.Id);
-                            uint passivePoints = await CalculatePassivePoints(user.Id);
+                            uint currentPoints = await LoadUserPoints(guild.Id, user.Id);
+                            uint passivePoints = await CalculatePassivePoints(guild.Id, user.Id);
                             currentPoints += passivePoints;
-                            SaveUserPoints(user.Id, currentPoints);
+                            await SaveUserPoints(guild.Id, user.Id, currentPoints);
                         }
                     }
                 }
@@ -46,28 +44,31 @@ class VoicePointsManager
         Console.WriteLine("Active users have been collected and their points updated.");
     }
 
-    private async Task<uint> LoadUserPoints(ulong userId)
+    private async Task<uint> LoadUserPoints(ulong guildId, ulong userId)
     {
-        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
+        var userConfig = await jsonReader.ReadJson<UserConfig>(UserDataPaths.GetUserConfigPath(Program.serverConfigPath, guildId, userId)) ?? throw new InvalidOperationException("UserConfig cannot be null");
         return userConfig.Points;
     }
 
-    public async void SaveUserPoints(ulong userId, uint points)
+    public async Task SaveUserPoints(ulong guildId, ulong userId, uint points)
     {
-        await jsonWriter.UpdateUserConfig(userId, "Points", points);
+        await jsonWriter.UpdateUserConfig(guildId, userId, "Points", points);
     }
 
     public async Task OnVoiceStateUpdated(DiscordClient client, VoiceStateUpdateEventArgs e)
     {
         ulong userId = e.User.Id;
+        ulong guildId = e.Before.Channel?.Guild.Id ?? e.After.Channel?.Guild.Id
+            ?? throw new InvalidOperationException("Voice state update has no guild channel.");
+        var activeUser = (GuildId: guildId, UserId: userId);
 
         if (e.After.Channel != null)
         {
-            activeUsers.Add(userId);
+            activeUsers.TryAdd(activeUser, 0);
         }
-        else if (e.Before.Channel != null && e.After.Channel == null)
+        else if (e.Before.Channel != null)
         {
-            activeUsers.Remove(userId);
+            activeUsers.TryRemove(activeUser, out _);
         }
 
         await Task.CompletedTask;
@@ -78,34 +79,27 @@ class VoicePointsManager
         while (true)
         {
             await Task.Delay(TimeSpan.FromMinutes(1));
-            foreach (ulong userId in activeUsers)
+            foreach (var (guildId, userId) in activeUsers.Keys)
             {
-                uint currentPoints = await LoadUserPoints(userId);
-                uint passivePoints = await CalculatePassivePoints(userId);
+                uint currentPoints = await LoadUserPoints(guildId, userId);
+                uint passivePoints = await CalculatePassivePoints(guildId, userId);
                 currentPoints += passivePoints;
-                SaveUserPoints(userId, currentPoints);
+                await SaveUserPoints(guildId, userId, currentPoints);
             }
         }
     }
 
-    public async Task<uint> GetUserPoints(ulong userId)
+    public async Task<uint> GetUserPoints(ulong guildId, ulong userId)
     {
-        return await LoadUserPoints(userId);
+        return await LoadUserPoints(guildId, userId);
     }
 
-    private async Task<uint> CalculatePassivePoints(ulong userId)
+    private async Task<uint> CalculatePassivePoints(ulong guildId, ulong userId)
     {
-        var guild = Program.Client.Guilds.Values
-            .FirstOrDefault(g => g.VoiceStates.TryGetValue(userId, out var voiceState) && voiceState.Channel != null);
-
-        if (guild == null)
-            return 0;
-
-        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json");
-        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
+        var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{guildId}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
 
         uint passivePoints = 10;
-        var userItems = await inventoryManager.GetUserItems(userId);
+        var userItems = await inventoryManager.GetUserItems(guildId, userId);
         foreach (var item in userItems.Items)
         {
             var shopItem = serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(item.Key, StringComparison.OrdinalIgnoreCase));

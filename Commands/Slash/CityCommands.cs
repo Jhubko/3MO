@@ -43,7 +43,7 @@ namespace Discord_Bot.Commands.Slash
         [SlashCommand("setcityname", "Set the name of your city.")]
         public async Task SetCityNameCommand(InteractionContext ctx, [Option("name", "New name of the city")] string cityName)
         {
-            bool success = await _cityHandler.SetCityName(ctx.User.Id, cityName);
+            bool success = await _cityHandler.SetCityName(ctx.Guild.Id, ctx.User.Id, cityName);
             var embed = new DiscordEmbedBuilder()
             {
                 Title = success ? "City Name Updated!" : "Error",
@@ -60,7 +60,7 @@ namespace Discord_Bot.Commands.Slash
         public async Task ViewCityCommand(InteractionContext ctx, [Option("user", "The user to check points for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            var embed = await _cityHandler.ViewCity(userId);
+            var embed = await _cityHandler.ViewCity(ctx.Guild.Id, userId);
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
         }
 
@@ -71,7 +71,7 @@ namespace Discord_Bot.Commands.Slash
         [Option("y", "y coordinate")] string y)
         {
             {
-                uint userPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
+                uint userPoints = await _pointsManager.GetUserPoints(ctx.Guild.Id, ctx.User.Id);
 
                 var building = _cityHandler.Buildings.FirstOrDefault(b => b.Name.Equals(buildingName, StringComparison.CurrentCultureIgnoreCase));
 
@@ -103,15 +103,13 @@ namespace Discord_Bot.Commands.Slash
                     return;
                 }
 
-                var success = await _cityHandler.BuyBuilding(ctx.User.Id, building.Emote, int.Parse(x), int.Parse(y));
+                var success = await _cityHandler.BuyBuilding(ctx.Guild.Id, ctx.User.Id, building.Emote, int.Parse(x), int.Parse(y));
                 var responseEmbed = new DiscordEmbedBuilder();
 
                 if (success)
                 {
-                    userPoints -= buildingCost;
-                    _pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
-                    await StatsHandler.IncreaseStats(ctx.User.Id, "BuildingsBought");
-                    await StatsHandler.IncreaseStats(ctx.User.Id, "BoildingsSpent", buildingCost);
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "BuildingsBought");
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "BoildingsSpent", buildingCost);
 
                     responseEmbed.Title = "💰Building Purchased Successfully💰";
                     responseEmbed.Description = $"You have successfully purchased the {building.Name} at location ({x}, {y}).";
@@ -132,8 +130,8 @@ namespace Discord_Bot.Commands.Slash
                                              [Option("x", "x coordinate")] string x,
                                              [Option("y", "y coordinate")] string y)
         {
-            var success = await _cityHandler.SellBuilding(ctx.User.Id, int.Parse(x), int.Parse(y));
-            await StatsHandler.IncreaseStats(ctx.User.Id, "BuildingsSold");
+            var success = await _cityHandler.SellBuilding(ctx.Guild.Id, ctx.User.Id, int.Parse(x), int.Parse(y));
+            await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "BuildingsSold");
             var embedBuilder = new DiscordEmbedBuilder()
             {
                 Color = success ? DiscordColor.Green : DiscordColor.Red,
@@ -153,7 +151,7 @@ namespace Discord_Bot.Commands.Slash
                                              [Option("x2", "Final x coordinate")] string x2,
                                              [Option("y2", "Final y coordinate")] string y2)
         {
-            var success = await _cityHandler.MoveBuilding(ctx.User.Id, int.Parse(x1), int.Parse(y1), int.Parse(x2), int.Parse(y2));
+            var success = await _cityHandler.MoveBuilding(ctx.Guild.Id, ctx.User.Id, int.Parse(x1), int.Parse(y1), int.Parse(x2), int.Parse(y2));
 
             var embedBuilder = new DiscordEmbedBuilder()
             {
@@ -176,11 +174,11 @@ namespace Discord_Bot.Commands.Slash
         [SlashCommand("collectpoints", "Collect income from buildings in your city.")]
         public async Task CollectPointsCommand(InteractionContext ctx)
         {
-            var points = await _cityHandler.GetCityPoints(ctx.User.Id);
-            uint currentPoints = await _pointsManager.GetUserPoints(ctx.User.Id);
+            var points = await _cityHandler.GetCityPoints(ctx.Guild.Id, ctx.User.Id);
+            uint currentPoints = await _pointsManager.GetUserPoints(ctx.Guild.Id, ctx.User.Id);
             uint newPoints = currentPoints + points;
-            await StatsHandler.IncreaseStats(ctx.User.Id, "TotalCityIncome", points);
-            _pointsManager.SaveUserPoints(ctx.User.Id, newPoints);
+            await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "TotalCityIncome", points);
+            await _pointsManager.SaveUserPoints(ctx.Guild.Id, ctx.User.Id, newPoints);
 
             var embedBuilder = new DiscordEmbedBuilder()
             {

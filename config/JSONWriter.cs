@@ -26,15 +26,17 @@ namespace Discord_Bot.Config
             await UpdateConfig(filePath, key, value, value2);
         }
 
-        public async Task UpdateUserConfig(ulong userID, string key, object value, object? value2 = null)
+        public async Task UpdateUserConfig(ulong guildId, ulong userId, string key, object value, object? value2 = null)
         {
-            string filePath = Path.Combine($"{_serverConfigDir}\\user_points", $"{userID}.json");
+            string filePath = UserDataPaths.GetUserConfigPath(_serverConfigDir, guildId, userId);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
             await UpdateConfig(filePath, key, value, value2);
         }
 
-        public async Task UpdateCityConfig(ulong userID, string key, object value)
+        public async Task UpdateCityConfig(ulong guildId, ulong userId, string key, object value)
         {
-            string filePath = Path.Combine($"{_serverConfigDir}\\cities", $"{userID}_city.json");
+            string filePath = UserDataPaths.GetCityPath(_serverConfigDir, guildId, userId);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
             await UpdateConfig(filePath, key, value);
         }
         public async Task UpdateShopConfig<T>(string filePath, Dictionary<string, T> newConfig)

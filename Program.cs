@@ -213,7 +213,7 @@ namespace Discord_Bot
             }
             else
             {
-                await StatsHandler.IncreaseStats(args.Author.Id, "Messages");
+                await StatsHandler.IncreaseStats(args.Guild.Id, args.Author.Id, "Messages");
             }
 
 
@@ -256,7 +256,7 @@ namespace Discord_Bot
                     return;
                 }
 
-                var pokemonInventory = await inventoryManager.GetUserItems(collectionUserId);
+                var pokemonInventory = await inventoryManager.GetUserItems(args.Interaction.Guild.Id, collectionUserId);
                 if (pokemonInventory.Pokemons.Count == 0)
                 {
                     await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,

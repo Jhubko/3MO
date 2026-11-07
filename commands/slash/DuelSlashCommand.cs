@@ -12,8 +12,8 @@ namespace Discord_Bot.Commands.Slash
         {
             ulong userId = ctx.User.Id;
             ulong opponentId = opponent.Id;
-            uint userPoints = await Program.voicePointsManager.GetUserPoints(userId);
-            uint opponentPoints = await Program.voicePointsManager.GetUserPoints(opponentId);
+            uint userPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, userId);
+            uint opponentPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, opponentId);
             uint betAmount = GambleUtils.ParseGambleAmount(amountInput, userPoints);
             var (isProperValue, errorMessage) = GambleUtils.CheckGambleAmout(betAmount, userPoints);
 
@@ -86,12 +86,12 @@ namespace Discord_Bot.Commands.Slash
                 {
                     userPoints += betAmount;
                     opponentPoints -= betAmount;
-                    await StatsHandler.IncreaseStats(userId, "DuelWins");
-                    await StatsHandler.IncreaseStats(opponentId, "DuelLosses");
-                    await StatsHandler.IncreaseStats(userId, "WonPoints", betAmount);
-                    await StatsHandler.IncreaseStats(opponentId, "LostPoints", betAmount);
-                    Program.voicePointsManager.SaveUserPoints(userId, userPoints);
-                    Program.voicePointsManager.SaveUserPoints(opponentId, opponentPoints);
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "DuelWins");
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, opponentId, "DuelLosses");
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "WonPoints", betAmount);
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, opponentId, "LostPoints", betAmount);
+                    await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, userId, userPoints);
+                    await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, opponentId, opponentPoints);
 
                     var embedResult = new DiscordEmbedBuilder
                     {
@@ -105,12 +105,12 @@ namespace Discord_Bot.Commands.Slash
                 {
                     userPoints -= betAmount;
                     opponentPoints += betAmount;
-                    await StatsHandler.IncreaseStats(opponentId, "DuelWins");
-                    await StatsHandler.IncreaseStats(userId, "DuelLosses");
-                    await StatsHandler.IncreaseStats(userId, "LostPoints", betAmount);
-                    await StatsHandler.IncreaseStats(opponentId, "WonPoints", betAmount);
-                    Program.voicePointsManager.SaveUserPoints(userId, userPoints);
-                    Program.voicePointsManager.SaveUserPoints(opponentId, opponentPoints);
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, opponentId, "DuelWins");
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "DuelLosses");
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "LostPoints", betAmount);
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, opponentId, "WonPoints", betAmount);
+                    await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, userId, userPoints);
+                    await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, opponentId, opponentPoints);
 
                     var embedResult = new DiscordEmbedBuilder
                     {

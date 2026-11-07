@@ -37,8 +37,8 @@ namespace Discord_Bot.Commands.Slash
             await InventoryManager.InventoryTransactionSemaphore.WaitAsync();
             try
             {
-                var senderInventory = await inventoryManager.GetUserItems(ctx.User.Id);
-                var recipientInventory = await inventoryManager.GetUserItems(recipient.Id);
+                var senderInventory = await inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
+                var recipientInventory = await inventoryManager.GetUserItems(ctx.Guild.Id, recipient.Id);
                 if (itemName.StartsWith("pokemon:", StringComparison.Ordinal))
                 {
                     if (amount != 1)
@@ -57,8 +57,8 @@ namespace Discord_Bot.Commands.Slash
 
                     senderInventory.Pokemons.Remove(pokemon);
                     recipientInventory.Pokemons.Add(pokemon);
-                    await inventoryManager.UpdateUserItems(recipient.Id, recipientInventory);
-                    await inventoryManager.UpdateUserItems(ctx.User.Id, senderInventory);
+                    await inventoryManager.UpdateUserItems(ctx.Guild.Id, recipient.Id, recipientInventory);
+                    await inventoryManager.UpdateUserItems(ctx.Guild.Id, ctx.User.Id, senderInventory);
                     await ctx.CreateResponseAsync(embed: new DiscordEmbedBuilder
                     {
                         Title = "🎁 Przekazano Pokémona",
@@ -101,8 +101,8 @@ namespace Discord_Bot.Commands.Slash
                     recipientInventory.Items[inventoryItemName] = (uint)amount;
                 }
 
-                await inventoryManager.UpdateUserItems(recipient.Id, recipientInventory);
-                await inventoryManager.UpdateUserItems(ctx.User.Id, senderInventory);
+                await inventoryManager.UpdateUserItems(ctx.Guild.Id, recipient.Id, recipientInventory);
+                await inventoryManager.UpdateUserItems(ctx.Guild.Id, ctx.User.Id, senderInventory);
 
                 var embed = new DiscordEmbedBuilder
                 {

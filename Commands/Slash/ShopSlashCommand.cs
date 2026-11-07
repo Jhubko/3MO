@@ -9,7 +9,6 @@ namespace Discord_Bot.Commands.Slash
     {
         private static readonly JSONReader jsonReader = new();
         private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
-        private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
         private readonly InventoryManager inventoryManager = new();
 
         [SlashCommand("buy", "Buy an item from the shop.")]
@@ -18,7 +17,7 @@ namespace Discord_Bot.Commands.Slash
             [Option("item", "Wybierz przedmiot ze sklepu do kupienia.")] string itemName)
         {
             ulong userId = ctx.User.Id;
-            var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? new UserConfig();
+            var userData = await jsonReader.ReadJson<UserConfig>(UserDataPaths.GetUserConfigPath(Program.serverConfigPath, ctx.Guild.Id, userId)) ?? new UserConfig();
             var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
 
             var pokeball = PokemonService.FindPokeball(itemName);
@@ -33,7 +32,7 @@ namespace Discord_Bot.Commands.Slash
 
             itemName = item.Name;
             uint currentPoints = userData.Points;
-            var inventory = await inventoryManager.GetUserItems(userId);
+            var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, userId);
             uint itemCount = inventory.Items.TryGetValue(itemName, out uint value) ? value : 0;
             uint itemCost = pokeball != null ? pokeball.Price : item.BaseCost * (itemCount + 1);
 
@@ -51,8 +50,8 @@ namespace Discord_Bot.Commands.Slash
             else
                 inventory.Items[itemName] = 1;
 
-            await jsonWriter.UpdateUserConfig(userId, "Points", userData.Points);
-            await inventoryManager.UpdateUserItems(userId, inventory);
+            await jsonWriter.UpdateUserConfig(ctx.Guild.Id, userId, "Points", userData.Points);
+            await inventoryManager.UpdateUserItems(ctx.Guild.Id, userId, inventory);
 
             var embedBuy = new DiscordEmbedBuilder
             {
@@ -68,7 +67,7 @@ namespace Discord_Bot.Commands.Slash
         public async Task ListShopItems(InteractionContext ctx)
         {
             var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
-            var inventory = await inventoryManager.GetUserItems(ctx.User.Id);
+            var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
 
             var shopItems = serverConfig.ShopItems
                 .Where(i => PokemonService.FindPokeball(i.Name) == null)
@@ -94,7 +93,7 @@ namespace Discord_Bot.Commands.Slash
         public async Task ListUserItems(InteractionContext ctx, [Option("user", "The user to check items for")] DiscordUser? user = null)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            var inventory = await inventoryManager.GetUserItems(userId);
+            var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, userId);
 
             if (inventory.Items.Count == 0 && inventory.Fish.Count == 0)
             {

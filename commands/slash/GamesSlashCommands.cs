@@ -31,7 +31,7 @@ namespace Discord_Bot.Commands.Slash
             var userCard = new CardSystem();
             bool isPlayerWinner = false;
             ulong userId = ctx.User.Id;
-            uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+            uint currentPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, userId);
             uint amountToGamble = GambleUtils.ParseGambleAmount(amountInput, currentPoints);
             var (isProperValue, errorMessage) = GambleUtils.CheckGambleAmout(amountToGamble, currentPoints);
 
@@ -72,14 +72,14 @@ namespace Discord_Bot.Commands.Slash
             {
                 isPlayerWinner = true;
                 currentPoints += amountToGamble;
-                await StatsHandler.IncreaseStats(userId, "CardsWins");
-                await StatsHandler.IncreaseStats(userId, "WonPoints", amountToGamble);
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "CardsWins");
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "WonPoints", amountToGamble);
             }
             else
             {
                 currentPoints -= amountToGamble;
-                await StatsHandler.IncreaseStats(userId, "CardsLosses");
-                await StatsHandler.IncreaseStats(userId, "LostPoints", amountToGamble);
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "CardsLosses");
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "LostPoints", amountToGamble);
             }
 
 
@@ -90,7 +90,7 @@ namespace Discord_Bot.Commands.Slash
                 Color = isPlayerWinner ? DiscordColor.Green : DiscordColor.Red
             };
 
-            Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
+            await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, userId, currentPoints);
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbeds([startEmbed, userCardEmbed, botCardEmbed, resultEmbed]));
         }
 
