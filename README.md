@@ -19,6 +19,7 @@
 ## 🎙️ Voice Points System
 
 - Earn points while spending time in voice channels.
+- Points, stats, inventory (including fish and Pokémon), and cities are separate for each Discord server. Previous shared data is not imported, so every server starts fresh; old files are left untouched.
 - Check your balance or another player's balance with `/points`.
 - Send points to another player with `/givepoints`; enter a number, percentage, or `all`.
 

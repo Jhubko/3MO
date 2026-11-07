@@ -93,11 +93,11 @@ namespace Discord_Bot.Commands.Slash
                 if (input == game.WordToGuess)
                 {
                     ulong userId = ctx.User.Id;
-                    uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+                    uint currentPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, userId);
                     await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.WordToGuess)}** points!");
-                    await StatsHandler.IncreaseStats(ctx.User.Id, "HangmanWins");
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "HangmanWins");
                     currentPoints += CalculatePoints(game.WordToGuess);
-                    Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
+                    await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, userId, currentPoints);
                     activeTimers[ctx.Channel.Id].Cancel();
                     activeTimers[ctx.Channel.Id].Dispose();
                     activeTimers.Remove(ctx.Channel.Id);
@@ -119,11 +119,11 @@ namespace Discord_Bot.Commands.Slash
             if (new string(game.GuessedWord) == game.WordToGuess)
             {
                 ulong userId = ctx.User.Id;
-                uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+                uint currentPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, userId);
                 await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}**  and won **{CalculatePoints(game.WordToGuess)}** points!");
-                await StatsHandler.IncreaseStats(ctx.User.Id, "HangmanWins");
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "HangmanWins");
                 currentPoints += CalculatePoints(game.WordToGuess);
-                Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
+                await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, userId, currentPoints);
                 activeTimers[ctx.Channel.Id].Cancel();
                 activeTimers[ctx.Channel.Id].Dispose();
                 activeTimers.Remove(ctx.Channel.Id);
@@ -133,7 +133,7 @@ namespace Discord_Bot.Commands.Slash
             else if (game.WrongAttempts >= hangmanPics.Length - 1)
             {
                 await ctx.CreateResponseAsync($"💀 Hanged man hanged! The word is: **{game.WordToGuess}**");
-                await StatsHandler.IncreaseStats(ctx.User.Id, "HangmanLosses");
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "HangmanLosses");
                 activeTimers[ctx.Channel.Id].Cancel();
                 activeTimers[ctx.Channel.Id].Dispose();
                 activeTimers.Remove(ctx.Channel.Id);

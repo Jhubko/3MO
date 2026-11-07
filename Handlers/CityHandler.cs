@@ -5,7 +5,6 @@ using DSharpPlus.Entities;
 
 class CityHandler
 {
-    private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\cities";
     private readonly VoicePointsManager _pointsManager = Program.voicePointsManager;
     public const int CitySize = 8;
 
@@ -39,20 +38,19 @@ class CityHandler
 
     public CityHandler()
     {
-        Directory.CreateDirectory(folderPath);
     }
-    public async Task<uint> GetCityPoints(ulong userId)
+    public async Task<uint> GetCityPoints(ulong guildId, ulong userId)
     {
-        var city = await LoadCity(userId);
+        var city = await LoadCity(guildId, userId);
         uint points = city.StoredPoints;
         city.StoredPoints = 0;
-        await jsonWriter.UpdateCityConfig(userId, "StoredPoints", city.StoredPoints);
+        await jsonWriter.UpdateCityConfig(guildId, userId, "StoredPoints", city.StoredPoints);
         return points;
     }
 
-    public async Task<DiscordEmbed> ViewCity(ulong userId)
+    public async Task<DiscordEmbed> ViewCity(ulong guildId, ulong userId)
     {
-        var city = await LoadCity(userId);
+        var city = await LoadCity(guildId, userId);
         string cityView = RenderCity(city.Grid);
         return new DiscordEmbedBuilder()
         {
@@ -61,9 +59,9 @@ class CityHandler
         }.Build();
     }
 
-    public async Task<bool> BuyBuilding(ulong userId, string buildingInput, int x, int y)
+    public async Task<bool> BuyBuilding(ulong guildId, ulong userId, string buildingInput, int x, int y)
     {
-        var city = await LoadCity(userId);
+        var city = await LoadCity(guildId, userId);
 
         x -= 1;
         y -= 1;
@@ -80,7 +78,7 @@ class CityHandler
             return false;
 
         uint buildingCost = building.Cost;
-        uint userPoints = await _pointsManager.GetUserPoints(userId);
+        uint userPoints = await _pointsManager.GetUserPoints(guildId, userId);
 
         if (userPoints < buildingCost)
             return false;
@@ -88,21 +86,21 @@ class CityHandler
         city.Grid[x][y] = building.Emote;
 
         userPoints -= buildingCost;
-        _pointsManager.SaveUserPoints(userId, userPoints);
+        await _pointsManager.SaveUserPoints(guildId, userId, userPoints);
 
-        await jsonWriter.UpdateCityConfig(userId, "Grid", city.Grid);
+        await jsonWriter.UpdateCityConfig(guildId, userId, "Grid", city.Grid);
 
         return true;
     }
 
 
 
-    public async Task<bool> SellBuilding(ulong userId, int x, int y)
+    public async Task<bool> SellBuilding(ulong guildId, ulong userId, int x, int y)
     {
         x -= 1;
         y -= 1;
-        uint userPoints = await _pointsManager.GetUserPoints(userId);
-        var city = await LoadCity(userId);
+        uint userPoints = await _pointsManager.GetUserPoints(guildId, userId);
+        var city = await LoadCity(guildId, userId);
         if (x < 0 || x >= CitySize || y < 0 || y >= CitySize || city.Grid[x][y] == "⬜")
             return false;
 
@@ -116,69 +114,80 @@ class CityHandler
 
         city.Grid[x][y] = "⬜";
         userPoints += refund;
-        _pointsManager.SaveUserPoints(userId, userPoints);
+        await _pointsManager.SaveUserPoints(guildId, userId, userPoints);
 
-        await jsonWriter.UpdateCityConfig(userId, "Grid", city.Grid);
+        await jsonWriter.UpdateCityConfig(guildId, userId, "Grid", city.Grid);
         return true;
     }
 
-    public async Task<bool> SetCityName(ulong userId, string newCityName)
+    public async Task<bool> SetCityName(ulong guildId, ulong userId, string newCityName)
     {
         if (string.IsNullOrWhiteSpace(newCityName))
             return false;
 
-        var city = await LoadCity(userId);
+        var city = await LoadCity(guildId, userId);
         city.Name = newCityName;
 
-        await jsonWriter.UpdateCityConfig(userId, "Name", city.Name);
+        await jsonWriter.UpdateCityConfig(guildId, userId, "Name", city.Name);
 
         return true;
     }
 
-    public async Task<bool> MoveBuilding(ulong userId, int x1, int y1, int x2, int y2)
+    public async Task<bool> MoveBuilding(ulong guildId, ulong userId, int x1, int y1, int x2, int y2)
     {
         x1 -= 1;
         y1 -= 1;
         x2 -= 1;
         y2 -= 1;
 
-        var city = await LoadCity(userId);
+        var city = await LoadCity(guildId, userId);
         if (x1 < 0 || x1 >= CitySize || y1 < 0 || y1 >= CitySize ||
             x2 < 0 || x2 >= CitySize || y2 < 0 || y2 >= CitySize)
             return false;
 
         (city.Grid[x1][y1], city.Grid[x2][y2]) = (city.Grid[x2][y2], city.Grid[x1][y1]);
-        await jsonWriter.UpdateCityConfig(userId, "Grid", city.Grid);
+        await jsonWriter.UpdateCityConfig(guildId, userId, "Grid", city.Grid);
         return true;
     }
 
     public async Task GenerateDailyIncome()
     {
-        foreach (var file in Directory.GetFiles($"{Program.serverConfigPath}\\cities", "*_city.json"))
-        {
-            ulong userId = ulong.Parse(Path.GetFileNameWithoutExtension(file).Split('_')[0]);
-            var city = await LoadCity(userId);
+        string citiesPath = Path.Combine(Program.serverConfigPath, "cities");
+        if (!Directory.Exists(citiesPath))
+            return;
 
-            foreach (var row in city.Grid)
+        foreach (var guildDirectory in Directory.GetDirectories(citiesPath))
+        {
+            if (!ulong.TryParse(Path.GetFileName(guildDirectory), out ulong guildId))
+                continue;
+
+            foreach (var file in Directory.GetFiles(guildDirectory, "*_city.json"))
             {
-                foreach (var cell in row)
+                if (!ulong.TryParse(Path.GetFileNameWithoutExtension(file).Split('_')[0], out ulong userId))
                 {
-                    var building = Buildings.FirstOrDefault(b => b.Emote == cell);
-                    if (building != null)
+                    Console.WriteLine($"Skipping city file with an invalid user ID: {file}");
+                    continue;
+                }
+
+                var city = await LoadCity(guildId, userId);
+                foreach (var row in city.Grid)
+                {
+                    foreach (var cell in row)
                     {
-                        city.StoredPoints += building.Income;
+                        var building = Buildings.FirstOrDefault(b => b.Emote == cell);
+                        if (building != null)
+                            city.StoredPoints += building.Income;
                     }
                 }
+
+                await jsonWriter.UpdateCityConfig(guildId, userId, "StoredPoints", city.StoredPoints);
             }
-
-            await jsonWriter.UpdateCityConfig(userId, "StoredPoints", city.StoredPoints);
-
         }
     }
 
-    private async Task<City> LoadCity(ulong userId)
+    private async Task<City> LoadCity(ulong guildId, ulong userId)
     {
-        return await jsonReader.ReadJson<City>(Path.Combine($"{Program.serverConfigPath}\\cities", $"{userId}_city.json")) ?? throw new InvalidOperationException("City cannot be null at this point");
+        return await jsonReader.ReadJson<City>(UserDataPaths.GetCityPath(Program.serverConfigPath, guildId, userId)) ?? throw new InvalidOperationException("City cannot be null at this point");
     }
 
     public string RenderCity(string[][] grid)

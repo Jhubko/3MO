@@ -25,8 +25,8 @@ namespace Discord_Bot.Commands.Slash
                 return;
             }
 
-            uint senderPoints = await Program.voicePointsManager.GetUserPoints(senderId);
-            uint recipientPoints = await Program.voicePointsManager.GetUserPoints(recipientId);
+            uint senderPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, senderId);
+            uint recipientPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, recipientId);
             uint amountToGive = GambleUtils.ParseGambleAmount(amount, senderPoints);
             var (isProperValue, errorMessage) = GambleUtils.CheckGambleAmout(amountToGive, senderPoints);
 
@@ -45,10 +45,10 @@ namespace Discord_Bot.Commands.Slash
 
             senderPoints -= amountToGive;
             recipientPoints += amountToGive;
-            Program.voicePointsManager.SaveUserPoints(senderId, senderPoints);
-            Program.voicePointsManager.SaveUserPoints(recipientId, recipientPoints);
-            await StatsHandler.IncreaseStats(senderId, "GivedPoints", amountToGive);
-            await StatsHandler.IncreaseStats(recipientId, "ReceivedPoints", amountToGive);
+            await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, senderId, senderPoints);
+            await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, recipientId, recipientPoints);
+            await StatsHandler.IncreaseStats(ctx.Guild.Id, senderId, "GivedPoints", amountToGive);
+            await StatsHandler.IncreaseStats(ctx.Guild.Id, recipientId, "ReceivedPoints", amountToGive);
 
             var embedTransfer = new DiscordEmbedBuilder
             {

@@ -10,11 +10,10 @@ namespace Discord_Bot.Commands.Slash
     public class FishingCommand : ApplicationCommandModule
     {
         private static readonly Random random = new();
-        private static readonly Dictionary<ulong, bool> fishingUsers = [];
+        private static readonly HashSet<(ulong GuildId, ulong UserId)> fishingUsers = [];
         private static readonly JSONReader jsonReader = new();
 
         private readonly uint fishingPrice = 10;
-        private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
         private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
         private readonly VoicePointsManager pointsManager = Program.voicePointsManager;
@@ -25,7 +24,8 @@ namespace Discord_Bot.Commands.Slash
         {
             var fishList = await inventoryManager.LoadFishDataAsync(ctx.Guild.Id);
             DiscordMessage message;
-            if (fishingUsers.ContainsKey(ctx.User.Id))
+            var fishingUser = (GuildId: ctx.Guild.Id, UserId: ctx.User.Id);
+            if (fishingUsers.Contains(fishingUser))
             {
                 await ctx.CreateResponseAsync("🎣 Już łowisz rybę! Poczekaj na branie.", true);
                 return;
@@ -36,8 +36,8 @@ namespace Discord_Bot.Commands.Slash
                 return;
             }
 
-            fishingUsers[ctx.User.Id] = true;
-            uint userPoints = await pointsManager.GetUserPoints(ctx.User.Id);
+            fishingUsers.Add(fishingUser);
+            uint userPoints = await pointsManager.GetUserPoints(ctx.Guild.Id, ctx.User.Id);
 
             if (userPoints < fishingPrice)
             {
@@ -46,7 +46,7 @@ namespace Discord_Bot.Commands.Slash
             }
 
             userPoints -= fishingPrice;
-            pointsManager.SaveUserPoints(ctx.User.Id, userPoints);
+            await pointsManager.SaveUserPoints(ctx.Guild.Id, ctx.User.Id, userPoints);
 
             await ctx.CreateResponseAsync($"🎣{ctx.User.Mention} Zarzuciłeś wędkę... czekaj na branie!");
 
@@ -54,7 +54,7 @@ namespace Discord_Bot.Commands.Slash
             {
                 await Task.Delay(600000);
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"❌ {ctx.User.Mention} Nic nie złapało się na haczyk. Spróbuj ponownie!"));
-                fishingUsers.Remove(ctx.User.Id);
+                fishingUsers.Remove(fishingUser);
                 return;
             }
 
@@ -78,9 +78,9 @@ namespace Discord_Bot.Commands.Slash
 
                 if (reaction.TimedOut)
                 {
-                    await StatsHandler.IncreaseStats(ctx.User.Id, "FishBreakoffs");
+                    await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "FishBreakoffs");
                     await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"❌ {ctx.User.Mention} Ryba uciekła!"));
-                    fishingUsers.Remove(ctx.User.Id);
+                    fishingUsers.Remove(fishingUser);
                     return;
                 }
 
@@ -95,10 +95,10 @@ namespace Discord_Bot.Commands.Slash
             }
             await message.DeleteAsync();
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"✅ Gratulacje {ctx.User.Mention}! Złowiłeś {fish.Name} o wadze {weight}kg!"));
-            await inventoryManager.SaveFishToInventory(ctx.User.Id, fish.Name, weight, fish.BasePrice);
-            await StatsHandler.CalculateHeaviestFish(ctx.User.Id, fish.Name, weight, fish.BasePrice);
-            await StatsHandler.IncreaseStats(ctx.User.Id, "FishCaught");
-            fishingUsers.Remove(ctx.User.Id);
+            await inventoryManager.SaveFishToInventory(ctx.Guild.Id, ctx.User.Id, fish.Name, weight, fish.BasePrice);
+            await StatsHandler.CalculateHeaviestFish(ctx.Guild.Id, ctx.User.Id, fish.Name, weight, fish.BasePrice);
+            await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "FishCaught");
+            fishingUsers.Remove(fishingUser);
 
         }
 
@@ -141,8 +141,8 @@ namespace Discord_Bot.Commands.Slash
         [Option("name", "Name of the fish to sell or 'all' to sell all fish.")] string fishName,
         [Option("amount", "Weight of the fish to sell ('heaviest', 'lightest', a specific weight, or 'all').")] string? amount = null)
         {
-            var userInventory = await inventoryManager.GetUserItems(ctx.User.Id);
-            var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{ctx.User.Id}.json") ?? new UserConfig();
+            var userInventory = await inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
+            var userData = await jsonReader.ReadJson<UserConfig>(UserDataPaths.GetUserConfigPath(Program.serverConfigPath, ctx.Guild.Id, ctx.User.Id)) ?? new UserConfig();
 
             if (userInventory.Fish == null || userInventory.Fish.Count == 0)
             {
@@ -213,8 +213,8 @@ namespace Discord_Bot.Commands.Slash
             currentPoints += totalPrice;
             userData.Points = (uint)currentPoints;
 
-            await jsonWriter.UpdateUserConfig(ctx.User.Id, "Points", userData.Points);
-            await inventoryManager.UpdateUserItems(ctx.User.Id, userInventory);
+            await jsonWriter.UpdateUserConfig(ctx.Guild.Id, ctx.User.Id, "Points", userData.Points);
+            await inventoryManager.UpdateUserItems(ctx.Guild.Id, ctx.User.Id, userInventory);
 
             await ctx.CreateResponseAsync($"✅ Sprzedano {fishSoldCount} ryb(y) za {totalPrice} punktów!");
         }

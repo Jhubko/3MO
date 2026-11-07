@@ -22,13 +22,14 @@ namespace Discord_Bot.Commands.Slash
             BaseAddress = new Uri("https://pokeapi.co/api/v2/"),
             Timeout = TimeSpan.FromSeconds(15)
         };
-        private static readonly ConcurrentDictionary<ulong, byte> activeEncounters = new();
+        private static readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), byte> activeEncounters = new();
         private readonly InventoryManager inventoryManager = new();
 
         [SlashCommand("pokemonencounter", "Spotkaj losowego Pokémona i wybierz Poké Balla podczas spotkania.")]
         public async Task PokemonEncounter(InteractionContext ctx)
         {
-            if (!activeEncounters.TryAdd(ctx.User.Id, 0))
+            var encounterKey = (GuildId: ctx.Guild.Id, UserId: ctx.User.Id);
+            if (!activeEncounters.TryAdd(encounterKey, 0))
             {
                 await ctx.CreateResponseAsync("Masz już aktywne spotkanie z Pokémonem.", true);
                 return;
@@ -37,7 +38,7 @@ namespace Discord_Bot.Commands.Slash
             try
             {
                 await ctx.DeferAsync();
-                var inventory = await inventoryManager.GetUserItems(ctx.User.Id);
+                var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
                 var ballsRemaining = PokemonService.Pokeballs.ToDictionary(
                     ball => ball,
                     ball => GetPokeballCount(inventory, ball.Name));
@@ -135,13 +136,13 @@ namespace Discord_Bot.Commands.Slash
                             SpriteUrl = pokemon.SpriteUrl,
                             CaughtAt = DateTime.UtcNow
                         });
-                        await inventoryManager.UpdateUserItems(ctx.User.Id, inventory);
+                        await inventoryManager.UpdateUserItems(ctx.Guild.Id, ctx.User.Id, inventory);
                         await message.DeleteAsync();
                         await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"✅ {ctx.User.Mention} złapał(a) **{pokemon.Name}** używając **{selectedBall.Name}**! Sprawdź kolekcję komendą `/pokedex`."));
                         return;
                     }
 
-                    await inventoryManager.UpdateUserItems(ctx.User.Id, inventory);
+                    await inventoryManager.UpdateUserItems(ctx.Guild.Id, ctx.User.Id, inventory);
                     await message.DeleteAsync();
                     if (ballsRemaining.Values.All(count => count == 0))
                     {
@@ -158,7 +159,7 @@ namespace Discord_Bot.Commands.Slash
             }
             finally
             {
-                activeEncounters.TryRemove(ctx.User.Id, out _);
+                activeEncounters.TryRemove(encounterKey, out _);
             }
         }
 
@@ -169,7 +170,7 @@ namespace Discord_Bot.Commands.Slash
             long page = 1)
         {
             ulong userId = user?.Id ?? ctx.User.Id;
-            var inventory = await inventoryManager.GetUserItems(userId);
+            var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, userId);
             if (inventory.Pokemons.Count == 0)
             {
                 await ctx.CreateResponseAsync($"{user?.Username ?? ctx.User.Username} nie ma jeszcze żadnego Pokémona.", true);
@@ -294,7 +295,7 @@ namespace Discord_Bot.Commands.Slash
             await InventoryManager.InventoryTransactionSemaphore.WaitAsync();
             try
             {
-                var inventory = await inventoryManager.GetUserItems(ctx.User.Id);
+                var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
                 var duplicates = inventory.Pokemons.Where(pokemon => pokemon.PokedexId == pokedexId).ToList();
                 if (duplicates.Count < 2)
                 {
@@ -311,7 +312,7 @@ namespace Discord_Bot.Commands.Slash
 
                 inventory.Pokemons.Remove(duplicates[^1]);
                 inventory.Items[PokemonService.Pokeballs[0].Name] = pokeballCount + 1;
-                await inventoryManager.UpdateUserItems(ctx.User.Id, inventory);
+                await inventoryManager.UpdateUserItems(ctx.Guild.Id, ctx.User.Id, inventory);
                 await ctx.CreateResponseAsync($"Wymieniono jednego duplikata **#{pokedexId} {duplicates[0].Name}** na **1 Poké Ball**.");
             }
             finally
@@ -325,7 +326,7 @@ namespace Discord_Bot.Commands.Slash
             [Autocomplete(typeof(PokemonInventoryAutocomplete))]
             [Option("pokemon", "Wybierz Pokémona ze swojej kolekcji po nazwie lub numerze.")] string pokemonQuery)
         {
-            var inventory = await inventoryManager.GetUserItems(ctx.User.Id);
+            var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
             PokemonInventoryItem? ownedPokemon = int.TryParse(pokemonQuery, out int pokedexId)
                 ? inventory.Pokemons.FirstOrDefault(pokemon => pokemon.PokedexId == pokedexId)
                 : inventory.Pokemons.FirstOrDefault(pokemon => pokemon.Name.Equals(pokemonQuery, StringComparison.OrdinalIgnoreCase));

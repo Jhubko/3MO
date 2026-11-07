@@ -33,3 +33,7 @@ start "" Discord_Bot.exe
 
 echo Done!
 exit
+
+:dirty
+echo ERROR: Local changes or untracked files found. Commit or stash them before updating.
+exit /b 1

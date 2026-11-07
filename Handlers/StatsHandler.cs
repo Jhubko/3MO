@@ -6,17 +6,17 @@ using System.Text.RegularExpressions;
 
 class StatsHandler
 {
-    private readonly static string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
+    private static readonly string folderPath = Path.Combine(Program.serverConfigPath, "user_points");
     private static readonly JSONReader jsonReader = new();
     private static readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
-    public async static Task<UserConfig> LoadUserStats(ulong userId)
+    public static async Task<UserConfig> LoadUserStats(ulong guildId, ulong userId)
     {
-        return await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
+        return await jsonReader.ReadJson<UserConfig>(UserDataPaths.GetUserConfigPath(Program.serverConfigPath, guildId, userId)) ?? throw new InvalidOperationException("UserConfig cannot be null");
     }
 
-    public async static Task IncreaseStats(ulong userId, string statToChange, uint points = 0)
+    public async static Task IncreaseStats(ulong guildId, ulong userId, string statToChange, uint points = 0)
     {
-        var userconfig = await LoadUserStats(userId);
+        var userconfig = await LoadUserStats(guildId, userId);
         Type type = typeof(UserConfig);
         PropertyInfo? stat = type.GetProperty(statToChange);
 
@@ -24,12 +24,12 @@ class StatsHandler
         {
             uint currentValue = (uint)(stat.GetValue(userconfig) ?? 0);
             if (statToChange.Contains("Wins") && statToChange != "Wins")
-                await IncreaseStats(userId, "Wins");
+                await IncreaseStats(guildId, userId, "Wins");
             if (statToChange.Contains("Losses") && statToChange != "Losses")
-                await IncreaseStats(userId, "Losses");
+                await IncreaseStats(guildId, userId, "Losses");
 
             uint newValue = currentValue + (points != 0 ? points : 1);
-            await jsonWriter.UpdateUserConfig(userId, statToChange, newValue);
+            await jsonWriter.UpdateUserConfig(guildId, userId, statToChange, newValue);
         }
     }
     public static string AddSpacesBeforeCapitalLetters(string input)
@@ -46,8 +46,11 @@ class StatsHandler
     {
         var users = new List<UserPoints>();
         var validUserIds = guild.Members.Keys;
+        string guildFolder = Path.Combine(folderPath, guild.Id.ToString());
+        if (!Directory.Exists(guildFolder))
+            return users;
 
-        foreach (var file in Directory.GetFiles(folderPath, "*.json"))
+        foreach (var file in Directory.GetFiles(guildFolder, "*.json"))
         {
             var filename = Path.GetFileNameWithoutExtension(file);
             if (filename.Contains('_')) continue;
@@ -84,9 +87,9 @@ class StatsHandler
     }
 
 
-    public async static Task CalculateHeaviestFish(ulong userId, string fishName, double weight, int basePrice)
+    public async static Task CalculateHeaviestFish(ulong guildId, ulong userId, string fishName, double weight, int basePrice)
     {
-        var userConfig = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
+        var userConfig = await jsonReader.ReadJson<UserConfig>(UserDataPaths.GetUserConfigPath(Program.serverConfigPath, guildId, userId)) ?? throw new InvalidOperationException("UserConfig cannot be null");
         double currentHeaviestFish = userConfig.HeaviestFish?.Weight ?? 0;
         int price = (int)(basePrice * (weight / 2));
 
@@ -99,7 +102,7 @@ class StatsHandler
 
         if (currentHeaviestFish == 0 || newFish.Weight > currentHeaviestFish)
         {
-            await jsonWriter.UpdateUserConfig(userId, "HeaviestFish", newFish);
+            await jsonWriter.UpdateUserConfig(guildId, userId, "HeaviestFish", newFish);
             return;
         }
     }
