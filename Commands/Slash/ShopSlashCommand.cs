@@ -1,3 +1,4 @@
+using System.Numerics;
 using Discord_Bot.Config;
 using Discord_Bot.Handlers;
 using Discord_Bot.other;
@@ -14,8 +15,16 @@ namespace Discord_Bot.Commands.Slash
         [SlashCommand("buy", "Buy an item from the shop.")]
         public async Task BuyItem(InteractionContext ctx,
             [Autocomplete(typeof(ShopItemAutocomplete))]
-            [Option("item", "Wybierz przedmiot ze sklepu do kupienia.")] string itemName)
+            [Option("item", "Wybierz przedmiot ze sklepu do kupienia.")] string itemName,
+            [Option("amount", "Ile sztuk kupić (domyślnie 1).")]
+            long amount = 1)
         {
+            if (amount <= 0)
+            {
+                await ctx.CreateResponseAsync("Liczba kupowanych przedmiotów musi być większa od zera.", true);
+                return;
+            }
+
             ulong userId = ctx.User.Id;
             var userData = await jsonReader.ReadJson<UserConfig>(UserDataPaths.GetUserConfigPath(Program.serverConfigPath, ctx.Guild.Id, userId)) ?? new UserConfig();
             var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
@@ -34,21 +43,25 @@ namespace Discord_Bot.Commands.Slash
             uint currentPoints = userData.Points;
             var inventory = await inventoryManager.GetUserItems(ctx.Guild.Id, userId);
             uint itemCount = inventory.Items.TryGetValue(itemName, out uint value) ? value : 0;
-            uint itemCost = pokeball != null ? pokeball.Price : item.BaseCost * (itemCount + 1);
-
-            if (currentPoints < itemCost)
+            if ((ulong)amount > uint.MaxValue - itemCount)
             {
-                await ctx.CreateResponseAsync($"Nie masz wystarczającej ilości punktów, aby kupić {itemName}. Potrzebujesz {itemCost} punktów.", true);
+                await ctx.CreateResponseAsync("Nie możesz mieć więcej niż 4 294 967 295 sztuk tego przedmiotu.", true);
                 return;
             }
 
-            currentPoints -= itemCost;
-            userData.Points = currentPoints;
+            BigInteger quantity = amount;
+            BigInteger totalCost = pokeball != null
+                ? (BigInteger)pokeball.Price * quantity
+                : (BigInteger)item.BaseCost * quantity * (2 * (BigInteger)itemCount + quantity + 1) / 2;
 
-            if (inventory.Items.TryGetValue(itemName, out uint itemValue))
-                inventory.Items[itemName] = ++itemValue;
-            else
-                inventory.Items[itemName] = 1;
+            if (totalCost > currentPoints)
+            {
+                await ctx.CreateResponseAsync($"Nie masz wystarczającej ilości punktów, aby kupić {amount} × {itemName}. Potrzebujesz {totalCost} punktów.", true);
+                return;
+            }
+
+            userData.Points = currentPoints - (uint)totalCost;
+            inventory.Items[itemName] = itemCount + (uint)amount;
 
             await jsonWriter.UpdateUserConfig(ctx.Guild.Id, userId, "Points", userData.Points);
             await inventoryManager.UpdateUserItems(ctx.Guild.Id, userId, inventory);
@@ -56,7 +69,7 @@ namespace Discord_Bot.Commands.Slash
             var embedBuy = new DiscordEmbedBuilder
             {
                 Title = "💰 Nowy zakup 💰",
-                Description = $"{ctx.User.Mention} kupił **{itemName}**! Ma teraz {inventory.Items[itemName]} sztuk {itemName}.",
+                Description = $"{ctx.User.Mention} kupił **{amount} × {itemName}**! Ma teraz {inventory.Items[itemName]} sztuk {itemName}.",
                 Color = DiscordColor.Blurple
             };
             await ctx.CreateResponseAsync(embed: embedBuy);

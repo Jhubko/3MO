@@ -49,7 +49,7 @@ namespace Discord_Bot.other
         {
             Color = DiscordColor.Gold,
             Title = "Shop Commands",
-            Description = "**/buy** - Kup przedmiot ze sklepu (Poké Ball 1000, Great Ball 5000, Ultra Ball 10000, Master Ball 20000 punktów)\n" +
+            Description = "**/buy** - Kup przedmiot ze sklepu; opcjonalnie ustaw liczbę w parametrze `amount` (domyślnie 1). Cena zwykłych przedmiotów rośnie z każdą kupioną sztuką.\n" +
                   "**/shop** - Wyświetl listę dostępnych przedmiotów w sklepie\n" +
                   "**/items** - Sprawdź swoje przedmioty i ryby\n" +
                   "**/pokedex** - Wyświetl złapane Pokémony w siatce 3×3 z przyciskiem następnej strony\n" +
