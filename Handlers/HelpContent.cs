@@ -138,10 +138,11 @@ namespace Discord_Bot.other
                 "**/resume**  -> Wznawia muzykę\n" +
                 "**/stop**  -> Całkowicie zatrzymuje muzykę\n" +
                 "**/skip**  -> Pomija aktualnie grany utwór\n" +
+                "**/nowplaying**  -> Wyświetla aktualnie odtwarzany utwór\n" +
                 "**/queue**  -> Wyświetla kolejkę odtwarzania\n" +
                 "**/position**  -> Wyświetla aktualny czas utworu\n" +
                 "**/volume**  -> Ustawia głośność 0–1000%\n" +
-                "**/shuffle**  -> Zmienia kolejność playlisty"
+                "**/shuffle**  -> Losowo miesza kolejkę; jej kolejność jest widoczna w /queue"
         };
     }
 }
