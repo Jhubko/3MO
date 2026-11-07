@@ -20,7 +20,7 @@ namespace Discord_Bot.other
             var pool = serverConfig.RafflePool;
             if (pool == 0)
             {
-                if (raffleCommand.IsRaffleActive())
+                if (raffleCommand.IsRaffleActive(guild))
                 {
                     await raffleCommand.EndRaffle(ctx);
                 }
@@ -43,7 +43,7 @@ namespace Discord_Bot.other
             if (ctx == null)
                 return;
 
-            if (raffleCommand.IsRaffleActive())
+            if (raffleCommand.IsRaffleActive(guild))
                 await raffleCommand.EndRaffle(ctx);
 
             await raffleCommand.StartRaffle(ctx);

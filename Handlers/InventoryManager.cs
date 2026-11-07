@@ -8,11 +8,11 @@ namespace Discord_Bot.Handlers
     {
         public static SemaphoreSlim InventoryTransactionSemaphore { get; } = new(1, 1);
         private static readonly JSONReader jsonReader = new();
-        private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
-        public async Task<UserInventory> GetUserItems(ulong userId)
+        public async Task<UserInventory> GetUserItems(ulong guildId, ulong userId)
         {
-            string userFilePath = $"{folderPath}\\{userId}_Items.json";
+            string userFilePath = UserDataPaths.GetInventoryPath(Program.serverConfigPath, guildId, userId);
+            Directory.CreateDirectory(Path.GetDirectoryName(userFilePath)!);
             if (!File.Exists(userFilePath))
             {
                 var defaultInventory = new UserInventory
@@ -41,7 +41,7 @@ namespace Discord_Bot.Handlers
             bool hasPokemonWithoutId = userData["Pokemons"] is JArray pokemonData
                 && pokemonData.Any(pokemon => string.IsNullOrWhiteSpace(pokemon["Id"]?.Value<string>()));
             if (hasPokemonWithoutId)
-                await UpdateUserItems(userId, inventory);
+                await UpdateUserItems(guildId, userId, inventory);
 
             return inventory;
         }
@@ -62,9 +62,10 @@ namespace Discord_Bot.Handlers
             }
         }
 
-        public async Task UpdateUserItems(ulong userId, UserInventory inventory)
+        public async Task UpdateUserItems(ulong guildId, ulong userId, UserInventory inventory)
         {
-            string userFilePath = $"{folderPath}\\{userId}_Items.json";
+            string userFilePath = UserDataPaths.GetInventoryPath(Program.serverConfigPath, guildId, userId);
+            Directory.CreateDirectory(Path.GetDirectoryName(userFilePath)!);
 
             var newData = new JObject
             {
@@ -77,16 +78,16 @@ namespace Discord_Bot.Handlers
             await File.WriteAllTextAsync(userFilePath, jsonString);
         }
 
-        public async Task UpdateUserItem(ulong userId, string item, uint amount)
+        public async Task UpdateUserItem(ulong guildId, ulong userId, string item, uint amount)
         {
-            var inventory = await GetUserItems(userId);
+            var inventory = await GetUserItems(guildId, userId);
             if (inventory.Items.ContainsKey(item))
                 inventory.Items[item] += amount;
             else
                 inventory.Items[item] = amount;
-            await UpdateUserItems(userId, inventory);
+            await UpdateUserItems(guildId, userId, inventory);
         }
-        public async Task SaveFishToInventory(ulong userId, string fishName, double weight, int basePrice)
+        public async Task SaveFishToInventory(ulong guildId, ulong userId, string fishName, double weight, int basePrice)
         {
             int price = (int)(basePrice * (weight / 2));
             var newFish = new FishItem
@@ -96,11 +97,11 @@ namespace Discord_Bot.Handlers
                 Price = price
             };
 
-            var userInventory = await GetUserItems(userId);
+            var userInventory = await GetUserItems(guildId, userId);
             var fishList = userInventory.Fish ?? [];
             fishList.Add(newFish);
             userInventory.Fish = fishList;
-            await UpdateUserItems(userId, userInventory);
+            await UpdateUserItems(guildId, userId, userInventory);
         }
 
     }

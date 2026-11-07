@@ -398,7 +398,7 @@ namespace Discord_Bot.Commands.Slash
 
             try
             {
-                await RemoveItemFromAllUsers(name);
+                await RemoveItemFromAllUsers(ctx.Guild.Id, name);
             }
             catch (Exception ex)
             {
@@ -474,27 +474,23 @@ namespace Discord_Bot.Commands.Slash
         }
 
 
-        private async Task RemoveItemFromAllUsers(string itemName)
+        private async Task RemoveItemFromAllUsers(ulong guildId, string itemName)
         {
-            var files = Directory.GetFiles($"{Program.serverConfigPath}\\user_points", "*_Items.json");
+            string guildFolder = Path.Combine(Program.serverConfigPath, "user_points", guildId.ToString());
+            if (!Directory.Exists(guildFolder))
+                return;
 
+            var files = Directory.GetFiles(guildFolder, "*_Items.json");
             foreach (var file in files)
             {
                 var fileName = Path.GetFileNameWithoutExtension(file);
                 if (!ulong.TryParse(fileName.Replace("_Items", ""), out var userId))
                     continue;
 
-                var inventory = await inventoryManager.GetUserItems(userId);
+                var inventory = await inventoryManager.GetUserItems(guildId, userId);
 
                 if (inventory.Items.Remove(itemName))
-                {
-                    var json = JObject.FromObject(new
-                    {
-                        inventory.Fish,
-                        inventory.Items
-                    });
-                    await File.WriteAllTextAsync(file, json.ToString());
-                }
+                    await inventoryManager.UpdateUserItems(guildId, userId, inventory);
             }
         }
     }

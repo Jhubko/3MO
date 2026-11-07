@@ -68,11 +68,11 @@ namespace Discord_Bot.Commands.Slash
             if (input == game.WordToGuess)
             {
                 ulong userId = ctx.User.Id;
-                uint currentPoints = await Program.voicePointsManager.GetUserPoints(userId);
+                uint currentPoints = await Program.voicePointsManager.GetUserPoints(ctx.Guild.Id, userId);
                 await ctx.CreateResponseAsync($"🎉 {ctx.User.Mention} guessed the word **{game.WordToGuess}** and won **{CalculatePoints(game.GuessedWords)}** points! \n{GetGameState(ctx.Channel.Id)}");
                 currentPoints += CalculatePoints(game.GuessedWords);
-                Program.voicePointsManager.SaveUserPoints(userId, currentPoints);
-                await StatsHandler.IncreaseStats(ctx.User.Id, "WordleWins");
+                await Program.voicePointsManager.SaveUserPoints(ctx.Guild.Id, userId, currentPoints);
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "WordleWins");
                 activeTimers[ctx.Channel.Id].Cancel();
                 activeTimers[ctx.Channel.Id].Dispose();
                 activeTimers.Remove(ctx.Channel.Id);
@@ -82,7 +82,7 @@ namespace Discord_Bot.Commands.Slash
             else if (game.GuessedWords.Count >= totalGuesses)
             {
                 await ctx.CreateResponseAsync($"💀 You lost! The word is: **{game.WordToGuess}**  \n{GetGameState(ctx.Channel.Id)}");
-                await StatsHandler.IncreaseStats(ctx.User.Id, "WordleLosses");
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, ctx.User.Id, "WordleLosses");
                 activeTimers[ctx.Channel.Id].Cancel();
                 activeTimers[ctx.Channel.Id].Dispose();
                 activeTimers.Remove(ctx.Channel.Id);

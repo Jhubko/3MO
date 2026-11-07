@@ -50,7 +50,7 @@ namespace Discord_Bot.other
         {
             var shop = await _jsonReader.ReadJson<ServerConfigShop>(
                 $"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? new ServerConfigShop();
-            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            var inventory = await _inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
             string userInput = ctx.OptionValue?.ToString() ?? "";
 
             var regularItems = shop.ShopItems
@@ -63,7 +63,7 @@ namespace Discord_Bot.other
             var pokeballs = PokemonService.Pokeballs
                 .Select(ball => new { ball.Name, Cost = (ulong)ball.Price });
 
-            return regularItems.Concat(pokeballs)
+            return regularItems.AsEnumerable().Concat(pokeballs)
                 .Where(item => item.Name.Contains(userInput, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
                 .Take(25)
@@ -77,7 +77,7 @@ namespace Discord_Bot.other
 
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
-            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            var inventory = await _inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
             string userInput = ctx.OptionValue?.ToString() ?? "";
 
             return inventory.Pokemons
@@ -99,7 +99,7 @@ namespace Discord_Bot.other
 
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
-            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            var inventory = await _inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
             string userInput = ctx.OptionValue?.ToString() ?? "";
 
             return inventory.Pokemons
@@ -122,7 +122,7 @@ namespace Discord_Bot.other
 
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
-            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            var inventory = await _inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
             string userInput = ctx.OptionValue?.ToString() ?? "";
 
             var itemChoices = inventory.Items
@@ -147,7 +147,7 @@ namespace Discord_Bot.other
 
         public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
-            var userInventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            var userInventory = await _inventoryManager.GetUserItems(ctx.Guild.Id, ctx.User.Id);
 
             if (userInventory?.Fish == null || userInventory.Fish.Count == 0)
             {

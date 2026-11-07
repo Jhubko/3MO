@@ -14,7 +14,6 @@ namespace Discord_Bot.Commands.Slash
         private const int DefaultPool = 2000;
         private static readonly JSONReader jsonReader = new();
         private readonly JSONWriter jsonWriter = new(jsonReader, "config.json", Program.serverConfigPath);
-        private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
         [SlashCommand("checkSlotsChances", "Check the chances of winning the slots game!")]
         public async Task CheckSlotsChances(InteractionContext ctx)
@@ -44,7 +43,7 @@ namespace Discord_Bot.Commands.Slash
         public async Task Slots(InteractionContext ctx)
         {
             ulong userId = ctx.User.Id;
-            var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? throw new InvalidOperationException("UserConfig cannot be null");
+            var userData = await jsonReader.ReadJson<UserConfig>(UserDataPaths.GetUserConfigPath(Program.serverConfigPath, ctx.Guild.Id, userId)) ?? throw new InvalidOperationException("UserConfig cannot be null");
             uint currentPoints = userData.Points;
 
             if (currentPoints < BetAmount)
@@ -104,7 +103,7 @@ namespace Discord_Bot.Commands.Slash
             }
 
             currentPoints -= BetAmount;
-            await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints);
+            await jsonWriter.UpdateUserConfig(ctx.Guild.Id, userId, "Points", currentPoints);
 
             var serverConfig = await jsonReader.ReadJson<ServerConfig>($"{Program.serverConfigPath}\\{ctx.Guild.Id}.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
             var slotsPool = serverConfig.SlotsPool;
@@ -118,15 +117,15 @@ namespace Discord_Bot.Commands.Slash
             {
                 uint winAmount = serverConfig.SlotsPool;
                 currentPoints += winAmount;
-                await StatsHandler.IncreaseStats(userId, "SlotsWins");
-                await StatsHandler.IncreaseStats(userId, "WonPoints", winAmount);
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "SlotsWins");
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "WonPoints", winAmount);
                 await jsonWriter.UpdateServerConfig(ctx.Guild.Id, "SlotsPool", DefaultPool);
-                await jsonWriter.UpdateUserConfig(userId, "Points", currentPoints);
+                await jsonWriter.UpdateUserConfig(ctx.Guild.Id, userId, "Points", currentPoints);
             }
             else
             {
-                await StatsHandler.IncreaseStats(userId, "SlotsLosses");
-                await StatsHandler.IncreaseStats(userId, "LostPoints", BetAmount);
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "SlotsLosses");
+                await StatsHandler.IncreaseStats(ctx.Guild.Id, userId, "LostPoints", BetAmount);
             }
 
             var embed = new DiscordEmbedBuilder
