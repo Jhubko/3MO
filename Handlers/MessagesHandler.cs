@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Exceptions;
 using System.Threading.Channels;
 
 namespace Discord_Bot.other
@@ -13,13 +14,30 @@ namespace Discord_Bot.other
 
         public static async Task DeleteUnwantedMessage(MessageReactionAddEventArgs args, DiscordEmoji emoji)
         {
-            var message = await args.Channel.GetMessageAsync(args.Message.Id);
+            DiscordMessage? message;
+            try
+            {
+                message = await args.Channel.GetMessageAsync(args.Message.Id);
+            }
+            catch (NotFoundException)
+            {
+                return;
+            }
+
             if (message == null)
                 return;
-            var deleteMessageReactions = await args.Message.GetReactionsAsync(emoji);
-            var mentionAuthor = message.Author.Mention;
-            bool adminReaction = false;
 
+            IReadOnlyList<DiscordUser> deleteMessageReactions;
+            try
+            {
+                deleteMessageReactions = await message.GetReactionsAsync(emoji);
+            }
+            catch (NotFoundException)
+            {
+                return;
+            }
+
+            bool adminReaction = false;
             foreach (var user in deleteMessageReactions)
             {
                 var member = await args.Guild.GetMemberAsync(user.Id);
@@ -33,8 +51,16 @@ namespace Discord_Bot.other
 
             if (deleteMessageReactions.Count >= 2 || (deleteMessageReactions.Count == 1 && adminReaction))
             {
-                await args.Channel.SendMessageAsync($"{mentionAuthor} Your message was deleted in vote");
-                await args.Message.DeleteAsync();
+                try
+                {
+                    await message.DeleteAsync();
+                }
+                catch (NotFoundException)
+                {
+                    return;
+                }
+
+                await args.Channel.SendMessageAsync($"{message.Author.Mention} Your message was deleted in vote");
             }
         }
         public static async Task DeleteBotMessages()
