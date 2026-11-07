@@ -59,7 +59,7 @@
 ## 🛍️ Shop and Inventory
 
 - Browse server shop items and your next prices with `/shop`.
-- Buy an item with `/buy`; repeat purchases of regular items increase their price.
+- Buy an item with `/buy` and set the optional `amount` to purchase multiple copies at once (defaults to 1); regular items increase in price with each copy purchased.
 - View your items and fish with `/items`; view Pokémon separately with `/pokedex`.
 - Create or remove server shop items with `/createShopItem` and `/removeShopItem`.
 - Send items or an individual Pokémon to another player with `/giveitem`.
