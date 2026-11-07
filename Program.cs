@@ -17,6 +17,7 @@ using Lavalink4NET.DSharpPlus;
 using Lavalink4NET.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 
@@ -127,10 +128,12 @@ namespace Discord_Bot
             SlashCommandConfig.RegisterCommands<SlotsCommand>();
             SlashCommandConfig.RegisterCommands<CitySlashCommands>();
             SlashCommandConfig.RegisterCommands<GivePointsCommand>();
+            SlashCommandConfig.RegisterCommands<GiveItemsCommand>();
             SlashCommandConfig.RegisterCommands<ShopCommand>();
             SlashCommandConfig.RegisterCommands<HangmanCommands>();
             SlashCommandConfig.RegisterCommands<WordleCommands>();
             SlashCommandConfig.RegisterCommands<FishingCommand>();
+            SlashCommandConfig.RegisterCommands<PokemonCommand>();
 
             await Client.ConnectAsync();
 
@@ -233,6 +236,48 @@ namespace Discord_Bot
 
         private static async Task Client_ComponentInteractionCreated(DiscordClient sender, ComponentInteractionCreateEventArgs args)
         {
+            if (args.Interaction.Data.CustomId?.StartsWith("pokedex:", StringComparison.Ordinal) == true)
+            {
+                string[] parts = args.Interaction.Data.CustomId.Split(':');
+                if (parts.Length != 4
+                    || !ulong.TryParse(parts[1], out ulong requesterId)
+                    || !ulong.TryParse(parts[2], out ulong collectionUserId)
+                    || !int.TryParse(parts[3], NumberStyles.None, CultureInfo.InvariantCulture, out int page))
+                {
+                    await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                        new DiscordInteractionResponseBuilder().WithContent("Nieprawidłowy przycisk Pokédexu.").AsEphemeral());
+                    return;
+                }
+
+                if (args.Interaction.User.Id != requesterId)
+                {
+                    await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                        new DiscordInteractionResponseBuilder().WithContent("Tylko osoba, która otworzyła ten Pokédex, może zmieniać strony.").AsEphemeral());
+                    return;
+                }
+
+                var pokemonInventory = await inventoryManager.GetUserItems(collectionUserId);
+                if (pokemonInventory.Pokemons.Count == 0)
+                {
+                    await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                        new DiscordInteractionResponseBuilder().WithContent("Ta kolekcja nie zawiera już Pokémonów. Uruchom ponownie `/pokedex`.").AsEphemeral());
+                    return;
+                }
+
+                int totalPages = (int)Math.Ceiling(pokemonInventory.Pokemons.Select(pokemon => pokemon.PokedexId).Distinct().Count() / 9.0);
+                page = Math.Clamp(page, 1, totalPages);
+                var (image, message) = await PokemonCommand.BuildPokedexPageAsync(
+                    pokemonInventory,
+                    (await sender.GetUserAsync(collectionUserId)).Username,
+                    requesterId,
+                    collectionUserId,
+                    page);
+                using (image)
+                    await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
+                        new DiscordInteractionResponseBuilder(message));
+                return;
+            }
+
             var backButton = new DiscordButtonComponent(ButtonStyle.Primary, "backButton", "Back");
             var fishList = await inventoryManager.LoadFishDataAsync(args.Guild.Id);
 

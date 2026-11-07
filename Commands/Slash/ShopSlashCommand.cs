@@ -1,5 +1,6 @@
 using Discord_Bot.Config;
 using Discord_Bot.Handlers;
+using Discord_Bot.other;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 namespace Discord_Bot.Commands.Slash
@@ -12,13 +13,18 @@ namespace Discord_Bot.Commands.Slash
         private readonly InventoryManager inventoryManager = new();
 
         [SlashCommand("buy", "Buy an item from the shop.")]
-        public async Task BuyItem(InteractionContext ctx, [Option("item", "The name of the item to buy")] string itemName)
+        public async Task BuyItem(InteractionContext ctx,
+            [Autocomplete(typeof(ShopItemAutocomplete))]
+            [Option("item", "Wybierz przedmiot ze sklepu do kupienia.")] string itemName)
         {
             ulong userId = ctx.User.Id;
             var userData = await jsonReader.ReadJson<UserConfig>($"{folderPath}\\{userId}.json") ?? new UserConfig();
             var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
 
-            var item = serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+            var pokeball = PokemonService.FindPokeball(itemName);
+            var item = pokeball != null
+                ? new ShopItem { Name = pokeball.Name, Description = $"Mnożnik szansy złapania: {pokeball.CatchMultiplier:0.#}x.", BaseCost = pokeball.Price, PassivePointsIncrease = 0 }
+                : serverConfig.ShopItems.FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.OrdinalIgnoreCase));
             if (item == null)
             {
                 await ctx.CreateResponseAsync($"Item '{itemName}' not found in the shop.", true);
@@ -29,7 +35,7 @@ namespace Discord_Bot.Commands.Slash
             uint currentPoints = userData.Points;
             var inventory = await inventoryManager.GetUserItems(userId);
             uint itemCount = inventory.Items.TryGetValue(itemName, out uint value) ? value : 0;
-            uint itemCost = item.BaseCost * (itemCount + 1);
+            uint itemCost = pokeball != null ? pokeball.Price : item.BaseCost * (itemCount + 1);
 
             if (currentPoints < itemCost)
             {
@@ -64,18 +70,14 @@ namespace Discord_Bot.Commands.Slash
             var serverConfig = await jsonReader.ReadJson<ServerConfigShop>($"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? throw new InvalidOperationException("ServerConfigShop cannot be null");
             var inventory = await inventoryManager.GetUserItems(ctx.User.Id);
 
-            if (serverConfig.ShopItems == null || serverConfig.ShopItems.Count == 0)
-            {
-                await ctx.CreateResponseAsync("The shop is currently empty.", true);
-                return;
-            }
+            var shopItems = serverConfig.ShopItems
+                .Where(i => PokemonService.FindPokeball(i.Name) == null)
+                .Select(i => (i.Name, i.Description, Cost: i.BaseCost * (inventory.Items.TryGetValue(i.Name, out uint count) ? count + 1 : 1)))
+                .Concat(PokemonService.Pokeballs.Select(ball =>
+                    (ball.Name, Description: $"Mnożnik szansy złapania: {ball.CatchMultiplier:0.#}x.", Cost: ball.Price)));
 
-            var itemsList = string.Join("\n", serverConfig.ShopItems.Select(i =>
-            {
-                uint itemCount = inventory.Items.TryGetValue(i.Name, out uint value) ? value : 0;
-                uint nextItemCost = i.BaseCost * (itemCount + 1);
-                return $"**{i.Name}** - {nextItemCost} punktów" + (i.Description != null ? $" - {i.Description}" : "");
-            }));
+            var itemsList = string.Join("\n", shopItems.Select(i =>
+                $"**{i.Name}** - {i.Cost} punktów - {i.Description}"));
 
             var embedShopList = new DiscordEmbedBuilder
             {

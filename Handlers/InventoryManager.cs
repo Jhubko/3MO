@@ -6,6 +6,7 @@ namespace Discord_Bot.Handlers
 {
     public class InventoryManager
     {
+        public static SemaphoreSlim InventoryTransactionSemaphore { get; } = new(1, 1);
         private static readonly JSONReader jsonReader = new();
         private readonly string folderPath = $"{Program.globalConfig.ConfigPath}\\user_points";
 
@@ -17,23 +18,32 @@ namespace Discord_Bot.Handlers
                 var defaultInventory = new UserInventory
                 {
                     Fish = [],
-                    Items = []
+                    Items = [],
+                    Pokemons = []
                 };
                 var defaultJson = JObject.FromObject(new
                 {
                     defaultInventory.Fish,
-                    defaultInventory.Items
+                    defaultInventory.Items,
+                    defaultInventory.Pokemons
                 });
 
                 await File.WriteAllTextAsync(userFilePath, defaultJson.ToString());
             }
             var userData = await jsonReader.ReadJson<JObject>(userFilePath) ?? [];
-
-            return new UserInventory
+            var inventory = new UserInventory
             {
                 Fish = userData["Fish"]?.ToObject<List<FishItem>>() ?? [],
-                Items = userData["Items"]?.ToObject<Dictionary<string, uint>>() ?? []
+                Items = userData["Items"]?.ToObject<Dictionary<string, uint>>() ?? [],
+                Pokemons = userData["Pokemons"]?.ToObject<List<PokemonInventoryItem>>() ?? []
             };
+
+            bool hasPokemonWithoutId = userData["Pokemons"] is JArray pokemonData
+                && pokemonData.Any(pokemon => string.IsNullOrWhiteSpace(pokemon["Id"]?.Value<string>()));
+            if (hasPokemonWithoutId)
+                await UpdateUserItems(userId, inventory);
+
+            return inventory;
         }
         public async Task<List<Fish>> LoadFishDataAsync(ulong serverId)
         {
@@ -59,7 +69,8 @@ namespace Discord_Bot.Handlers
             var newData = new JObject
             {
                 ["Fish"] = JToken.FromObject(inventory.Fish),
-                ["Items"] = JToken.FromObject(inventory.Items)
+                ["Items"] = JToken.FromObject(inventory.Items),
+                ["Pokemons"] = JToken.FromObject(inventory.Pokemons)
             };
 
             string jsonString = newData.ToString();

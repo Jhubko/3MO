@@ -41,6 +41,106 @@ namespace Discord_Bot.other
         }
     }
 
+    public class ShopItemAutocomplete : IAutocompleteProvider
+    {
+        private static readonly JSONReader _jsonReader = new();
+        private readonly InventoryManager _inventoryManager = new();
+
+        public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+        {
+            var shop = await _jsonReader.ReadJson<ServerConfigShop>(
+                $"{Program.serverConfigPath}\\{ctx.Guild.Id}_shop.json") ?? new ServerConfigShop();
+            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            string userInput = ctx.OptionValue?.ToString() ?? "";
+
+            var regularItems = shop.ShopItems
+                .Where(item => PokemonService.FindPokeball(item.Name) == null)
+                .Select(item => new
+                {
+                    item.Name,
+                    Cost = (ulong)item.BaseCost * (inventory.Items.TryGetValue(item.Name, out uint count) ? (ulong)count + 1 : 1UL)
+                });
+            var pokeballs = PokemonService.Pokeballs
+                .Select(ball => new { ball.Name, Cost = (ulong)ball.Price });
+
+            return regularItems.Concat(pokeballs)
+                .Where(item => item.Name.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
+                .Take(25)
+                .Select(item => new DiscordAutoCompleteChoice($"{item.Name} — {item.Cost} punktów", item.Name));
+        }
+    }
+
+    public class PokemonInventoryAutocomplete : IAutocompleteProvider
+    {
+        private readonly InventoryManager _inventoryManager = new();
+
+        public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+        {
+            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            string userInput = ctx.OptionValue?.ToString() ?? "";
+
+            return inventory.Pokemons
+                .GroupBy(pokemon => pokemon.PokedexId)
+                .Select(group => group.First())
+                .Where(pokemon => pokemon.Name.Contains(userInput, StringComparison.OrdinalIgnoreCase)
+                    || pokemon.PokedexId.ToString().Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(pokemon => pokemon.PokedexId)
+                .Take(25)
+                .Select(pokemon => new DiscordAutoCompleteChoice(
+                    $"#{pokemon.PokedexId} {pokemon.Name}",
+                    pokemon.PokedexId.ToString()));
+        }
+    }
+
+    public class DuplicatePokemonAutocomplete : IAutocompleteProvider
+    {
+        private readonly InventoryManager _inventoryManager = new();
+
+        public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+        {
+            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            string userInput = ctx.OptionValue?.ToString() ?? "";
+
+            return inventory.Pokemons
+                .GroupBy(pokemon => pokemon.PokedexId)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.First())
+                .Where(pokemon => pokemon.Name.Contains(userInput, StringComparison.OrdinalIgnoreCase)
+                    || pokemon.PokedexId.ToString().Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(pokemon => pokemon.PokedexId)
+                .Take(25)
+                .Select(pokemon => new DiscordAutoCompleteChoice(
+                    $"#{pokemon.PokedexId} {pokemon.Name} (duplikaty)",
+                    pokemon.PokedexId.ToString()));
+        }
+    }
+
+    public class UserItemAutocomplete : IAutocompleteProvider
+    {
+        private readonly InventoryManager _inventoryManager = new();
+
+        public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+        {
+            var inventory = await _inventoryManager.GetUserItems(ctx.User.Id);
+            string userInput = ctx.OptionValue?.ToString() ?? "";
+
+            var itemChoices = inventory.Items
+                .Where(item => item.Value > 0 && item.Key.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(item => item.Key)
+                .Select(item => new DiscordAutoCompleteChoice($"{item.Key} (x{item.Value})", $"item:{item.Key}"));
+            var pokemonChoices = inventory.Pokemons
+                .Where(pokemon => pokemon.Name.Contains(userInput, StringComparison.OrdinalIgnoreCase)
+                    || pokemon.PokedexId.ToString().Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(pokemon => pokemon.PokedexId)
+                .Select(pokemon => new DiscordAutoCompleteChoice($"Pokémon #{pokemon.PokedexId} {pokemon.Name}", $"pokemon:{pokemon.Id}"));
+
+            return itemChoices.Concat(pokemonChoices)
+                .OrderBy(choice => choice.Name, StringComparer.OrdinalIgnoreCase)
+                .Take(25);
+        }
+    }
+
     public class FishAutocomplete : IAutocompleteProvider
     {
         private readonly InventoryManager _inventoryManager = new();
