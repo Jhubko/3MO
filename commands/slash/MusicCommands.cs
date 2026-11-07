@@ -354,6 +354,31 @@ namespace Discord_Bot.Commands.Slash
 
         }
 
+        [SlashCommand("nowplaying", "Shows the currently playing song")]
+        public async Task NowPlaying(InteractionContext ctx)
+        {
+            var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
+
+            if (player is null)
+                return;
+
+            var track = player.CurrentTrack;
+            if (track is null)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Nothing playing!")).ConfigureAwait(false);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = DiscordColor.DarkRed,
+                Title = "Teraz leci:",
+                Description = $"**{track.Title}**\nWykonawca: {track.Author}\nCzas: {player.Position?.Position} / {track.Duration}\n[Otwórz utwór]({track.Uri})"
+            };
+
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed)).ConfigureAwait(false);
+        }
+
         [SlashCommand("position", description: "Shows the track position")]
         public async Task Position(InteractionContext ctx)
         {
@@ -406,20 +431,23 @@ namespace Discord_Bot.Commands.Slash
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(queueEmbed)).ConfigureAwait(false);
         }
 
-        [SlashCommand("shuffle", description: "Turn shuffle on or off")]
-        public async Task Shuffle(InteractionContext ctx, [Option("isShuffled", "Suffle player")] bool isShuffled)
+        [SlashCommand("shuffle", description: "Losowo przetasowuje utwory w kolejce")]
+        public async Task Shuffle(InteractionContext ctx)
         {
             var player = await GetPlayerAsync(ctx, connectToVoiceChannel: false);
 
             if (player is null)
                 return;
 
-            player.Shuffle = isShuffled;
+            if (player.Queue.IsEmpty)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Nie ma utworów w kolejce do przetasowania.")).ConfigureAwait(false);
+                return;
+            }
 
-            if (player.Shuffle)
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Player shuffled")).ConfigureAwait(false);
-            else
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Player is not shuffled")).ConfigureAwait(false);
+            player.Shuffle = false;
+            await player.Queue.ShuffleAsync().ConfigureAwait(false);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Kolejka została przemieszana. Jej aktualna kolejność jest widoczna w `/queue`.")).ConfigureAwait(false);
         }
     }
 }

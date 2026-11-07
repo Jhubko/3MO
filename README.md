@@ -81,8 +81,8 @@
 - Use `/play` with a YouTube song, search query, or playlist to start playback or add it to the queue.
 - Add a track to the front of the queue with `/next`, or interrupt playback with `/playnow` and a single track.
 - Control playback with `/pause`, `/resume`, `/skip`, and `/stop`.
-- View the current track's position with `/position` and upcoming tracks with `/queue`.
-- Set volume from 0% to 1,000% with `/volume` and toggle queue shuffle with `/shuffle`.
+- See the currently playing song with `/nowplaying`, its position with `/position`, and the upcoming queue with `/queue`.
+- Set volume from 0% to 1,000% with `/volume`; `/shuffle` randomly reorders the queue, and `/queue` shows the resulting playback order.
 - Join a voice channel before using music commands.
 
 ## 🌐 Information Search
