@@ -1,26 +1,12 @@
 @echo off
 cd /d %~dp0
-set "BRANCH=Config_separation"
 
-echo Checking for local changes...
-git diff --quiet
-if errorlevel 1 goto dirty
-
-git diff --cached --quiet
-if errorlevel 1 goto dirty
-
-for /f "delims=" %%i in ('git ls-files --others --exclude-standard') do goto dirty
+echo Stashing local changes...
+git reset --hard
+git clean -fd
 
 echo Downloading the latest changes from GitHub...
-git fetch origin %BRANCH%
-if errorlevel 1 exit /b 1
-
-git checkout %BRANCH%
-if errorlevel 1 git checkout -b %BRANCH% --track origin/%BRANCH%
-if errorlevel 1 exit /b 1
-
-git pull --ff-only origin %BRANCH%
-if errorlevel 1 exit /b 1
+git pull origin main
 
 echo Deleting old build folder...
 if exist build rmdir /s /q build
@@ -46,8 +32,4 @@ cd build
 start "" Discord_Bot.exe
 
 echo Done!
-exit /b 0
-
-:dirty
-echo ERROR: Local changes or untracked files found. Commit or stash them before updating.
-exit /b 1
+exit
