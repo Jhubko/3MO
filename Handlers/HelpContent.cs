@@ -17,6 +17,7 @@ namespace Discord_Bot.other
                 "**/buyticket** - Kup bilet na loterię\n" +
                 "**/checktickets** - Sprawdź liczbę swoich losów\n" +
                 "**/givepoints** - Podziel się punktami z przyjaciółmi\n" +
+                "**/giveitem** - Przekaż przedmiot lub Pokémona innemu użytkownikowi\n" +
                 "**/freepoints** - 1000 darmowych punktów"
         };
 
@@ -28,7 +29,11 @@ namespace Discord_Bot.other
                 "**/hangman** - Zaczyna grę w wisielca\n" +
                 "**/hguess** - Zgaduje literę lub hasło w wisielcu\n" +
                 "**/wordle** - Zaczyna grę w Wordle\n" +
-                "**/wguess** - Zgaduje słowo w Wordle"
+                "**/wguess** - Zgaduje słowo w Wordle\n" +
+                "**/pokemonencounter** - Spotkaj losowego Pokémona; wybierz rodzaj Balla lub uciekaj\n" +
+                "**/pokemoninfo** - Zobacz szczegółowe informacje o swoim Pokémonie\n" +
+                "**/pokedex** - Wyświetl kolekcję Pokémonów w siatce 3×3; strony zmieniaj przyciskami\n" +
+                "**/pokemontrade** - Wymień duplikat Pokémona na Poké Ball"
         };
 
         public static DiscordEmbedBuilder fishingCommandEmbed = new()
@@ -44,9 +49,12 @@ namespace Discord_Bot.other
         {
             Color = DiscordColor.Gold,
             Title = "Shop Commands",
-            Description = "**/buy** - Kup przedmiot ze sklepu\n" +
+            Description = "**/buy** - Kup przedmiot ze sklepu (Poké Ball 1000, Great Ball 5000, Ultra Ball 10000, Master Ball 20000 punktów)\n" +
                   "**/shop** - Wyświetl listę dostępnych przedmiotów w sklepie\n" +
-                  "**/items** - Sprawdź swoje przedmioty"
+                  "**/items** - Sprawdź swoje przedmioty i ryby\n" +
+                  "**/pokedex** - Wyświetl złapane Pokémony w siatce 3×3 z przyciskiem następnej strony\n" +
+                  "**/pokemontrade** - Wymień duplikat Pokémona na Poké Ball\n" +
+                  "**/giveitem** - Przekaż przedmiot lub Pokémona innemu użytkownikowi"
         };
 
         public static DiscordEmbedBuilder cityCommandEmbed = new()

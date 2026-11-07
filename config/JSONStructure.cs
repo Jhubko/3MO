@@ -35,6 +35,16 @@
     {
         public List<FishItem> Fish { get; set; } = [];
         public Dictionary<string, uint> Items { get; set; } = [];
+        public List<PokemonInventoryItem> Pokemons { get; set; } = [];
+    }
+
+    public class PokemonInventoryItem
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        public string Name { get; set; } = string.Empty;
+        public int PokedexId { get; set; }
+        public string? SpriteUrl { get; set; }
+        public DateTime CaughtAt { get; set; }
     }
 
     public class UserConfig
